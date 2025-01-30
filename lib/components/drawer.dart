@@ -26,8 +26,9 @@ class ScaffoldDrawer extends StatelessWidget {
   const ScaffoldDrawer({super.key});
 
   static const drawerItems = [
-    _DrawerItemData('New Link', '/create' , Icons.add_outlined                 , Icons.add                 ),
-    _DrawerItemData('My Links', '/gallery', Icons.collections_bookmark_outlined, Icons.collections_bookmark),
+    _DrawerItemData('New Link' , '/create' , Icons.add_outlined                 , Icons.add                 ),
+    _DrawerItemData('Read Link', '/read'   , Icons.tap_and_play_outlined        , Icons.tap_and_play        ),
+    _DrawerItemData('My Links' , '/gallery', Icons.collections_bookmark_outlined, Icons.collections_bookmark),
   ];
 
   @override
@@ -51,7 +52,7 @@ class ScaffoldDrawer extends StatelessWidget {
       selectedIndex: selectedIndex,
       children: [
         const ScaffoldDrawerHeader(),
-        ...routerDestinations
+        ...routerDestinations,
       ],
     );
   }

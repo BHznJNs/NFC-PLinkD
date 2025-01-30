@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nfc_plinkd/create/photo.dart';
+import 'package:nfc_plinkd/pages/create/photo.dart';
 
 class CreatePage extends StatelessWidget {
   const CreatePage({super.key});
@@ -9,8 +9,7 @@ class CreatePage extends StatelessWidget {
       icon: Icons.photo_camera,
       title: 'Take a photo',
       onTap: (context) {
-        Navigator.push(
-          context,
+        Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => PhotoPage()),
         );
       }

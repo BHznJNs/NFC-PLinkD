@@ -1,7 +1,15 @@
 import 'dart:io';
-import 'package:uuid/uuid.dart';
+
 import 'package:flutter/material.dart';
+import 'package:nfc_plinkd/components/resource_list_view.dart';
+import 'package:nfc_plinkd/utils/file.dart';
+import 'package:uuid/uuid.dart';
 import 'package:image_picker/image_picker.dart';
+
+import 'package:nfc_plinkd/components/snackbar.dart';
+import 'package:nfc_plinkd/db.dart';
+import 'package:nfc_plinkd/components/dialog.dart';
+import 'package:nfc_plinkd/components/nfc_modal.dart';
 
 class PhotoPage extends StatefulWidget {
   const PhotoPage({super.key});
@@ -32,7 +40,28 @@ class _PhotoPageState extends State<PhotoPage> {
   }
 
   Future<void> saveLink() async {
+    if (images.isEmpty) {
+      showInfoSnackBar(context, 'There is no photo, please add some');
+      return;
+    }
     final id = Uuid().v4();
+    final now = DateTime.now().millisecondsSinceEpoch;
+
+    showNFCWritingModal(
+      context, id,
+      onSuccess: () async {
+        showNFCWritingSuccessMsg(context, () => Navigator.of(context).pop());
+
+        final link = LinkModel(id: id, type: LinkType.image, createTime: now);
+        final pathList = await moveResourcesToAppDir(images, LinkType.image);
+        final resources = pathList.map((path) =>
+          ResourceModel(linkId: id, path: path)
+        ).toList();
+        await DatabaseHelper.instance.insertLink(link, resources);        
+      },
+      onError: (err) =>
+        showCustomError(context, err),
+    );
   }
 
   @override
@@ -49,7 +78,7 @@ class _PhotoPageState extends State<PhotoPage> {
         right: 0,
         child: FloatingActionButton.extended(
           heroTag: 'photo_finish',
-          onPressed: () {},
+          onPressed: saveLink,
           label: Text('Finish'),
           icon: Icon(Icons.check),
         ),
@@ -75,31 +104,10 @@ class _PhotoPageState extends State<PhotoPage> {
     return Scaffold(
       appBar: AppBar(title: Text('拍照')),
       floatingActionButton: floatingActionButtons,
-      body: ListView.builder(
-        padding: EdgeInsets.fromLTRB(8, 8, 8, 80),
-        itemCount: images.length,
-        itemBuilder: (context, index) =>
-          _ImageItem.fromFile(images[index]),
+      body: ResourceListView(
+        resourcePathList: images.map((xfile) => xfile.path).toList(),
+        resourceType: LinkType.image,
       ),
-    );
-  }
-}
-
-class _ImageItem extends StatelessWidget {
-  _ImageItem.fromFile(XFile file): imagePath = file.path;
-
-  final String imagePath;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Image.file(
-          File(imagePath),
-          fit: BoxFit.cover,
-        ),
-      )
     );
   }
 }
