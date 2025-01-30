@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:nfc_plinkd/components/resource_list_view.dart';
 import 'package:nfc_plinkd/utils/file.dart';

@@ -69,14 +69,11 @@ void showNFCWritingSuccessMsg(BuildContext context, Function() onConfirm) {
         content: Container(
           height: 40,
           margin: const EdgeInsets.symmetric(vertical: 16),
-          child: Center(child: SizedBox(
-            height: 40,
-            child: Icon(
-              Icons.check,
-              size: 40,
-            ),
-          )
-        )),
+          child: Center(child: Icon(
+            Icons.check,
+            size: 40,
+          )),
+        ),
         actions: [TextButton(
           child: const Text('Ok'),
           onPressed: () {
