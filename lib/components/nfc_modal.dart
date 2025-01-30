@@ -71,7 +71,10 @@ void showNFCWritingSuccessMsg(BuildContext context, Function() onConfirm) {
           margin: const EdgeInsets.symmetric(vertical: 16),
           child: Center(child: SizedBox(
             height: 40,
-            child: Icon(Icons.check),
+            child: Icon(
+              Icons.check,
+              size: 40,
+            ),
           )
         )),
         actions: [TextButton(
