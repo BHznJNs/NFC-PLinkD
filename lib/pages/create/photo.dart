@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:nfc_plinkd/components/resource_list_view.dart';
 import 'package:nfc_plinkd/utils/file.dart';
 import 'package:uuid/uuid.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'package:nfc_plinkd/components/snackbar.dart';
 import 'package:nfc_plinkd/db.dart';
+import 'package:nfc_plinkd/utils/media.dart';
+import 'package:nfc_plinkd/components/snackbar.dart';
 import 'package:nfc_plinkd/components/dialog.dart';
 import 'package:nfc_plinkd/components/nfc_modal.dart';
 
@@ -15,34 +17,27 @@ class PhotoPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _PhotoPageState();
 }
+
 class _PhotoPageState extends State<PhotoPage> {
+  late String id;
   final ImagePicker picker = ImagePicker();
-  final List<XFile> images = [];
+  final List<ResourceModel> resources = [];
 
-  Future<void> takePhoto() async {
-    final XFile? photo =
-      await picker.pickImage(source: ImageSource.camera);
-    if (photo == null) return;
-    setState(() {
-      images.add(photo);
-    });
-  }
-
-  Future<void> importPhoto() async {
-    final XFile? photo =
-      await picker.pickImage(source: ImageSource.gallery);
-    if (photo == null) return;
-    setState(() {
-      images.add(photo);
-    });
+  Future<void> filePickerWrapper(Future<XFile?> Function() picker, ResourceType type) async {
+    final file = await picker();
+    if (file == null) return;
+    setState(() => resources.add(ResourceModel(
+      linkId: id,
+      type: type,
+      path: file.path,
+    )));
   }
 
   Future<void> saveLink() async {
-    if (images.isEmpty) {
+    if (resources.isEmpty) {
       showInfoSnackBar(context, 'There is no photo, please add some');
       return;
     }
-    final id = Uuid().v4();
     final now = DateTime.now().millisecondsSinceEpoch;
 
     showNFCWritingModal(
@@ -50,12 +45,9 @@ class _PhotoPageState extends State<PhotoPage> {
       onSuccess: () async {
         showNFCWritingSuccessMsg(context, () => Navigator.of(context).pop());
 
-        final link = LinkModel(id: id, type: LinkType.image, createTime: now);
-        final pathList = await moveResourcesToAppDir(images, LinkType.image);
-        final resources = pathList.map((path) =>
-          ResourceModel(linkId: id, path: path)
-        ).toList();
-        await DatabaseHelper.instance.insertLink(link, resources);        
+        final link = LinkModel(id: id, createTime: now);
+        final processedResources = await moveResourcesToAppDir(id, resources);
+        await DatabaseHelper.instance.insertLink(link, processedResources);        
       },
       onError: (err) =>
         showCustomError(context, err),
@@ -65,47 +57,75 @@ class _PhotoPageState extends State<PhotoPage> {
   @override
   void initState() {
     super.initState();
-    takePhoto();
+    id = Uuid().v4();
+    filePickerWrapper(takePhoto, ResourceType.image);
   }
 
   @override
   Widget build(BuildContext context) {
-    final floatingActionButtons = Stack(children: [
-      Positioned(
-        bottom: 0,
-        right: 0,
-        child: FloatingActionButton.extended(
-          heroTag: 'photo_finish',
-          onPressed: saveLink,
-          label: Text('Finish'),
-          icon: Icon(Icons.check),
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final bgColorMap = isDarkMode ? {
+      'video': Colors.blueGrey.shade600,
+      'audio': Colors.purple.shade700,
+      'weblink': Colors.teal.shade700,
+      'upload': Colors.amber.shade700,
+    } : {
+      'video': Colors.indigo.shade400,
+      'audio': Colors.deepPurple.shade400,
+      'weblink': Colors.teal.shade400,
+      'upload': Colors.amber.shade400,
+    };
+    final floatingActionButtons = SpeedDial(
+      heroTag: 'list-view-fab',
+      icon: Icons.add,
+      activeIcon: Icons.add_a_photo,
+      buttonSize: const Size(64, 64),
+      childPadding: const EdgeInsets.all(4),
+      spacing: 16,
+      spaceBetweenChildren: 4,
+      children: [
+        SpeedDialChild(
+          label: 'Record a video',
+          child: Icon(Icons.videocam),
+          foregroundColor: Colors.white,
+          backgroundColor: bgColorMap['video'],
         ),
-      ),
-      Positioned(
-        bottom: 72, right: 0,
-        child: FloatingActionButton.small(
-          heroTag: 'photo_take-photo',
-          onPressed: takePhoto,
-          child: Icon(Icons.add_a_photo),
+        SpeedDialChild(
+          label: 'Record a audio',
+          child: Icon(Icons.mic),
+          foregroundColor: Colors.white,
+          backgroundColor: bgColorMap['audio'],
+          onTap: () => recordAudio(context),
         ),
-      ),
-      Positioned(
-        bottom: 128, right: 0,
-        child: FloatingActionButton.small(
-          heroTag: 'photo_import-photo',
-          onPressed: importPhoto,
+        SpeedDialChild(
+          label: 'Attach a web link',
+          child: Icon(Icons.link),
+          foregroundColor: Colors.white,
+          backgroundColor: bgColorMap['weblink'],
+        ),
+        SpeedDialChild(
+          label: 'Upload some resource',
           child: Icon(Icons.upload),
-        ),
-      ),
-    ]);
+          foregroundColor: Colors.white,
+          backgroundColor: bgColorMap['upload'],
+          onTap: pickMediaFile,
+        )
+      ],
+    );
 
     return Scaffold(
-      appBar: AppBar(title: Text('拍照')),
-      floatingActionButton: floatingActionButtons,
-      body: ResourceListView(
-        resourcePathList: images.map((xfile) => xfile.path).toList(),
-        resourceType: LinkType.image,
+      appBar: AppBar(
+        title: Text('Create a Link'),
+        actions: [TextButton(
+          onPressed: saveLink,
+          child: Text('Finish'),
+        )],
       ),
+      floatingActionButton: Padding(
+        padding: EdgeInsets.all(8),
+        child: floatingActionButtons
+      ),
+      body: ResourceListView(resources),
     );
   }
 }

@@ -32,12 +32,16 @@ dependencies:
     sdk: flutter
 
   app_links: ^6.3.3
+  audio_waveforms: ^1.2.0
   dynamic_color: ^1.2.3
+  flutter_speed_dial: ^7.0.0
+  file_picker: ^8.3.1
   nfc_manager: ^3.5.0
   path: ^1.9.0
   path_provider: ^2.1.5
   permission_handler: ^11.3.1
   sqflite: ^2.4.1
+  stop_watch_timer: ^3.2.1
   image_picker: ^1.1.2
   uuid: ^4.5.1
 

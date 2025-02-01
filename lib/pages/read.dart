@@ -35,14 +35,13 @@ class _ReadPageState extends State<ReadPage> {
         final (link, resources) = await DatabaseHelper.instance.fetchLink(targetId);
         final appDir = (await getApplicationDocumentsDirectory()).path;
         // ignore: use_build_context_synchronously
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => LinkView(
-            resourcePathList: resources.map((resource) =>
-              path.join(appDir, resource.path)
-            ).toList(),
-            resourceType: link.type,
-          )
-        ));
+        // Navigator.of(context).push(
+        //   MaterialPageRoute(builder: (context) => LinkView(
+        //     resourcePathList: resources.map((resource) =>
+        //       path.join(appDir, resource.path)
+        //     ).toList(),
+        //   )
+        // ));
       },
       onError: (e) {
         if (e is CustomError) {

@@ -4,34 +4,53 @@ import 'package:flutter/material.dart';
 import 'package:nfc_plinkd/db.dart';
 
 class ResourceListView extends StatelessWidget {
-  const ResourceListView({
-    super.key,
-    required this.resourcePathList,
-    required this.resourceType,
-  });
+  const ResourceListView(this.resourceList, {super.key});
 
-  final List<String> resourcePathList;
-  final LinkType resourceType;
+  final List<ResourceModel> resourceList;
 
   @override
   Widget build(BuildContext context) {
-    final targetItemWidget = switch (resourceType) {
-      LinkType.image => (String path) => _ImageItem(path: path),
-      LinkType.video => () => _VideoItem(),
-      LinkType.audio => () => _AudioItem(),
-      LinkType.webLink => () => _WebLinkItem(),
-    };
-    return ListView.builder(
+    return ReorderableListView.builder(
       padding: EdgeInsets.fromLTRB(8, 8, 8, 80),
-      itemCount: resourcePathList.length,
-      itemBuilder: (context, index) =>
-        targetItemWidget(resourcePathList[index]),
+      onReorder: (oldIndex, newIndex) {
+        // 
+      },
+      itemCount: resourceList.length,
+      itemBuilder: (context, index) {
+        final resource = resourceList[index];
+        return _GenericResourceItem(
+          key: ValueKey(index),
+          path: resource.path,
+          type: resource.type,
+        );
+      },
     );
   }
 }
 
+class _GenericResourceItem extends StatelessWidget {
+  const _GenericResourceItem({
+    super.key,
+    required this.path,
+    required this.type,
+  });
+
+  final String path;
+  final ResourceType type;
+
+  @override
+  Widget build(BuildContext context) {
+    return switch (type) {
+      ResourceType.image => _ImageItem(path),
+      ResourceType.video => _VideoItem(path),
+      ResourceType.audio => _AudioItem(path),
+      ResourceType.webLink => _WebLinkItem(path),
+    };
+  }
+}
+
 class _ImageItem extends StatelessWidget {
-  const _ImageItem({required this.path});
+  const _ImageItem(this.path);
 
   final String path;
 
@@ -50,7 +69,10 @@ class _ImageItem extends StatelessWidget {
 }
 
 class _VideoItem extends StatelessWidget {
-  const _VideoItem();
+  const _VideoItem(this.path);
+
+  final String path;
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -59,7 +81,10 @@ class _VideoItem extends StatelessWidget {
 }
 
 class _AudioItem extends StatelessWidget {
-  const _AudioItem();
+  const _AudioItem(this.path);
+
+  final String path;
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -68,7 +93,10 @@ class _AudioItem extends StatelessWidget {
 }
 
 class _WebLinkItem extends StatelessWidget {
-  const _WebLinkItem();
+  const _WebLinkItem(this.path);
+
+  final String path;
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build

@@ -32,14 +32,15 @@ class DatabaseHelper {
       CREATE TABLE $linksTableName (
         id TEXT,
         created_at INTEGER NOT NULL,
-        type TEXT NOT NULL
       )
     ''');
     await db.execute('''
       CREATE TABLE $resourcesTableName (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        link_id INTEGER NOT NULL,
+        order_index INTEGER NOT NULL,
         path TEXT NOT NULL,
+        type INTEGER NOT NULL,
+        link_id INTEGER NOT NULL,
         description TEXT,
         FOREIGN KEY (link_id) REFERENCES links(id)
       )
@@ -49,8 +50,11 @@ class DatabaseHelper {
   Future<void> insertLink(LinkModel link, List<ResourceModel> resources) async {
     final db = await database;
     await db.insert(linksTableName, link.toMap());
-    for (final resource in resources) {
-      await db.insert(resourcesTableName, resource.toMap());
+    for (int i = 0; i < resources.length; i++) {
+      final resource = resources[i];
+      final map = resource.toMap();
+      map['order_index'] = i;
+      await db.insert(resourcesTableName, map);
     }
   }
 
@@ -65,6 +69,7 @@ class DatabaseHelper {
       resourcesTableName,
       where: "link_id = ?",
       whereArgs: [id],
+      orderBy: 'order_index',
     );
     if (candidateLinks.isEmpty || linkResources.isEmpty) {
       throw LinkError.DataNotFound;
@@ -101,6 +106,17 @@ enum LinkType {
   }
 }
 
+enum ResourceType {
+  image,
+  video,
+  audio,
+  webLink;
+
+  static ResourceType fromInt(int typeId) {
+    return ResourceType.values[typeId];
+  }
+}
+
 class LinkError extends CustomError {
   LinkError({required super.title, required super.content});
 
@@ -115,19 +131,16 @@ class LinkError extends CustomError {
 
 class LinkModel {
   final String id;
-  final LinkType type;
   final int createTime;
 
   LinkModel({
     required this.id,
-    required this.type,
     required this.createTime,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'type': type.name,
       'created_at': createTime,
     };
   }
@@ -135,7 +148,6 @@ class LinkModel {
   factory LinkModel.fromMap(Map<String, dynamic> map) {
     return LinkModel(
       id: map['id'] as String,
-      type: LinkType.fromName(map['type']),
       createTime: map['created_at'] as int,
     );
   }
@@ -144,10 +156,12 @@ class LinkModel {
 class ResourceModel {
   final String linkId;
   final String path;
+  final ResourceType type;
   final String? description;
 
   ResourceModel({
     required this.linkId,
+    required this.type,
     required this.path,
     this.description,
   });
@@ -155,6 +169,7 @@ class ResourceModel {
   Map<String, dynamic> toMap() {
     return {
       'link_id': linkId,
+      'type': type.index,
       'path': path,
       'description': description,
     };
@@ -163,6 +178,7 @@ class ResourceModel {
   factory ResourceModel.fromMap(Map<String, dynamic> map) {
     return ResourceModel(
       linkId: map['link_id'] as String,
+      type: ResourceType.fromInt(map['type'] as int),
       path: map['path'] as String,
       description: map['description'] as String?,
     );
