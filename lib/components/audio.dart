@@ -37,7 +37,7 @@ class _RecorderState extends State<Recorder> {
       builder: (context, snap) {
         final value = snap.data!;
         final displayTime =
-            StopWatchTimer.getDisplayTime(value, hours: false);
+          StopWatchTimer.getDisplayTime(value, hours: false);
         return Text(
           displayTime,
           style: const TextStyle(
@@ -139,13 +139,13 @@ class _TimerButtonState extends State<_TimerButton>
     );
     _slideLeft = Tween<Offset>(
       begin: Offset.zero,
-      end: const Offset(-0.8, 0.0),
+      end: const Offset(-0.75, 0.0),
     ).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
     _slideRight = Tween<Offset>(
       begin: Offset.zero,
-      end: const Offset(0.8, 0.0),
+      end: const Offset(0.75, 0.0),
     ).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
@@ -172,8 +172,8 @@ class _TimerButtonState extends State<_TimerButton>
         widget.onStart();
         setState(() => isPlaying = true);
       },
-      foregroundColor: Theme.of(context).colorScheme.onPrimary,
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      foregroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
     );
     final pauseResumeButton = CircularElevatedIconButton(
       icon: isPlaying ? Icons.pause : Icons.play_arrow,
@@ -185,8 +185,8 @@ class _TimerButtonState extends State<_TimerButton>
         }
         setState(() => isPlaying = !isPlaying);
       },
-      foregroundColor: Theme.of(context).colorScheme.onSecondary,
-      backgroundColor: Theme.of(context).colorScheme.secondary,
+      foregroundColor: Theme.of(context).colorScheme.secondary,
+      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
     );
     final stopButton = CircularElevatedIconButton(
       icon: Icons.stop,
@@ -195,8 +195,8 @@ class _TimerButtonState extends State<_TimerButton>
         widget.onComplete();
         setState(() => isPlaying = false);
       },
-      foregroundColor: Theme.of(context).colorScheme.onPrimary,
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      foregroundColor: Theme.of(context).colorScheme.error,
+      backgroundColor: Theme.of(context).colorScheme.errorContainer,
     );
     return Stack(
       alignment: Alignment.center,

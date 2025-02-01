@@ -48,7 +48,7 @@ void _showNFCApprochingAlert(BuildContext context) {
           height: 40,
           margin: const EdgeInsets.symmetric(vertical: 16),
           child: const Center(
-            child: CircularProgressIndicator(),
+            child: CircularProgressIndicator.adaptive(),
           )
         ),
         actions: [TextButton(

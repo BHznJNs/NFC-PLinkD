@@ -31,7 +31,7 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE $linksTableName (
         id TEXT,
-        created_at INTEGER NOT NULL,
+        created_at INTEGER NOT NULL
       )
     ''');
     await db.execute('''
@@ -94,17 +94,6 @@ class DatabaseHelper {
 }
 
 // --- --- --- --- --- ---
-
-enum LinkType {
-  image,
-  video,
-  audio,
-  webLink;
-
-  static LinkType fromName(String name) {
-    return LinkType.values.byName(name);
-  }
-}
 
 enum ResourceType {
   image,

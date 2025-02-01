@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:nfc_plinkd/components/custom_button.dart';
 import 'package:nfc_plinkd/components/resource_list_view.dart';
 import 'package:nfc_plinkd/utils/file.dart';
 import 'package:uuid/uuid.dart';
@@ -19,18 +20,22 @@ class PhotoPage extends StatefulWidget {
 }
 
 class _PhotoPageState extends State<PhotoPage> {
-  late String id;
+  final String id = Uuid().v4();
   final ImagePicker picker = ImagePicker();
   final List<ResourceModel> resources = [];
 
-  Future<void> filePickerWrapper(Future<XFile?> Function() picker, ResourceType type) async {
-    final file = await picker();
-    if (file == null) return;
-    setState(() => resources.add(ResourceModel(
-      linkId: id,
-      type: type,
-      path: file.path,
-    )));
+  Future<void> filePickerWrapper(ResourcePicker picker) async {
+    final result = await picker(context);
+    if (result.isEmpty) return;
+    setState(() {
+      for (var item in result) {
+        resources.add(ResourceModel(
+          linkId: id,
+          type: item.$2,
+          path: item.$1.path,
+        ));
+      }
+    });
   }
 
   Future<void> saveLink() async {
@@ -57,8 +62,19 @@ class _PhotoPageState extends State<PhotoPage> {
   @override
   void initState() {
     super.initState();
-    id = Uuid().v4();
-    filePickerWrapper(takePhoto, ResourceType.image);
+    takePhoto(context).then((result) {
+      if (result.isEmpty) {
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).pop();
+        return;
+      }
+      final photo = result[0];
+      setState(() => resources.add(ResourceModel(
+        linkId: id,
+        type: photo.$2,
+        path: photo.$1.path,
+      )));
+    });
   }
 
   @override
@@ -75,43 +91,35 @@ class _PhotoPageState extends State<PhotoPage> {
       'weblink': Colors.teal.shade400,
       'upload': Colors.amber.shade400,
     };
-    final floatingActionButtons = SpeedDial(
-      heroTag: 'list-view-fab',
-      icon: Icons.add,
-      activeIcon: Icons.add_a_photo,
-      buttonSize: const Size(64, 64),
-      childPadding: const EdgeInsets.all(4),
-      spacing: 16,
-      spaceBetweenChildren: 4,
-      children: [
-        SpeedDialChild(
-          label: 'Record a video',
-          child: Icon(Icons.videocam),
-          foregroundColor: Colors.white,
-          backgroundColor: bgColorMap['video'],
-        ),
-        SpeedDialChild(
-          label: 'Record a audio',
-          child: Icon(Icons.mic),
-          foregroundColor: Colors.white,
-          backgroundColor: bgColorMap['audio'],
-          onTap: () => recordAudio(context),
-        ),
-        SpeedDialChild(
-          label: 'Attach a web link',
-          child: Icon(Icons.link),
-          foregroundColor: Colors.white,
-          backgroundColor: bgColorMap['weblink'],
-        ),
-        SpeedDialChild(
-          label: 'Upload some resource',
-          child: Icon(Icons.upload),
-          foregroundColor: Colors.white,
-          backgroundColor: bgColorMap['upload'],
-          onTap: pickMediaFile,
-        )
-      ],
-    );
+    final speedDialChildren = [
+      SpeedDialChild(
+        label: 'Record a video',
+        child: Icon(Icons.videocam),
+        foregroundColor: Colors.white,
+        backgroundColor: bgColorMap['video'],
+        onTap: () => filePickerWrapper(recordVideo),
+      ),
+      SpeedDialChild(
+        label: 'Record a audio',
+        child: Icon(Icons.mic),
+        foregroundColor: Colors.white,
+        backgroundColor: bgColorMap['audio'],
+        onTap: () => filePickerWrapper(recordAudio),
+      ),
+      SpeedDialChild(
+        label: 'Attach a web link',
+        child: Icon(Icons.link),
+        foregroundColor: Colors.white,
+        backgroundColor: bgColorMap['weblink'],
+      ),
+      SpeedDialChild(
+        label: 'Upload some resource',
+        child: Icon(Icons.upload),
+        foregroundColor: Colors.white,
+        backgroundColor: bgColorMap['upload'],
+        onTap: () => filePickerWrapper(pickMediaFile),
+      )
+    ];
 
     return Scaffold(
       appBar: AppBar(
@@ -121,9 +129,11 @@ class _PhotoPageState extends State<PhotoPage> {
           child: Text('Finish'),
         )],
       ),
-      floatingActionButton: Padding(
-        padding: EdgeInsets.all(8),
-        child: floatingActionButtons
+      floatingActionButton: EnhancedSpeedDial(
+        speedDialChildren,
+        onDialRootPressed: (isOpen) {
+          print('isOpen: $isOpen');
+        },
       ),
       body: ResourceListView(resources),
     );

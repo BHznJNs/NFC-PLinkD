@@ -85,7 +85,7 @@ class _ReadPageState extends State<ReadPage> {
               child: SizedBox(
                 width: 64,
                 height: 64,
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator.adaptive(),
               ),
             )
           )
