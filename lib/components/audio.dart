@@ -6,14 +6,15 @@ import 'package:path_provider/path_provider.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class Recorder extends StatefulWidget {
-  const Recorder({super.key});
+  const Recorder({super.key, required this.onRecordEnd});
+
+  final Function(String?) onRecordEnd;
 
   @override
   State<StatefulWidget> createState() => _RecorderState();
 }
 
 class _RecorderState extends State<Recorder> {
-  String? recordedFilePath;
   late RecorderController recorderController;
   final timer = StopWatchTimer(mode: StopWatchMode.countUp);
 
@@ -85,12 +86,13 @@ class _RecorderState extends State<Recorder> {
                 recorderController.record();
                 timer.onStartTimer();
               },
-              onComplete: () async {
+              onComplete: () {
                 if (recorderController.isRecording) {
-                  recordedFilePath = await recorderController.stop();
-                  print(recordedFilePath);
+                  recorderController.stop().then((path) =>
+                    widget.onRecordEnd(path));
                 }
                 timer.onResetTimer();
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -189,7 +191,7 @@ class _TimerButtonState extends State<_TimerButton>
       backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
     );
     final stopButton = CircularElevatedIconButton(
-      icon: Icons.stop,
+      icon: Icons.check,
       onPressed: () {
         _controller.reverse();
         widget.onComplete();

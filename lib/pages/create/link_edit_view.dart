@@ -12,17 +12,19 @@ import 'package:nfc_plinkd/components/snackbar.dart';
 import 'package:nfc_plinkd/components/dialog.dart';
 import 'package:nfc_plinkd/components/nfc_modal.dart';
 
-class PhotoPage extends StatefulWidget {
-  const PhotoPage({super.key});
+class LinkEditView extends StatefulWidget {
+  const LinkEditView({super.key, required this.initialResources});
+
+  final ResourcePickerResult initialResources;
 
   @override
-  State<StatefulWidget> createState() => _PhotoPageState();
+  State<StatefulWidget> createState() => _LinkEditViewState();
 }
 
-class _PhotoPageState extends State<PhotoPage> {
+class _LinkEditViewState extends State<LinkEditView> {
   final String id = Uuid().v4();
   final ImagePicker picker = ImagePicker();
-  final List<ResourceModel> resources = [];
+  late List<ResourceModel> resources;
 
   Future<void> filePickerWrapper(ResourcePicker picker) async {
     final result = await picker(context);
@@ -62,19 +64,25 @@ class _PhotoPageState extends State<PhotoPage> {
   @override
   void initState() {
     super.initState();
-    takePhoto(context).then((result) {
-      if (result.isEmpty) {
-        // ignore: use_build_context_synchronously
-        Navigator.of(context).pop();
-        return;
-      }
-      final photo = result[0];
-      setState(() => resources.add(ResourceModel(
-        linkId: id,
-        type: photo.$2,
-        path: photo.$1.path,
-      )));
-    });
+    resources = widget.initialResources.map((resource) => ResourceModel(
+      linkId: id,
+      type: resource.$2,
+      path: resource.$1.path,
+    )).toList();
+    // WidgetsBinding.instance.addPostFrameCallback((_) async {
+    //   final result = await widget.onOpen(context);
+    //   if (result.isEmpty) {
+    //     // ignore: use_build_context_synchronously
+    //     Navigator.of(context).pop();
+    //     return;
+    //   }
+    //   final file = result[0];
+    //   setState(() => resources.add(ResourceModel(
+    //     linkId: id,
+    //     type: file.$2,
+    //     path: file.$1.path,
+    //   )));
+    // });
   }
 
   @override
@@ -132,7 +140,9 @@ class _PhotoPageState extends State<PhotoPage> {
       floatingActionButton: EnhancedSpeedDial(
         speedDialChildren,
         onDialRootPressed: (isOpen) {
-          print('isOpen: $isOpen');
+          if (!isOpen) {
+            filePickerWrapper(takePhoto);
+          }
         },
       ),
       body: ResourceListView(resources),

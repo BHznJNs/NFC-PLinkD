@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nfc_plinkd/pages/create/photo.dart';
+import 'package:nfc_plinkd/pages/create/link_edit_view.dart';
+import 'package:nfc_plinkd/utils/media.dart';
 
 class CreatePage extends StatelessWidget {
   const CreatePage({super.key});
@@ -8,25 +9,26 @@ class CreatePage extends StatelessWidget {
     _CreateItemData(
       icon: Icons.photo_camera,
       title: 'Take a photo',
-      onTap: (context) {
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => PhotoPage()),
-        );
-      }
+      onTap: (context) =>
+        takePhoto(context).then((resources) =>
+          // ignore: use_build_context_synchronously
+          linkEditViewBuilder(context, resources))
     ),
     _CreateItemData(
       icon: Icons.videocam,
       title: 'Record a Video',
-      onTap: (context) {
-        // 
-      }
+      onTap: (context) =>
+        recordVideo(context).then((resources) =>
+          // ignore: use_build_context_synchronously
+          linkEditViewBuilder(context, resources))
     ),
     _CreateItemData(
       icon: Icons.mic,
       title: 'Record a Audio',
-      onTap: (context) {
-        // 
-      }
+      onTap: (context) =>
+        recordAudio(context).then((resources) =>
+          // ignore: use_build_context_synchronously
+          linkEditViewBuilder(context, resources))
     ),
     _CreateItemData(
       icon: Icons.link,
@@ -34,8 +36,16 @@ class CreatePage extends StatelessWidget {
       onTap: (context) {
         // 
       }
-    )
+    ),
   ];
+
+  static void linkEditViewBuilder(BuildContext context, ResourcePickerResult resources) {
+    if (resources.isEmpty) return;
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) =>
+        LinkEditView(initialResources: resources)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

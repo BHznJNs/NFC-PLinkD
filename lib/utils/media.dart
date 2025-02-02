@@ -1,5 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
+import 'package:flutter/services.dart';
+import 'package:image/image.dart' as img;
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
@@ -72,7 +78,10 @@ Future<ResourcePickerResult> recordVideo(BuildContext _) async {
 Future<ResourcePickerResult> recordAudio(BuildContext context) async {
   final completer = Completer<ResourcePickerResult>();
   Navigator.of(context).push(MaterialPageRoute(builder: (context) => 
-    Recorder()
+    Recorder(onRecordEnd: (recordedFilePath) {
+      if (recordedFilePath == null) completer.complete([]);
+      completer.complete([(XFile(recordedFilePath!), ResourceType.audio)]);
+    })
   ));
   return completer.future;
 }
@@ -84,11 +93,80 @@ Future<ResourcePickerResult> pickMediaFile(BuildContext _) async {
       type: FileType.media,
       allowMultiple: true);
   if (result == null) return [];
-  return result.files
-    .where((file) =>
-      (file.extension != null) && (file.path != null))
-    .map((file) =>
-      (XFile(file.path!), getResourceTypeFromExtname(file.extension!)))
-    .where((res) => res.$2 != null)
-    .toList() as ResourcePickerResult;
+  final ResourcePickerResult resultList = [];
+  for (final file in result.files) {
+    if (file.extension == null || file.path == null) {
+      continue;
+    }
+    final fileType = getResourceTypeFromExtname(file.extension!);
+    if (fileType == null) {
+      continue;
+    }
+    resultList.add((XFile(file.path!), fileType));
+  }
+  return resultList;
+}
+
+Future<File?> generateImageThumbnail(List<dynamic> params) async {
+  final rootIsolateToken = params[0] as RootIsolateToken?;
+  final imagePath = params[1] as String;
+  final thumbSize = params[2] as int;
+
+  if (rootIsolateToken != null) {
+    BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
+  }
+
+  final File imageFile = File(imagePath);
+  final List<int> imageBytes = await imageFile.readAsBytes();
+
+  final img.Image? image = img.decodeImage(Uint8List.fromList(imageBytes));
+  if (image == null) return null;
+
+  final int size = image.width < image.height ? image.width : image.height;
+  final int x = (image.width - size) ~/ 2;
+  final int y = (image.height - size) ~/ 2;
+
+  final img.Image thumbnail = img.copyCrop(image,
+    x: x, y: y,
+    width: size, height: size,
+  );
+  final img.Image resizedThumbnail = img.copyResize(thumbnail,
+    width: thumbSize,
+    height: thumbSize,
+  );
+
+  final directory = await getTemporaryDirectory();
+  final thumbnailPath = '${directory.path}/${path.basenameWithoutExtension(imagePath)}.png';
+  final encoded = img.encodePng(resizedThumbnail);
+  File outputFile = File(thumbnailPath)..writeAsBytesSync(encoded);
+
+  return outputFile;
+}
+
+final videoThumbnail = FcNativeVideoThumbnail();
+Future<File?> generateVideoThumbnail(List<dynamic> params) async {
+  final rootIsolateToken = params[0] as RootIsolateToken?;
+  final videoPath = params[0] as String;
+  final size = params[1] as int;
+
+  if (rootIsolateToken != null) {
+    BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
+  }
+
+  final directory = await getTemporaryDirectory();
+  final thumbnailPath = '${directory.path}/${path.basenameWithoutExtension(videoPath)}.jpeg';
+  try {
+    final thumbnailGenerated = await videoThumbnail.getVideoThumbnail(
+      srcFile: videoPath,
+      destFile: thumbnailPath,
+      width: size,
+      height: size,
+      format: 'jpeg',
+      quality: 60,
+    );
+    if (!thumbnailGenerated) return null;
+  } catch(_) {
+    return null;
+  }
+  return File(thumbnailPath);
 }

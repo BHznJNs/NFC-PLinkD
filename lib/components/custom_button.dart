@@ -56,7 +56,7 @@ class EnhancedSpeedDial extends StatefulWidget {
 }
 class _PageSpeedDialState extends State<EnhancedSpeedDial>
     with SingleTickerProviderStateMixin {
-  late void Function() toggleSpeedDial;
+  VoidCallback? toggleSpeedDial;
   late AnimationController controller = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 200),
@@ -114,20 +114,37 @@ class _PageSpeedDialState extends State<EnhancedSpeedDial>
         Positioned(
           right: 8,
           bottom: 8,
-          child: ScaleTransition(
-            scale: scaleRev,
-            child: FloatingActionButton.extended(
-              heroTag: 'Add-a-photo',
-              onPressed: () {
-                toggleSpeedDial();
-                widget.onDialRootPressed?.call(isSpeedDialOpen);
-              },
-              label: Text('Add a Photo'),
-              icon: Icon(Icons.add_a_photo),
-            ),
+          child: Row(
+            spacing: 16,
+            children: [
+              ScaleTransition(
+                scale: scaleRev,
+                child: FloatingActionButton(
+                  heroTag: 'close',
+                  onPressed: toggleSpeedDial,
+                  foregroundColor: Theme.of(context).colorScheme.secondary,
+                  backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+                  child: Icon(Icons.close),
+                ),
+              ),
+              ScaleTransition(
+                scale: scaleRev,
+                child: FloatingActionButton.extended(
+                  heroTag: 'Add-a-photo',
+                  onPressed: () {
+                    toggleSpeedDial?.call();
+                    widget.onDialRootPressed?.call(isSpeedDialOpen);
+                  },
+                  label: Text('Add a Photo'),
+                  foregroundColor: Theme.of(context).colorScheme.primary,
+                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                  icon: Icon(Icons.add_a_photo),
+                ),
+              ),
+            ],
           ),
-        )
-      ]
+        ),
+      ],
     );
   }
 }
