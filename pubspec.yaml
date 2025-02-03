@@ -39,6 +39,7 @@ dependencies:
   flutter_image_compress: ^2.4.0
   file_picker: ^8.3.1
   nfc_manager: ^3.5.0
+  just_audio: ^0.9.45
   path: ^1.9.0
   path_provider: ^2.1.5
   permission_handler: ^11.3.1
@@ -47,9 +48,11 @@ dependencies:
   stop_watch_timer: ^3.2.1
   image: ^4.5.2
   image_picker: ^1.1.2
+  open_file: ^3.5.10
   universal_video_controls: ^1.0.10
   universal_video_controls_video_player: ^1.0.1
   uuid: ^4.5.1
+  url_launcher: ^6.3.1
   video_player: ^2.9.2
 
 dev_dependencies:

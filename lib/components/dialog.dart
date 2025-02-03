@@ -9,7 +9,7 @@ void showAlert(
   showDialog(
     context: context,
     builder: (BuildContext context) {
-      return AlertDialog(
+      return AlertDialog.adaptive(
         title: Text(title),
         content: Text(content),
         actions: [TextButton(

@@ -34,7 +34,7 @@ class _LinkEditViewState extends State<LinkEditView> {
         resources.add(ResourceModel(
           linkId: id,
           type: item.$2,
-          path: item.$1.path,
+          path: item.$1,
         ));
       }
     });
@@ -67,22 +67,8 @@ class _LinkEditViewState extends State<LinkEditView> {
     resources = widget.initialResources.map((resource) => ResourceModel(
       linkId: id,
       type: resource.$2,
-      path: resource.$1.path,
+      path: resource.$1,
     )).toList();
-    // WidgetsBinding.instance.addPostFrameCallback((_) async {
-    //   final result = await widget.onOpen(context);
-    //   if (result.isEmpty) {
-    //     // ignore: use_build_context_synchronously
-    //     Navigator.of(context).pop();
-    //     return;
-    //   }
-    //   final file = result[0];
-    //   setState(() => resources.add(ResourceModel(
-    //     linkId: id,
-    //     type: file.$2,
-    //     path: file.$1.path,
-    //   )));
-    // });
   }
 
   @override
@@ -119,6 +105,7 @@ class _LinkEditViewState extends State<LinkEditView> {
         child: Icon(Icons.link),
         foregroundColor: Colors.white,
         backgroundColor: bgColorMap['weblink'],
+        onTap: () => filePickerWrapper(inputWebLink),
       ),
       SpeedDialChild(
         label: 'Upload some resource',

@@ -4,12 +4,11 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:nfc_plinkd/pages/resource_view/image.dart';
+import 'package:nfc_plinkd/pages/resource_view/audio.dart';
+import 'package:nfc_plinkd/pages/resource_view/video.dart';
 import 'package:nfc_plinkd/utils/media.dart';
-// import 'package:path/path.dart' as path;
-// import 'package:video_player/video_player.dart';
-// import 'package:universal_video_controls/universal_video_controls.dart';
-// import 'package:universal_video_controls_video_player/universal_video_controls_video_player.dart';
 import 'package:nfc_plinkd/db.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class ResourceListView extends StatefulWidget {
   const ResourceListView(this.resourceList, {super.key});
@@ -74,7 +73,7 @@ class _GenericResourceItem extends StatefulWidget {
   State<StatefulWidget> createState() => _GenericResourceItemState();
 }
 class _GenericResourceItemState extends State<_GenericResourceItem> {
-  static const double size = 108;
+  static const double size = 128;
   File? thumbnail;
 
   void openResource() {
@@ -83,14 +82,11 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
         Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => ImagePage(widget.path)));
       case ResourceType.video:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        openVideoWithDefaultPlayer(context, widget.path);
       case ResourceType.audio:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        openAudioWithDefaultPlayer(context, widget.path);
       case ResourceType.webLink:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        launchUrlString(widget.path);
     }
   }
 
@@ -100,18 +96,25 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
       widget.type == ResourceType.video
     )) {
       return Stack(children: [
-        Ink.image(
-          image: FileImage(thumbnail!),
-          width: size,
-          height: size,
-          fit: BoxFit.cover,
+        Container(
+          width: size - 16,
+          height: size - 16,
+          margin: EdgeInsets.all(8),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.file(thumbnail!, fit: BoxFit.cover),
+          ),
         ),
         if (widget.type == ResourceType.video)
           Container(
-            width: size,
-            height: size,
+            width: size - 16,
+            height: size - 16,
+            margin: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Color.fromRGBO(0, 0, 0, 0.4), 
+              borderRadius: BorderRadius.all(Radius.circular(8))
+            ),
             alignment: Alignment.center,
-            color: Color.fromRGBO(0, 0, 0, 0.4), 
             child: const Icon(
               Icons.play_arrow,
               color: Colors.white,
@@ -124,14 +127,30 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
         width: size,
         height: size,
         alignment: Alignment.center,
-        child: const Icon(Icons.audio_file, size: 64),
+        child: Icon(
+          Icons.audio_file,
+          size: 64,
+          color: Theme.of(context).colorScheme.primary,
+        ),
       );
     } else if (widget.type == ResourceType.webLink) {
+      final faviconUri = Uri
+        .parse(widget.path)
+        .replace(path: 'favicon.ico');
       return Container(
-        width: size,
-        height: size,
+        width: size - 16,
+        height: size - 16,
+        margin: EdgeInsets.all(8),
         alignment: Alignment.center,
-        child: const Icon(Icons.link, size: 64),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.network(
+            width: 72,
+            height: 72,
+            faviconUri.toString(),
+            fit: BoxFit.contain,
+          ),
+        ),
       );
     }
     return Container(
@@ -146,6 +165,7 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
   void initState() {
     super.initState();
 
+    // load thumbnail
     if (widget.type == ResourceType.image || widget.type == ResourceType.video) {
       final generator = switch (widget.type) {
         ResourceType.image => generateImageThumbnail,
@@ -166,9 +186,13 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
 
   @override
   Widget build(BuildContext context) {
-    final description = widget.description != null
-      ? Text(widget.description!)
-      : Opacity(opacity: .4, child: Text('No description'));
+    final description = Container(
+      height: double.infinity,
+      margin: EdgeInsets.symmetric(vertical: 16),
+      child: widget.description != null
+        ? Text(widget.description!, overflow: TextOverflow.ellipsis)
+        : Opacity(opacity: .4, child: Text('No description')),
+    );
 
     final draggableRegion = ReorderableDragStartListener(
       index: widget.index,
@@ -176,7 +200,7 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
         color: Colors.transparent,
         child: Container(
           width: 48,
-          height: size,
+          height: double.infinity,
           alignment: Alignment.center,
           child: const Icon(Icons.drag_handle),
         ),
@@ -186,20 +210,23 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
     return Card(
       margin: EdgeInsets.symmetric(vertical: 8),
       clipBehavior: Clip.antiAlias,
-      child: Row(
-        children: [
-          Expanded(child: InkWell(
-            onTap: openResource,
-            child: Row(children: [
-              thumbnailBuilder(),
-              Expanded(child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: description,
-              )),
-            ]),
-          )),
-          draggableRegion,
-        ],
+      child: SizedBox(
+        height: size,
+        child: Row(
+          children: [
+            Expanded(child: InkWell(
+              onTap: openResource,
+              child: Row(children: [
+                thumbnailBuilder(),
+                Expanded(child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: description,
+                )),
+              ]),
+            )),
+            draggableRegion,
+          ],
+        ),
       ),
     );
   }

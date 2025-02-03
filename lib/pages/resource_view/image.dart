@@ -15,6 +15,9 @@ class ImagePage extends StatelessWidget {
       body: PhotoView(
         minScale: PhotoViewComputedScale.contained,
         imageProvider: FileImage(File(path)),
+        backgroundDecoration: BoxDecoration(
+          color: Theme.of(context).canvasColor,
+        )
       ),
     );
   }

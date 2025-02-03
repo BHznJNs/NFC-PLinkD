@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
 import 'package:flutter/services.dart';
-import 'package:image/image.dart' as img;
+import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:nfc_plinkd/components/audio.dart';
@@ -15,7 +15,7 @@ import 'package:nfc_plinkd/db.dart';
 final picker = ImagePicker();
 
 typedef ResourcePicker = Future<ResourcePickerResult> Function(BuildContext);
-typedef ResourcePickerResult = List<(XFile, ResourceType)>;
+typedef ResourcePickerResult = List<(String, ResourceType)>;
 
 ResourceType? getResourceTypeFromExtname(String extname) {
   switch (extname) {
@@ -66,13 +66,13 @@ ResourceType? getResourceTypeFromExtname(String extname) {
 Future<ResourcePickerResult> takePhoto(BuildContext _) async {
   final photo = await picker.pickImage(source: ImageSource.camera);
   if (photo == null) return [];
-  return [(photo, ResourceType.image)];
+  return [(photo.path, ResourceType.image)];
 }
 
 Future<ResourcePickerResult> recordVideo(BuildContext _) async {
   final video = await picker.pickVideo(source: ImageSource.camera);
   if (video == null) return [];
-  return [(video, ResourceType.video)];
+  return [(video.path, ResourceType.video)];
 }
 
 Future<ResourcePickerResult> recordAudio(BuildContext context) async {
@@ -80,10 +80,105 @@ Future<ResourcePickerResult> recordAudio(BuildContext context) async {
   Navigator.of(context).push(MaterialPageRoute(builder: (context) => 
     Recorder(onRecordEnd: (recordedFilePath) {
       if (recordedFilePath == null) completer.complete([]);
-      completer.complete([(XFile(recordedFilePath!), ResourceType.audio)]);
+      completer.complete([(recordedFilePath!, ResourceType.audio)]);
     })
   ));
   return completer.future;
+}
+
+Future<ResourcePickerResult> inputWebLink(BuildContext context) async {
+  final result = await showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return WebLinkInputDialog();
+    },
+  );
+  if (result == null) return [];
+  return [(result, ResourceType.webLink)];
+}
+class WebLinkInputDialog extends StatefulWidget {
+  const WebLinkInputDialog({super.key});
+
+  @override
+  State<StatefulWidget> createState() => WebLinkInputDialogState();
+}
+class WebLinkInputDialogState extends State<WebLinkInputDialog> {
+  final TextEditingController controller = TextEditingController();
+  bool _isTextFieldEmpty = true;
+  String? _errorMessage;
+
+  void _pasteText() async {
+    ClipboardData? data = await Clipboard.getData('text/plain');
+    if (data != null) {
+      controller.text = data.text ?? '';
+    }
+  }
+  void _clearText() {
+    controller.clear();
+  }
+  void _onTextChanged() {
+    setState(() => _isTextFieldEmpty = controller.text.isEmpty);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    controller.addListener(_onTextChanged);
+  }
+
+  @override
+  void dispose() {
+    controller.removeListener(_onTextChanged);
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final textField = TextField(
+      maxLines: 1,
+      autofocus: true,
+      controller: controller,
+      decoration: InputDecoration(
+        errorText: _errorMessage,
+        suffixIcon: _isTextFieldEmpty
+          ? IconButton(
+              onPressed: _pasteText,
+              icon: const Icon(Icons.paste),
+            )
+          : IconButton(
+              onPressed: _clearText,
+              icon: const Icon(Icons.clear),
+            ),
+      ),
+    );
+    final cancelButton = TextButton(
+      onPressed: () => Navigator.of(context).pop(null),
+      child: Text('Cancel'),
+    );
+    final confirmButton = TextButton(
+      onPressed: _isTextFieldEmpty ? null : () {
+        final uri = Uri.tryParse(controller.text);
+        final isValidUri = uri != null
+          && uri.scheme.isNotEmpty
+          && uri.host.isNotEmpty;
+        if (isValidUri) {
+          Navigator.of(context).pop(controller.text);
+        } else {
+          setState(() => _errorMessage = "Invalid URL");
+        }
+      },
+      child: Text('Confirm'),
+    );
+    return AlertDialog.adaptive(
+      title: Text('Website Link'),
+      content: textField,
+      actions: [
+        cancelButton,
+        confirmButton,
+      ],
+    );
+  }
 }
 
 Future<ResourcePickerResult> pickMediaFile(BuildContext _) async {
@@ -102,7 +197,7 @@ Future<ResourcePickerResult> pickMediaFile(BuildContext _) async {
     if (fileType == null) {
       continue;
     }
-    resultList.add((XFile(file.path!), fileType));
+    resultList.add((file.path!, fileType));
   }
   return resultList;
 }
@@ -110,44 +205,30 @@ Future<ResourcePickerResult> pickMediaFile(BuildContext _) async {
 Future<File?> generateImageThumbnail(List<dynamic> params) async {
   final rootIsolateToken = params[0] as RootIsolateToken?;
   final imagePath = params[1] as String;
-  final thumbSize = params[2] as int;
+  final size = params[2] as int;
 
   if (rootIsolateToken != null) {
     BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
   }
 
-  final File imageFile = File(imagePath);
-  final List<int> imageBytes = await imageFile.readAsBytes();
-
-  final img.Image? image = img.decodeImage(Uint8List.fromList(imageBytes));
-  if (image == null) return null;
-
-  final int size = image.width < image.height ? image.width : image.height;
-  final int x = (image.width - size) ~/ 2;
-  final int y = (image.height - size) ~/ 2;
-
-  final img.Image thumbnail = img.copyCrop(image,
-    x: x, y: y,
-    width: size, height: size,
-  );
-  final img.Image resizedThumbnail = img.copyResize(thumbnail,
-    width: thumbSize,
-    height: thumbSize,
-  );
-
+  final file = File(imagePath);
   final directory = await getTemporaryDirectory();
-  final thumbnailPath = '${directory.path}/${path.basenameWithoutExtension(imagePath)}.png';
-  final encoded = img.encodePng(resizedThumbnail);
-  File outputFile = File(thumbnailPath)..writeAsBytesSync(encoded);
-
-  return outputFile;
+  final thumbnailPath = '${directory.path}/${path.basenameWithoutExtension(imagePath)}.jpeg';
+  final result = await FlutterImageCompress.compressAndGetFile(
+    file.absolute.path, thumbnailPath,
+    quality: 75,
+    minWidth: size,
+    minHeight: size,
+  );
+  if (result == null) return null;
+  return File(result.path);
 }
 
 final videoThumbnail = FcNativeVideoThumbnail();
 Future<File?> generateVideoThumbnail(List<dynamic> params) async {
   final rootIsolateToken = params[0] as RootIsolateToken?;
-  final videoPath = params[0] as String;
-  final size = params[1] as int;
+  final videoPath = params[1] as String;
+  final size = params[2] as int;
 
   if (rootIsolateToken != null) {
     BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
@@ -162,11 +243,23 @@ Future<File?> generateVideoThumbnail(List<dynamic> params) async {
       width: size,
       height: size,
       format: 'jpeg',
-      quality: 60,
+      quality: 75,
     );
     if (!thumbnailGenerated) return null;
   } catch(_) {
     return null;
   }
   return File(thumbnailPath);
+}
+
+const videoUtilChannel = MethodChannel('org.nfc_plinkd.bhznjns/video_util');
+Future<int?> getVideoRotation(String videoPath) async {
+  try {
+    final int rotation = await videoUtilChannel.invokeMethod('getVideoRotation', {
+      'videoPath': videoPath,
+    });
+    return rotation;
+  } on PlatformException catch (_) {
+    return null;
+  }
 }

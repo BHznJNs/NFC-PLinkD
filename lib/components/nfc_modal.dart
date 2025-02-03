@@ -42,7 +42,7 @@ void _showNFCApprochingAlert(BuildContext context) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
-      return AlertDialog(
+      return AlertDialog.adaptive(
         title: const Text('Approach an NFC Tag'),
         content: Container(
           height: 40,
@@ -64,7 +64,7 @@ void showNFCWritingSuccessMsg(BuildContext context, Function() onConfirm) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
-      return AlertDialog(
+      return AlertDialog.adaptive(
         title: Text('Succeed'),
         content: Container(
           height: 40,

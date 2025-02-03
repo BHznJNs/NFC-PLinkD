@@ -34,7 +34,9 @@ class CreatePage extends StatelessWidget {
       icon: Icons.link,
       title: 'Attach a Web Link',
       onTap: (context) {
-        // 
+        inputWebLink(context).then((resources) =>
+          // ignore: use_build_context_synchronously
+          linkEditViewBuilder(context, resources));
       }
     ),
   ];
