@@ -8,6 +8,7 @@ import 'package:nfc_plinkd/pages/create/page.dart';
 import 'package:nfc_plinkd/components/drawer.dart';
 import 'package:nfc_plinkd/pages/gallery.dart';
 import 'package:nfc_plinkd/pages/read.dart';
+import 'package:nfc_plinkd/pages/settings.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -52,13 +53,15 @@ class MyAppState extends State<MyApp> {
       seedColor: colorTheme,
       brightness: Brightness.dark,
     );
-    final createPage  = ScaffoldWithDrawer(title: 'Create a Link', body: CreatePage(), drawer: sharedDrawer);
-    final readPage    = ScaffoldWithDrawer(title: 'Read a Link', body: ReadPage(), drawer: sharedDrawer);
-    final galleryPage = ScaffoldWithDrawer(title: 'My Links', body: GalleryPage(), drawer: sharedDrawer);
+    final createPage   = ScaffoldWithDrawer(title: 'Create a Link', body: CreatePage(), drawer: sharedDrawer);
+    final readPage     = ScaffoldWithDrawer(title: 'Read a Link', body: ReadPage()    , drawer: sharedDrawer);
+    final galleryPage  = ScaffoldWithDrawer(title: 'My Links', body: GalleryPage()    , drawer: sharedDrawer);
+    final settingsPage = ScaffoldWithDrawer(title: 'Settings', body: SettingsPage()   , drawer: sharedDrawer);
     final routes = {
-      '/create' : (context) => createPage,
-      '/read'   : (context) => readPage,
-      '/gallery': (context) => galleryPage,
+      '/create'  : (context) => createPage,
+      '/read'    : (context) => readPage,
+      '/gallery' : (context) => galleryPage,
+      '/settings': (context) => settingsPage,
     };
 
     return DynamicColorBuilder(

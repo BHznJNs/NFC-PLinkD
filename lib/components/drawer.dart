@@ -26,34 +26,41 @@ class ScaffoldDrawer extends StatelessWidget {
   const ScaffoldDrawer({super.key});
 
   static const drawerItems = [
-    _DrawerItemData('New Link' , '/create' , Icons.add_outlined                 , Icons.add                 ),
-    _DrawerItemData('Read Link', '/read'   , Icons.tap_and_play_outlined        , Icons.tap_and_play        ),
-    _DrawerItemData('My Links' , '/gallery', Icons.collections_bookmark_outlined, Icons.collections_bookmark),
+    _DrawerItemData('New Link' , '/create'  , Icons.add_outlined                 , Icons.add                 ),
+    _DrawerItemData('Read Link', '/read'    , Icons.tap_and_play_outlined        , Icons.tap_and_play        ),
+    _DrawerItemData('My Links' , '/gallery' , Icons.collections_bookmark_outlined, Icons.collections_bookmark),
+    _DrawerItemData('Settings' , '/settings', Icons.settings_outlined            , Icons.settings            ),
   ];
 
   @override
   Widget build(BuildContext context) {
     final currentRoute = ModalRoute.of(context)?.settings.name ?? '/create';
-    final selectedIndex = drawerItems.indexWhere((item) => item.route == currentRoute);
-    final routerDestinations = drawerItems.map((destination) => 
-      NavigationDrawerDestination(
-        label: Text(destination.label),
-        icon : Icon(destination.icon),
-        selectedIcon: Icon(destination.selectedIcon)
-      )
-    ).toList();
-
-    return NavigationDrawer(
-      onDestinationSelected: (int selectedScreen) {
-        final targetRoute = drawerItems[selectedScreen].route;
-        if (currentRoute == targetRoute) return;
-        Navigator.pushReplacementNamed(context, targetRoute);
-      },
-      selectedIndex: selectedIndex,
-      children: [
-        const ScaffoldDrawerHeader(),
-        ...routerDestinations,
-      ],
+    return Drawer(
+      child: SafeArea(
+        child: Column(
+          children: [
+            const ScaffoldDrawerHeader(),
+            const Divider(height: 1),
+            const SizedBox(height: 12),
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: drawerItems
+                  .sublist(0, drawerItems.length - 1)
+                  .map((item) => item.toDrawerItem(
+                    currentRoute == item.route))
+                  .toList(),
+              ),
+            ),
+            const Divider(height: 1),
+            Padding(
+              padding: EdgeInsets.only(top: 12, bottom: 24),
+              child: drawerItems.last.toDrawerItem(
+                currentRoute == drawerItems.last.route),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -93,6 +100,64 @@ class ScaffoldDrawerHeader extends StatelessWidget {
   }
 }
 
+class _DrawerItem extends StatefulWidget {
+  const _DrawerItem({
+    this.icon,
+    this.selectedIcon,
+    required this.route,
+    required this.label,
+    this.isSelected = false,
+  });
+
+  final IconData? icon;
+  final IconData? selectedIcon;
+  final String route;
+  final String label;
+  final bool isSelected;
+
+  @override
+  State<StatefulWidget> createState() => _DrawerItemState();
+}
+class _DrawerItemState extends State<_DrawerItem> {
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final icon = Icon(
+      widget.isSelected
+        ? widget.selectedIcon
+        : widget.icon,
+      color: widget.isSelected
+        ? theme.colorScheme.primary
+        : theme.iconTheme.color
+    );
+    final text = Text(
+      widget.label,
+      style: TextStyle(
+        fontSize: 14,
+        fontWeight: widget.isSelected
+          ? FontWeight.bold
+          : FontWeight.w500
+      ),
+    );
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 12),
+      child: Material(
+        color: widget.isSelected
+          ? theme.colorScheme.primaryContainer
+          : Colors.transparent,
+        clipBehavior: Clip.antiAlias,
+        borderRadius: BorderRadius.circular(128),
+        child: ListTile(
+          leading: icon,
+          title: text,
+          selected: widget.isSelected,
+          onTap: () => Navigator.of(context).pushReplacementNamed(widget.route),
+        ),
+      ),
+    );
+  }
+}
+
 class _DrawerItemData {
   const _DrawerItemData(
     this.label, this.route,
@@ -103,4 +168,19 @@ class _DrawerItemData {
   final String route;
   final IconData icon;
   final IconData selectedIcon;
+
+  NavigationDrawerDestination toNavigationDestination() =>
+    NavigationDrawerDestination(
+      label: Text(label),
+      icon : Icon(icon),
+      selectedIcon: Icon(selectedIcon)
+    );
+  _DrawerItem toDrawerItem(bool isSelected) =>
+    _DrawerItem(
+      label: label,
+      route: route,
+      icon : icon,
+      selectedIcon: selectedIcon,
+      isSelected: isSelected,
+    );
 }
