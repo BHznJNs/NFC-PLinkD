@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nfc_plinkd/pages/create/link_edit_view.dart';
-import 'package:nfc_plinkd/utils/media.dart';
+import 'package:nfc_plinkd/utils/media/picker.dart';
 
 class CreatePage extends StatelessWidget {
   const CreatePage({super.key});
@@ -45,7 +45,7 @@ class CreatePage extends StatelessWidget {
     if (resources.isEmpty) return;
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) =>
-        LinkEditView(initialResources: resources)),
+        LinkEditView(resourcePickerResult: resources)),
     );
   }
 

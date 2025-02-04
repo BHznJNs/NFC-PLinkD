@@ -7,23 +7,31 @@ import 'package:uuid/uuid.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:nfc_plinkd/db.dart';
-import 'package:nfc_plinkd/utils/media.dart';
+import 'package:nfc_plinkd/utils/media/picker.dart';
 import 'package:nfc_plinkd/components/snackbar.dart';
-import 'package:nfc_plinkd/components/dialog.dart';
+import 'package:nfc_plinkd/components/custom_dialog.dart';
 import 'package:nfc_plinkd/components/nfc_modal.dart';
 
 class LinkEditView extends StatefulWidget {
-  const LinkEditView({super.key, required this.initialResources});
+  const LinkEditView({
+    super.key,
+    this.initialResources,
+    this.resourcePickerResult,
+    this.linkId,
+  }) : assert(initialResources != null || resourcePickerResult != null,
+        'Either param1 or param2 must be provided');
 
-  final ResourcePickerResult initialResources;
+  final List<ResourceModel>? initialResources;
+  final ResourcePickerResult? resourcePickerResult;
+  final String? linkId;
 
   @override
   State<StatefulWidget> createState() => _LinkEditViewState();
 }
 
 class _LinkEditViewState extends State<LinkEditView> {
-  final String id = Uuid().v4();
   final ImagePicker picker = ImagePicker();
+  late String id = widget.linkId ?? Uuid().v4();
   late List<ResourceModel> resources;
 
   Future<void> filePickerWrapper(ResourcePicker picker) async {
@@ -42,7 +50,7 @@ class _LinkEditViewState extends State<LinkEditView> {
 
   Future<void> saveLink() async {
     if (resources.isEmpty) {
-      showInfoSnackBar(context, 'There is no photo, please add some');
+      showInfoSnackBar(context, 'There is no content, please add some.');
       return;
     }
     final now = DateTime.now().millisecondsSinceEpoch;
@@ -64,11 +72,18 @@ class _LinkEditViewState extends State<LinkEditView> {
   @override
   void initState() {
     super.initState();
-    resources = widget.initialResources.map((resource) => ResourceModel(
-      linkId: id,
-      type: resource.$2,
-      path: resource.$1,
-    )).toList();
+
+    if (widget.initialResources != null) {
+      resources = widget.initialResources!;
+    } else
+    if (widget.resourcePickerResult != null) {
+      resources = widget.resourcePickerResult!
+        .map((resource) => ResourceModel(
+          linkId: id,
+          type: resource.$2,
+          path: resource.$1,
+        )).toList();
+    }
   }
 
   @override

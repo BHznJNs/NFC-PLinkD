@@ -41,7 +41,7 @@ class DatabaseHelper {
         path TEXT NOT NULL,
         type INTEGER NOT NULL,
         link_id INTEGER NOT NULL,
-        description TEXT,
+        description TEXT NOT NULL,
         FOREIGN KEY (link_id) REFERENCES links(id)
       )
     ''');
@@ -82,6 +82,24 @@ class DatabaseHelper {
         ResourceModel.fromMap(resourceMap)
       ).toList(),
     );
+  }
+
+  Future<List<LinkModel>> fetchLinks({
+    int page = 0,
+    int pageSize = 10,
+    OrderBy orderBy = OrderBy.createTime,
+  }) async {
+    final db = await database;
+    final candidateLinks = await db.query(
+      linksTableName,
+      // TODO: orderBy, page, pageSize
+      // orderBy: 
+      // where: "id = ?",
+      // whereArgs: [id]
+    );
+    return candidateLinks.map((item) =>
+      LinkModel.fromMap(item)
+    ).toList();
   }
 
   Future<void> reset() async {
@@ -146,13 +164,13 @@ class ResourceModel {
   final String linkId;
   final String path;
   final ResourceType type;
-  final String? description;
+  final String description;
 
   ResourceModel({
     required this.linkId,
     required this.type,
     required this.path,
-    this.description,
+    this.description = '',
   });
 
   Map<String, dynamic> toMap() {
@@ -164,12 +182,30 @@ class ResourceModel {
     };
   }
 
+  ResourceModel copyWith({
+    String? linkId,
+    String? path,
+    ResourceType? type,
+    String? description,
+  }) => ResourceModel(
+    linkId: linkId ?? this.linkId,
+    path: path ?? this.path,
+    type: type ?? this.type,
+    description: description ?? this.description,
+  );
+
   factory ResourceModel.fromMap(Map<String, dynamic> map) {
     return ResourceModel(
       linkId: map['link_id'] as String,
       type: ResourceType.fromInt(map['type'] as int),
       path: map['path'] as String,
-      description: map['description'] as String?,
+      description: map['description'] as String,
     );
   }
+}
+
+enum OrderBy {
+  name,
+  createTime,
+  createTimeRev,
 }

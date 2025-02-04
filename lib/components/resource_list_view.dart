@@ -3,10 +3,11 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:nfc_plinkd/components/custom_textfield.dart';
 import 'package:nfc_plinkd/pages/resource_view/image.dart';
 import 'package:nfc_plinkd/pages/resource_view/audio.dart';
 import 'package:nfc_plinkd/pages/resource_view/video.dart';
-import 'package:nfc_plinkd/utils/media.dart';
+import 'package:nfc_plinkd/utils/media/thumbnail.dart';
 import 'package:nfc_plinkd/db.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -20,6 +21,26 @@ class ResourceListView extends StatefulWidget {
 }
 
 class _ResourceListViewState extends State<ResourceListView> {
+  late List<ResourceModel> resourceList = widget.resourceList;
+
+  void modifyItem(int index, {
+    String? path,
+    String? description,
+  }) {
+    if (path != null) {
+      resourceList[index] = resourceList[index].copyWith(path: path);
+    }
+    if (description != null) {
+      resourceList[index] = resourceList[index].copyWith(description: description);
+    }
+    setState(() {});
+  }
+  void deleteItem(int index) {
+    setState(() {
+      resourceList.removeAt(index);
+    });
+  }
+
   Widget proxyDecorator(Widget child, int index, Animation<double> animation) {
     return child;
   }
@@ -36,19 +57,21 @@ class _ResourceListViewState extends State<ResourceListView> {
       onReorder: (int oldIndex, int newIndex) {
         if (oldIndex < newIndex) newIndex -= 1;
         setState(() {
-          final item = widget.resourceList.removeAt(oldIndex);
-          widget.resourceList.insert(newIndex, item);
+          final item = resourceList.removeAt(oldIndex);
+          resourceList.insert(newIndex, item);
         });
       },
-      itemCount: widget.resourceList.length,
+      itemCount: resourceList.length,
       itemBuilder: (context, index) {
-        final item = widget.resourceList[index];
+        final item = resourceList[index];
         return _GenericResourceItem(
-          key: Key(item.path),
+          key: ObjectKey(item),
           index: index,
           path: item.path,
           type: item.type,
           description: item.description,
+          onSave: modifyItem,
+          onDelete: deleteItem,
         );
       },
     );
@@ -62,12 +85,16 @@ class _GenericResourceItem extends StatefulWidget {
     required this.type,
     required this.index,
     required this.description,
+    required this.onSave,
+    required this.onDelete,
   });
 
   final String path;
   final ResourceType type;
   final int index;
-  final String? description;
+  final String description;
+  final Function(int, {String? path, String? description}) onSave;
+  final Function(int) onDelete;
 
   @override
   State<StatefulWidget> createState() => _GenericResourceItemState();
@@ -75,6 +102,9 @@ class _GenericResourceItem extends StatefulWidget {
 class _GenericResourceItemState extends State<_GenericResourceItem> {
   static const double size = 128;
   File? thumbnail;
+
+  late TextEditingController urlController = TextEditingController(text: widget.path);
+  late TextEditingController descriptionController = TextEditingController(text: widget.description);
 
   void openResource() {
     switch (widget.type) {
@@ -90,11 +120,84 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
     }
   }
 
+  void openDialog() {
+    // reset TextEditingControllers
+    urlController = TextEditingController(text: widget.path);
+    descriptionController = TextEditingController(text: widget.description);
+
+    final deleteButton = TextButton(
+      onPressed: () {
+        widget.onDelete(widget.index);
+        Navigator.of(context).pop();
+      },
+      child: Text('Delete', style: TextStyle(
+        color: Theme.of(context).colorScheme.error
+      )),
+    );
+    final saveButton = TextButton(
+      onPressed: () {
+        widget.onSave(widget.index,
+          path: widget.type == ResourceType.webLink
+            ? urlController.text
+            : null,
+          description: descriptionController.text,
+        );
+        Navigator.of(context).pop();
+        setState(() {});
+      },
+      child: const Text('Save'),
+    );
+    final dialog = AlertDialog.adaptive(
+      title: Text('Edit Item'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (widget.type == ResourceType.webLink)
+            ...[
+              UrlTextField(urlController),
+              SizedBox(height: 32),
+            ],
+          TextField(
+            minLines: 1,
+            maxLines: 3,
+            controller: descriptionController,
+            decoration: const InputDecoration(
+              hintText: 'Input the descriptions here...',
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        deleteButton,
+        saveButton,
+      ],
+    );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => dialog,
+    );
+  }
+
   Widget thumbnailBuilder() {
     if (thumbnail != null && (
       widget.type == ResourceType.image ||
       widget.type == ResourceType.video
     )) {
+      final videoThumbnailMask = Container(
+        width: size - 16,
+        height: size - 16,
+        margin: const EdgeInsets.all(8),
+        decoration: const BoxDecoration(
+          color: Color.fromRGBO(0, 0, 0, 0.4), 
+          borderRadius: BorderRadius.all(Radius.circular(8))
+        ),
+        alignment: Alignment.center,
+        child: const Icon(
+          Icons.play_arrow,
+          color: Colors.white,
+          size: 32,
+        ),
+      );
       return Stack(children: [
         Container(
           width: size - 16,
@@ -106,21 +209,7 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
           ),
         ),
         if (widget.type == ResourceType.video)
-          Container(
-            width: size - 16,
-            height: size - 16,
-            margin: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Color.fromRGBO(0, 0, 0, 0.4), 
-              borderRadius: BorderRadius.all(Radius.circular(8))
-            ),
-            alignment: Alignment.center,
-            child: const Icon(
-              Icons.play_arrow,
-              color: Colors.white,
-              size: 32,
-            ),
-          ),
+          videoThumbnailMask,
       ]);
     } else if (widget.type == ResourceType.audio) {
       return Container(
@@ -149,6 +238,9 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
             height: 72,
             faviconUri.toString(),
             fit: BoxFit.contain,
+            errorBuilder: (context, object, stackTrace) {
+              return Icon(Icons.link, size: 72);
+            },
           ),
         ),
       );
@@ -185,12 +277,18 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
   }
 
   @override
+  void dispose() {
+    urlController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final description = Container(
       height: double.infinity,
       margin: EdgeInsets.symmetric(vertical: 16),
-      child: widget.description != null
-        ? Text(widget.description!, overflow: TextOverflow.ellipsis)
+      child: widget.description.isNotEmpty
+        ? Text(widget.description, overflow: TextOverflow.ellipsis)
         : Opacity(opacity: .4, child: Text('No description')),
     );
 
@@ -216,10 +314,11 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
           children: [
             Expanded(child: InkWell(
               onTap: openResource,
+              onLongPress: openDialog,
               child: Row(children: [
                 thumbnailBuilder(),
                 Expanded(child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 8),
                   child: description,
                 )),
               ]),

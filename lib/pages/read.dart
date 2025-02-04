@@ -1,13 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:nfc_plinkd/components/dialog.dart';
+import 'package:nfc_plinkd/components/custom_dialog.dart';
 import 'package:nfc_plinkd/db.dart';
-import 'package:nfc_plinkd/pages/link_view.dart';
+import 'package:nfc_plinkd/pages/create/link_edit_view.dart';
+import 'package:nfc_plinkd/utils/file.dart';
 import 'package:nfc_plinkd/utils/index.dart';
 import 'package:nfc_plinkd/utils/nfc.dart';
-import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
+// import 'package:path/path.dart' as path;
+// import 'package:path_provider/path_provider.dart';
 
 class ReadPage extends StatefulWidget {
   const ReadPage({super.key});
@@ -33,15 +34,19 @@ class _ReadPageState extends State<ReadPage> {
         }
         final targetId = uri.pathSegments[0];
         final (link, resources) = await DatabaseHelper.instance.fetchLink(targetId);
-        final appDir = (await getApplicationDocumentsDirectory()).path;
+        final dataBasePath = await getDataBasePath(link.id);
+        final resolvedResources = resources.map((resource) =>
+          resource.copyWith(
+            path: '$dataBasePath/${resource.path}')
+        ).toList();
         // ignore: use_build_context_synchronously
-        // Navigator.of(context).push(
-        //   MaterialPageRoute(builder: (context) => LinkView(
-        //     resourcePathList: resources.map((resource) =>
-        //       path.join(appDir, resource.path)
-        //     ).toList(),
-        //   )
-        // ));
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) =>
+            LinkEditView(
+              linkId: link.id,
+              initialResources: resolvedResources,
+            )
+        ));
       },
       onError: (e) {
         if (e is CustomError) {
