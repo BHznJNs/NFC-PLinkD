@@ -110,10 +110,10 @@ class _TimerButton extends StatefulWidget {
     required this.onComplete,
   });
 
-  final VoidCallback onStart;
-  final VoidCallback onPause;
-  final VoidCallback onResume;
-  final VoidCallback onComplete;
+  final Function onStart;
+  final Function onPause;
+  final Function onResume;
+  final Function onComplete;
 
   @override
   State<_TimerButton> createState() => _TimerButtonState();

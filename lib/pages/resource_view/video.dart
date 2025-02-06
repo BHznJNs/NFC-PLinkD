@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:universal_video_controls/universal_video_controls.dart';
 import 'package:universal_video_controls_video_player/universal_video_controls_video_player.dart';
@@ -11,15 +12,15 @@ Future<void> openVideoWithDefaultPlayer(BuildContext context, String path) async
   switch (result.type) {
     case ResultType.done: return;
     case ResultType.fileNotFound:
-      // TODO: Handle this case.
-      throw UnimplementedError();
+      if (kDebugMode) print('Target file not found: $path');
     case ResultType.noAppToOpen:
     case ResultType.permissionDenied:
     case ResultType.error:
       // fallback to build-in player
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => VideoPlayerPage(path)));
+      if (context.mounted) {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => VideoPlayerPage(path)));
+      }
   }
 }
 

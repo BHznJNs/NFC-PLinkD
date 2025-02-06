@@ -15,14 +15,16 @@ import 'package:nfc_plinkd/components/nfc_modal.dart';
 class LinkEditView extends StatefulWidget {
   const LinkEditView({
     super.key,
+    required this.title,
     this.initialResources,
     this.resourcePickerResult,
     this.linkId,
   }) : assert(initialResources != null || resourcePickerResult != null,
-        'Either param1 or param2 must be provided');
+        'Either `initialResources` or `resourcePickerResult` must be provided');
 
   final List<ResourceModel>? initialResources;
   final ResourcePickerResult? resourcePickerResult;
+  final String title;
   final String? linkId;
 
   @override
@@ -32,7 +34,18 @@ class LinkEditView extends StatefulWidget {
 class _LinkEditViewState extends State<LinkEditView> {
   final ImagePicker picker = ImagePicker();
   late String id = widget.linkId ?? Uuid().v4();
+  late bool isCreateView = widget.resourcePickerResult != null;
+  late bool isReadView = widget.initialResources != null;
   late List<ResourceModel> resources;
+
+  static Future<void> writeIntoDatabase(String id, List<ResourceModel> resources, bool isUpdate) async {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final link = LinkModel(id: id, createTime: now, modifyTime: now);
+    final processedResources = await copyResourcesToAppDir(id, resources);
+    isUpdate
+      ? await DatabaseHelper.instance.updateLink(link, processedResources)
+      : await DatabaseHelper.instance.insertLink(link, processedResources);        
+  }
 
   Future<void> filePickerWrapper(ResourcePicker picker) async {
     final result = await picker(context);
@@ -48,30 +61,46 @@ class _LinkEditViewState extends State<LinkEditView> {
     });
   }
 
-  Future<void> saveLink() async {
+  Future<void> saveLinkData() async {
     if (resources.isEmpty) {
       showInfoSnackBar(context, 'There is no content, please add some.');
       return;
     }
-    final now = DateTime.now().millisecondsSinceEpoch;
-
-    showNFCWritingModal(
-      context, id,
-      onSuccess: () async {
-        showNFCWritingSuccessMsg(context, () => Navigator.of(context).pop());
-
-        final link = LinkModel(id: id, createTime: now);
-        final processedResources = await moveResourcesToAppDir(id, resources);
-        await DatabaseHelper.instance.insertLink(link, processedResources);        
-      },
-      onError: (err) =>
-        showCustomError(context, err),
-    );
+    print('data to save');
+    for (final item in resources) {
+      print('path: ${item.path}, desc: ${item.description}');
+    }
+    if (isReadView) {
+      await writeIntoDatabase(id, resources, true);
+      if (!mounted) return;
+      showSuccessMsg(context,
+        text: 'You data is successfully saved, press "OK" to back.',
+        onConfirm: () => Navigator.of(context).pop()
+      );
+    }
+    if (isCreateView) {
+      // only write to NFC tag when creating
+      showNFCWritingModal(
+        context, id,
+        onSuccess: () async {
+          await writeIntoDatabase(id, resources, false);
+          if (!mounted) return;
+          showSuccessMsg(context,
+            text: 'You data is successfully saved, press "OK" to back.',
+            onConfirm: () => Navigator.of(context).pop()
+          );
+        },
+        onError: (err) =>
+          showCustomError(context, err),
+      );
+    }
   }
 
   @override
   void initState() {
     super.initState();
+
+    // debugPrintInternalFiles('data/$id');
 
     if (widget.initialResources != null) {
       resources = widget.initialResources!;
@@ -133,10 +162,10 @@ class _LinkEditViewState extends State<LinkEditView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create a Link'),
+        title: Text(widget.title),
         actions: [TextButton(
-          onPressed: saveLink,
-          child: Text('Finish'),
+          onPressed: saveLinkData,
+          child: Text('Save'),
         )],
       ),
       floatingActionButton: EnhancedSpeedDial(

@@ -31,7 +31,8 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE $linksTableName (
         id TEXT,
-        created_at INTEGER NOT NULL
+        ${OrderBy.createTime.toFieldName()} INTEGER NOT NULL,
+        ${OrderBy.modifyTime.toFieldName()} INTEGER NOT NULL
       )
     ''');
     await db.execute('''
@@ -50,6 +51,26 @@ class DatabaseHelper {
   Future<void> insertLink(LinkModel link, List<ResourceModel> resources) async {
     final db = await database;
     await db.insert(linksTableName, link.toMap());
+    for (int i = 0; i < resources.length; i++) {
+      final resource = resources[i];
+      final map = resource.toMap();
+      map['order_index'] = i;
+      await db.insert(resourcesTableName, map);
+    }
+  }
+
+  Future<void> updateLink(LinkModel link, List<ResourceModel> resources) async {
+    final db = await database;
+    await db.update(linksTableName,
+      { 'modified_at': link.modifyTime },
+      where: 'id = ?',
+      whereArgs: [link.id],
+    );
+    await db.delete(resourcesTableName,
+      where: 'link_id = ?',
+      whereArgs: [link.id],
+    );
+    // re-insert new data
     for (int i = 0; i < resources.length; i++) {
       final resource = resources[i];
       final map = resource.toMap();
@@ -90,16 +111,30 @@ class DatabaseHelper {
     OrderBy orderBy = OrderBy.createTime,
   }) async {
     final db = await database;
+    final orderByFieldName = orderBy.toFieldName();
+    final isReversed = orderBy.isReversed;
+
     final candidateLinks = await db.query(
       linksTableName,
-      // TODO: orderBy, page, pageSize
-      // orderBy: 
-      // where: "id = ?",
-      // whereArgs: [id]
+      offset: page * pageSize,
+      limit: pageSize,
+      orderBy: orderByFieldName + (isReversed ? ' ASC' : ' DESC'),
     );
     return candidateLinks.map((item) =>
       LinkModel.fromMap(item)
     ).toList();
+  }
+
+  Future<void> deleteLink(LinkModel link) async {
+    final db = await database;
+    await db.delete(resourcesTableName,
+      where: 'link_id = ?',
+      whereArgs: [link.id],
+    );
+    await db.delete(linksTableName,
+      where: 'id = ?',
+      whereArgs: [link.id],
+    );
   }
 
   Future<void> reset() async {
@@ -139,16 +174,19 @@ class LinkError extends CustomError {
 class LinkModel {
   final String id;
   final int createTime;
+  final int modifyTime;
 
   LinkModel({
     required this.id,
     required this.createTime,
+    required this.modifyTime,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'created_at': createTime,
+      'modified_at': modifyTime,
     };
   }
 
@@ -156,6 +194,7 @@ class LinkModel {
     return LinkModel(
       id: map['id'] as String,
       createTime: map['created_at'] as int,
+      modifyTime: map['modified_at'] as int,
     );
   }
 }
@@ -205,7 +244,23 @@ class ResourceModel {
 }
 
 enum OrderBy {
-  name,
   createTime,
   createTimeRev,
+  modifyTime,
+  modifyTimeRev;
+
+  bool get isReversed {
+    if (this == OrderBy.createTimeRev || this == OrderBy.modifyTimeRev) {
+      return true;
+    }
+    return false;
+  }
+
+  String toFieldName() {
+    final fieldName = switch (this) {
+      OrderBy.createTime || OrderBy.createTimeRev => 'created_at',
+      OrderBy.modifyTime || OrderBy.modifyTimeRev => 'modified_at',
+    };
+    return fieldName;
+  }
 }

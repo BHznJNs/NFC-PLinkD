@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nfc_plinkd/pages/create/link_edit_view.dart';
+import 'package:nfc_plinkd/components/link_edit_view.dart';
 import 'package:nfc_plinkd/utils/media/picker.dart';
 
 class CreatePage extends StatelessWidget {
@@ -10,33 +10,37 @@ class CreatePage extends StatelessWidget {
       icon: Icons.photo_camera,
       title: 'Take a photo',
       onTap: (context) =>
-        takePhoto(context).then((resources) =>
-          // ignore: use_build_context_synchronously
-          linkEditViewBuilder(context, resources))
+        takePhoto(context).then((resources) {
+          if (!context.mounted) return;
+          linkEditViewBuilder(context, resources);
+        })
     ),
     _CreateItemData(
       icon: Icons.videocam,
       title: 'Record a Video',
       onTap: (context) =>
-        recordVideo(context).then((resources) =>
-          // ignore: use_build_context_synchronously
-          linkEditViewBuilder(context, resources))
+        recordVideo(context).then((resources) {
+          if (!context.mounted) return;
+          linkEditViewBuilder(context, resources);
+        })
     ),
     _CreateItemData(
       icon: Icons.mic,
       title: 'Record a Audio',
       onTap: (context) =>
-        recordAudio(context).then((resources) =>
-          // ignore: use_build_context_synchronously
-          linkEditViewBuilder(context, resources))
+        recordAudio(context).then((resources) {
+          if (!context.mounted) return;
+          linkEditViewBuilder(context, resources);
+        })
     ),
     _CreateItemData(
       icon: Icons.link,
       title: 'Attach a Web Link',
       onTap: (context) {
-        inputWebLink(context).then((resources) =>
-          // ignore: use_build_context_synchronously
-          linkEditViewBuilder(context, resources));
+        inputWebLink(context).then((resources) {
+          if (!context.mounted) return;
+          linkEditViewBuilder(context, resources);
+        });
       }
     ),
   ];
@@ -45,13 +49,17 @@ class CreatePage extends StatelessWidget {
     if (resources.isEmpty) return;
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) =>
-        LinkEditView(resourcePickerResult: resources)),
+        LinkEditView(
+          title: 'Create a Link',
+          resourcePickerResult: resources,
+        )),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return ListView(
+      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
       children: itemsData.map((data) =>
         _CreateItem.fromData(data)
       ).toList(),
@@ -71,30 +79,27 @@ class _CreateItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Card(
-        child: InkWell(
-          onTap: () => onTap(context),
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Icon(icon, size: 32),
-                const SizedBox(width: 12),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+    return Card(
+      child: InkWell(
+        onTap: () => onTap(context),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Icon(icon, size: 32),
+              const SizedBox(width: 12),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
-            )
-          ),
+              ),
+            ],
+          )
         ),
-      )
+      ),
     );
   }
 }

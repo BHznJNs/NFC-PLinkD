@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:nfc_plinkd/components/custom_button.dart';
@@ -8,15 +9,15 @@ Future<void> openAudioWithDefaultPlayer(BuildContext context, String path) async
   switch (result.type) {
     case ResultType.done: return;
     case ResultType.fileNotFound:
-      // TODO: Handle this case.
-      throw UnimplementedError();
+      if (kDebugMode) print('Target file not found: $path');
     case ResultType.noAppToOpen:
     case ResultType.permissionDenied:
     case ResultType.error:
       // fallback to build-in player
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => AudioPlayerPage(path)));
+      if (context.mounted) {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => AudioPlayerPage(path)));
+      }
   }
 }
 
@@ -59,14 +60,14 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
 
       player.playbackEventStream.listen((_) {},
         onError: (Object e, StackTrace stackTrace) {
-          // ignore: use_build_context_synchronously
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error loading audio')),
           );
         }
       );
     } catch (e) {
-      // ignore: use_build_context_synchronously
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error loading audio')),
       );

@@ -12,32 +12,33 @@ import 'package:nfc_plinkd/db.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class ResourceListView extends StatefulWidget {
-  const ResourceListView(this.resourceList, {super.key});
+  const ResourceListView(this.children, {super.key});
 
-  final List<ResourceModel> resourceList;
+  final List<ResourceModel> children;
 
   @override
   State<StatefulWidget> createState() => _ResourceListViewState();
 }
 
 class _ResourceListViewState extends State<ResourceListView> {
-  late List<ResourceModel> resourceList = widget.resourceList;
+  late List<ResourceModel> resources = widget.children;
 
   void modifyItem(int index, {
     String? path,
     String? description,
   }) {
     if (path != null) {
-      resourceList[index] = resourceList[index].copyWith(path: path);
+      resources[index] = resources[index].copyWith(path: path);
     }
     if (description != null) {
-      resourceList[index] = resourceList[index].copyWith(description: description);
+      resources[index] = resources[index].copyWith(description: description);
     }
     setState(() {});
   }
+
   void deleteItem(int index) {
     setState(() {
-      resourceList.removeAt(index);
+      resources.removeAt(index);
     });
   }
 
@@ -46,7 +47,7 @@ class _ResourceListViewState extends State<ResourceListView> {
   }
 
   @override
-  Widget build(BuildContext context) {  
+  Widget build(BuildContext context) {
     return ReorderableListView.builder(
       buildDefaultDragHandles: false,
       proxyDecorator: proxyDecorator,
@@ -57,13 +58,13 @@ class _ResourceListViewState extends State<ResourceListView> {
       onReorder: (int oldIndex, int newIndex) {
         if (oldIndex < newIndex) newIndex -= 1;
         setState(() {
-          final item = resourceList.removeAt(oldIndex);
-          resourceList.insert(newIndex, item);
+          final item = resources.removeAt(oldIndex);
+          resources.insert(newIndex, item);
         });
       },
-      itemCount: resourceList.length,
+      itemCount: resources.length,
       itemBuilder: (context, index) {
-        final item = resourceList[index];
+        final item = resources[index];
         return _GenericResourceItem(
           key: ObjectKey(item),
           index: index,
@@ -111,12 +112,16 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
       case ResourceType.image:
         Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => ImagePage(widget.path)));
+        break;
       case ResourceType.video:
         openVideoWithDefaultPlayer(context, widget.path);
+        break;
       case ResourceType.audio:
         openAudioWithDefaultPlayer(context, widget.path);
+        break;
       case ResourceType.webLink:
         launchUrlString(widget.path);
+        break;
     }
   }
 
@@ -262,9 +267,9 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
       final generator = switch (widget.type) {
         ResourceType.image => generateImageThumbnail,
         ResourceType.video => generateVideoThumbnail,
-        ResourceType.audio => throw UnimplementedError(),
-        ResourceType.webLink => throw UnimplementedError(),
+        ResourceType.audio || ResourceType.webLink => null,
       };
+      if (generator == null) return;
       final rootIsolateToken = RootIsolateToken.instance;
       (rootIsolateToken == null
         ? generator([null, widget.path, size.toInt()]) // fallback to block computation

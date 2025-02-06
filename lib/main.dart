@@ -3,12 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:app_links/app_links.dart';
-
-import 'package:nfc_plinkd/pages/create/page.dart';
+ 
+import 'package:nfc_plinkd/pages/create.dart';
 import 'package:nfc_plinkd/components/drawer.dart';
 import 'package:nfc_plinkd/pages/gallery.dart';
 import 'package:nfc_plinkd/pages/read.dart';
 import 'package:nfc_plinkd/pages/settings.dart';
+import 'package:nfc_plinkd/utils/open_Link.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -17,15 +18,19 @@ class MyApp extends StatefulWidget {
   State<StatefulWidget> createState() => MyAppState();
 }
 
-class MyAppState extends State<MyApp> {
+class MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>(); 
   late AppLinks appLinks;
+  bool isInForeground = true;
   StreamSubscription<Uri>? linkSubscription;
 
   Future<void> initDeepLinks() async {
     appLinks = AppLinks();
+    WidgetsBinding.instance.addObserver(this);
     linkSubscription = appLinks.uriLinkStream.listen((uri) {
-      print('onAppLink: $uri');
-      // openAppLink(uri);
+      if (isInForeground) return;
+      openLinkWithUri(uri, navigator: navigatorKey.currentState)
+        .onError((error, stackTrace) {});
     });
   }
 
@@ -38,7 +43,15 @@ class MyAppState extends State<MyApp> {
   @override
   void dispose() {
     linkSubscription?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    isInForeground =
+      state == AppLifecycleState.resumed ||
+      state == AppLifecycleState.inactive;
   }
 
   @override
@@ -67,6 +80,7 @@ class MyAppState extends State<MyApp> {
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) => MaterialApp(
         title: 'NFC PLinkD',
+        navigatorKey: navigatorKey,
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: lightDynamic ?? defaultLightColorScheme,

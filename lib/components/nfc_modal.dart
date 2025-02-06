@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -21,20 +19,17 @@ Future<void> showNFCWritingModal(BuildContext context, String id, {
     return;
   }
 
-  _showNFCApprochingAlert(context);
+  if (context.mounted) _showNFCApprochingAlert(context);
   try {
     final uri = linkIdUriFactory(id);
     final dataToWrite = [NdefRecord.createUri(uri)];
     await tryWriteNFCData(dataToWrite);
 
-    Navigator.of(context).pop();
+    if (context.mounted) Navigator.of(context).pop();
     onSuccess?.call();
-  } catch(e) {
-    Navigator.of(context).pop();
-    onError?.call(NFCError(
-      title: 'NFC tag writing error',
-      content: e.toString(),
-    ));
+  } on NFCError catch (e, _) {
+    if (context.mounted) Navigator.of(context).pop();
+    onError?.call(e);
   }
 }
 
@@ -54,32 +49,6 @@ void _showNFCApprochingAlert(BuildContext context) {
         actions: [TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Cancel')
-        )],
-      );
-    },
-  );
-}
-
-void showNFCWritingSuccessMsg(BuildContext context, Function() onConfirm) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog.adaptive(
-        title: Text('Succeed'),
-        content: Container(
-          height: 40,
-          margin: const EdgeInsets.symmetric(vertical: 16),
-          child: Center(child: Icon(
-            Icons.check,
-            size: 40,
-          )),
-        ),
-        actions: [TextButton(
-          child: const Text('Ok'),
-          onPressed: () {
-            Navigator.of(context).pop();
-            onConfirm();
-          },
         )],
       );
     },

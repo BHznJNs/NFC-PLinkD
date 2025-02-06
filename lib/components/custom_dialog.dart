@@ -26,6 +26,44 @@ void showCustomError(BuildContext context, CustomError err) {
   showAlert(context, err.title, err.content);
 }
 
+void showSuccessMsg(BuildContext context, {
+  String? text,
+  Function()? onConfirm,
+}) {
+  final successIcon = Center(child: Icon(
+    Icons.check,
+    size: 64,
+  ));
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog.adaptive(
+        title: Text('Succeed'),
+        content: Container(
+          margin: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (text != null)
+                Text(text),
+              successIcon,
+            ],
+          ),
+        ),
+        actions: [TextButton(
+          child: const Text('Ok'),
+          onPressed: () {
+            Navigator.of(context).pop();
+            onConfirm?.call();
+          },
+        )],
+      );
+    },
+  );
+}
+
+// --- --- --- --- --- ---
+
 class WebLinkInputDialog extends StatefulWidget {
   const WebLinkInputDialog({super.key});
 

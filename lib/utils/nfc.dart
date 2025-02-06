@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:nfc_manager/nfc_manager.dart';
+import 'package:nfc_manager/platform_tags.dart';
 import 'package:nfc_plinkd/utils/index.dart';
 
-Future<Function> tryStartReadNFCData({
+typedef StopReadingClossure = Future<void> Function({Function()? onStop});
+Future<StopReadingClossure> tryStartReadNFCData({
   required FutureOr Function(String) onRead,
   required void Function(Object)     onError,
 }) async {
@@ -36,7 +38,10 @@ Future<Function> tryStartReadNFCData({
       }
     },
   );
-  return () => NfcManager.instance.stopSession();
+  return ({Function? onStop}) async {
+    await NfcManager.instance.stopSession();
+    onStop?.call();
+  };
 }
 
 Future<void> tryWriteNFCData(List<NdefRecord> data) async {
@@ -46,9 +51,25 @@ Future<void> tryWriteNFCData(List<NdefRecord> data) async {
       final ndef = Ndef.from(tag);
       if (ndef == null || !ndef.isWritable) {
         completer.completeError(NFCError.NFCTagUnusable);
-      } else {
-        final message = NdefMessage(data);
-        await ndef.write(message);
+        await NfcManager.instance.stopSession();
+        return;
+      }
+
+      final ndefFormatable = NdefFormatable.from(tag);
+      if (ndefFormatable != null) {
+        final defaultMessage = NdefMessage([NdefRecord.createText('')]);
+        await ndefFormatable.format(defaultMessage);
+        completer.completeError(NFCError.NFCTagFormated);
+        await NfcManager.instance.stopSession();
+        return;
+      }
+
+      final message = NdefMessage(data);
+      try { await ndef.write(message); }
+      catch (_) {
+        completer.completeError(NFCError.NFCTagFormated);
+        await NfcManager.instance.stopSession();
+        return;
       }
       await NfcManager.instance.stopSession();
       completer.complete();
@@ -73,7 +94,7 @@ class NFCError extends CustomError {
   static final NFCTagUnusable = NFCError(
     title: 'NFC Tag Unusable',
     content:
-      'The approached NFC tag is not writable, '
+      'The approached NFC tag is not writable or readable, '
       'it may be locked or does not support NDEF.',
   );
   // ignore: non_constant_identifier_names
@@ -83,6 +104,13 @@ class NFCError extends CustomError {
       'The data read from the NFC tag is not in the expected format. '
       'It may not be a valid URI or not compatible with this application. '
       'Please ensure the tag contains the correct data type for this app.',
+  );
+  // ignore: non_constant_identifier_names
+  static final NFCTagFormated = NFCError(
+    title: 'NFC Tag Formated',
+    content:
+      'The approached NFC tag is formated, '
+      'please approach again to write data.',
   );
   // ignore: non_constant_identifier_names
   static final NFCTagEmpty = NFCError(
