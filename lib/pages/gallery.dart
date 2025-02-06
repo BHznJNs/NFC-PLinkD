@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nfc_plinkd/components/custom_dialog.dart';
 import 'package:nfc_plinkd/db.dart';
 import 'package:nfc_plinkd/utils/formatter.dart';
 import 'package:nfc_plinkd/utils/open_Link.dart';
@@ -25,6 +26,9 @@ class _GalleryPageState extends State<GalleryPage> {
 
   Future<void> deleteLink(int index) async {
     if (links == null) return;
+    final result = await showDeleteDialog(context);
+    if (!result) return;
+
     await DatabaseHelper.instance.deleteLink(links![index]);
     setState(() => links!.removeAt(index));
   }
@@ -48,8 +52,19 @@ class _GalleryPageState extends State<GalleryPage> {
         child: CircularProgressIndicator.adaptive(),
       ));
     }
+    if (links!.isEmpty) {
+      return Container(
+        margin: EdgeInsets.only(top: 12),
+        alignment: Alignment.topCenter,
+        child: Text(
+          // 还没有链接，快去创建吧！
+          'No links available. Please create one!',
+          style: TextStyle(fontSize: 16),
+        ),
+      );
+    }
     return ListView.builder(
-      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       itemCount: links!.length,
       itemBuilder: (context, index) => _LinkItem(
         links![index], index,
@@ -74,23 +89,11 @@ class _LinkItem extends StatelessWidget {
   static const popupMenuItems = [
     PopupMenuItem<String>(
       value: 'open',
-      child: Row(
-        children: [
-          Icon(Icons.open_in_new),
-          SizedBox(width: 8),
-          Text('Open'),
-        ],
-      ),
+      child: Text('Open'),
     ),
     PopupMenuItem<String>(
       value: 'delete',
-      child: Row(
-        children: [
-          Icon(Icons.delete),
-          SizedBox(width: 8),
-          Text('Delete'),
-        ],
-      ),
+      child: Text('Delete'),
     ),
   ];
 
@@ -118,7 +121,7 @@ class _LinkItem extends StatelessWidget {
             },
             itemBuilder: (BuildContext context) => popupMenuItems,
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         ),
       ),
     );

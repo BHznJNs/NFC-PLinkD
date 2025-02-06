@@ -30,26 +30,23 @@ void showSuccessMsg(BuildContext context, {
   String? text,
   Function()? onConfirm,
 }) {
-  final successIcon = Center(child: Icon(
-    Icons.check,
-    size: 64,
-  ));
+  final successIcon = Container(
+    padding: EdgeInsets.symmetric(vertical: 16),
+    alignment: Alignment.center,
+    child: Icon(
+      Icons.check,
+      size: 64,
+    ),
+  );
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog.adaptive(
         title: Text('Succeed'),
-        content: Container(
-          margin: const EdgeInsets.symmetric(vertical: 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (text != null)
-                Text(text),
-              successIcon,
-            ],
-          ),
-        ),
+        icon: Icon(Icons.check),
+        content: text == null
+          ? successIcon
+          : Text(text),
         actions: [TextButton(
           child: const Text('Ok'),
           onPressed: () {
@@ -60,6 +57,36 @@ void showSuccessMsg(BuildContext context, {
       );
     },
   );
+}
+
+Future<bool> showDeleteDialog(BuildContext context) async {
+  final cancelButton = TextButton(
+    onPressed: () => Navigator.of(context).pop(false),
+    child: Text('Cancel'),
+  );
+  final deleteButton = TextButton(
+    onPressed: () => Navigator.of(context).pop(true),
+    child: Text('Delete', style: TextStyle(
+      color: Theme.of(context).colorScheme.error
+    )),
+  );
+  final result = await showDialog(
+    context: context,
+    builder: (context) => AlertDialog.adaptive(
+      title: Text('Confirm Deletion'),
+      content: Text(
+        'Are you sure you want to delete this item?'
+        'This action cannot be undone, '
+        'so please proceed with caution.'
+      ),
+      actions: [
+        cancelButton,
+        deleteButton,
+      ],
+    ),
+  );
+  if (result == null) return false;
+  return result as bool;
 }
 
 // --- --- --- --- --- ---

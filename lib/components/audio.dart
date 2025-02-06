@@ -44,7 +44,7 @@ class _RecorderState extends State<Recorder> {
           style: const TextStyle(
             fontSize: 56,
             fontFamily: 'Helvetica',
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w500,
           ),
         );
       }

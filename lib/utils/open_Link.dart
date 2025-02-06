@@ -14,7 +14,11 @@ Future<void> openLinkWithUri(Uri uri, {
     throw NFCError.NFCTagDataInvalid;
   }
   final targetId = uri.pathSegments[0];
-  await openLinkWithId(targetId);
+  await openLinkWithId(targetId,
+    context: context,
+    navigator: navigator,
+    onBack: onBack,
+  );
 }
 
 Future<void> openLinkWithId(String id,  {

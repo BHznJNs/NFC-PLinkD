@@ -59,7 +59,7 @@ class CreatePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       children: itemsData.map((data) =>
         _CreateItem.fromData(data)
       ).toList(),
@@ -80,24 +80,14 @@ class _CreateItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 4.0,
       child: InkWell(
         onTap: () => onTap(context),
         borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Icon(icon, size: 32),
-              const SizedBox(width: 12),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          )
+        child: ListTile(
+          leading: Icon(icon, size: 28),
+          title: Text(title, style: const TextStyle(fontSize: 18)),
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         ),
       ),
     );

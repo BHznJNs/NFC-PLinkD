@@ -38,6 +38,7 @@ void _showNFCApprochingAlert(BuildContext context) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog.adaptive(
+        icon: Icon(Icons.nfc),
         title: const Text('Approach an NFC Tag'),
         content: Container(
           height: 40,
