@@ -223,7 +223,7 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
         alignment: Alignment.center,
         child: Icon(
           Icons.audio_file,
-          size: 64,
+          size: 80,
           color: Theme.of(context).colorScheme.primary,
         ),
       );

@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nfc_plinkd/components/custom_textfield.dart';
 import 'package:nfc_plinkd/utils/index.dart';
 
-void showAlert(
-  BuildContext context,
-  String title,
-  String content,
-) {
-  showDialog(
+Future<void> showAlert(BuildContext context, String title, String content) async {
+  final l10n = S.of(context)!;
+  await showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog.adaptive(
         title: Text(title),
         content: Text(content),
         actions: [TextButton(
-          child: const Text('Ok'),
+          child: Text(l10n.custom_dialog_action_ok),
           onPressed: () => Navigator.of(context).pop(),
         )],
       );
@@ -22,37 +20,31 @@ void showAlert(
   );
 }
 
-void showCustomError(BuildContext context, CustomError err) {
-  showAlert(context, err.title, err.content);
+Future<void> showCustomError(BuildContext context, CustomError err) async {
+  await showAlert(context, err.title, err.content);
 }
 
-void showSuccessMsg(BuildContext context, {
-  String? text,
-  Function()? onConfirm,
-}) {
+Future<void> showSuccessMsg(BuildContext context, { String? text }) async {
+  final l10n = S.of(context)!;
   final successIcon = Container(
-    padding: EdgeInsets.symmetric(vertical: 16),
+    padding: const EdgeInsets.symmetric(vertical: 16),
     alignment: Alignment.center,
-    child: Icon(
+    child: const Icon(
       Icons.check,
       size: 64,
     ),
   );
-  showDialog(
+  await showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog.adaptive(
-        title: Text('Succeed'),
-        icon: Icon(Icons.check),
+        title: Text(l10n.custom_dialog_success_title),
         content: text == null
           ? successIcon
           : Text(text),
         actions: [TextButton(
-          child: const Text('Ok'),
-          onPressed: () {
-            Navigator.of(context).pop();
-            onConfirm?.call();
-          },
+          child: Text(l10n.custom_dialog_action_ok),
+          onPressed: () => Navigator.of(context).pop(),
         )],
       );
     },
@@ -60,25 +52,22 @@ void showSuccessMsg(BuildContext context, {
 }
 
 Future<bool> showDeleteDialog(BuildContext context) async {
+  final l10n = S.of(context)!;
   final cancelButton = TextButton(
     onPressed: () => Navigator.of(context).pop(false),
-    child: Text('Cancel'),
+    child: Text(l10n.custom_dialog_action_cancel),
   );
   final deleteButton = TextButton(
     onPressed: () => Navigator.of(context).pop(true),
-    child: Text('Delete', style: TextStyle(
+    child: Text(l10n.custom_dialog_action_delete, style: TextStyle(
       color: Theme.of(context).colorScheme.error
     )),
   );
   final result = await showDialog(
     context: context,
     builder: (context) => AlertDialog.adaptive(
-      title: Text('Confirm Deletion'),
-      content: Text(
-        'Are you sure you want to delete this item?'
-        'This action cannot be undone, '
-        'so please proceed with caution.'
-      ),
+      title: Text(l10n.custom_dialog_delete_title),
+      content: Text(l10n.custom_dialog_delete_content),
       actions: [
         cancelButton,
         deleteButton,
@@ -87,6 +76,29 @@ Future<bool> showDeleteDialog(BuildContext context) async {
   );
   if (result == null) return false;
   return result as bool;
+}
+
+Future<void> showNFCApproachingAlert(BuildContext context) async {
+  final l10n = S.of(context)!;
+  await showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog.adaptive(
+        title: Text(l10n.custom_dialog_nfc_approach_title),
+        content: Container(
+          height: 40,
+          margin: const EdgeInsets.symmetric(vertical: 16),
+          child: const Center(
+            child: CircularProgressIndicator.adaptive(),
+          )
+        ),
+        actions: [TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l10n.custom_dialog_action_cancel)
+        )],
+      );
+    },
+  );
 }
 
 // --- --- --- --- --- ---
@@ -104,6 +116,7 @@ class _WebLinkInputDialogState extends State<WebLinkInputDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context)!;
     final textField = UrlTextField(
       textEditingController,
       errorMessage: errorMessage,
@@ -112,7 +125,7 @@ class _WebLinkInputDialogState extends State<WebLinkInputDialog> {
     );
     final cancelButton = TextButton(
       onPressed: () => Navigator.of(context).pop(null),
-      child: Text('Cancel'),
+      child: Text(l10n.custom_dialog_action_cancel),
     );
     final confirmButton = TextButton(
       onPressed: isUrlEmpty ? null : () {
@@ -123,13 +136,14 @@ class _WebLinkInputDialogState extends State<WebLinkInputDialog> {
         if (isValidUri) {
           Navigator.of(context).pop(textEditingController.text);
         } else {
-          setState(() => errorMessage = "Invalid URL");
+          setState(() =>
+            errorMessage = l10n.custom_dialog_weblink_invalidUrlMsg);
         }
       },
-      child: Text('Confirm'),
+      child: Text(l10n.custom_dialog_action_confirm),
     );
     return AlertDialog.adaptive(
-      title: Text('Website Link'),
+      title: Text(l10n.custom_dialog_weblink_title),
       content: textField,
       actions: [
         cancelButton,

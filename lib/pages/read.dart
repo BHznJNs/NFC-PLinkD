@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:nfc_plinkd/components/custom_dialog.dart';
 import 'package:nfc_plinkd/utils/index.dart';
 import 'package:nfc_plinkd/utils/nfc.dart';
-import 'package:nfc_plinkd/utils/open_Link.dart';
+import 'package:nfc_plinkd/utils/open_link.dart';
 
 class ReadPage extends StatefulWidget {
   const ReadPage({super.key});
@@ -19,14 +19,16 @@ class _ReadPageState extends State<ReadPage> {
 
   Future<void> startReadingNFC() async {
     if (!await checkNFCAvailability()) {
-      if (mounted) showCustomError(context, NFCError.NFCFunctionDisabled);
+      if (mounted) showCustomError(context, NFCError.NFCFunctionDisabled(context));
       return;
     }
+    if (!mounted) return;
     stopReading = await tryStartReadNFCData(
+      context,
       onRead: (data) async {
         final uri = Uri.parse(data);
-        await openLinkWithUri(uri, 
-          context: context,
+        await openLinkWithUri( 
+          context, uri,
           onBack: startReadingNFC,
         );
         await stopReading?.call();
@@ -36,7 +38,7 @@ class _ReadPageState extends State<ReadPage> {
         if (e is CustomError) {
           showCustomError(context, e);
         } else if (e is FormatException) {
-          final e = NFCError.NFCTagDataInvalid;
+          final e = NFCError.NFCTagDataInvalid(context);
           showCustomError(context, e);
         } else {
           showAlert(context, 'NFC tag reading error', e.toString());

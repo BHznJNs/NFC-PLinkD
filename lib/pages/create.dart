@@ -1,56 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nfc_plinkd/components/link_edit_view.dart';
 import 'package:nfc_plinkd/utils/media/picker.dart';
 
 class CreatePage extends StatelessWidget {
   const CreatePage({super.key});
 
-  static final itemsData = [
-    _CreateItemData(
-      icon: Icons.photo_camera,
-      title: 'Take a photo',
-      onTap: (context) =>
-        takePhoto(context).then((resources) {
-          if (!context.mounted) return;
-          linkEditViewBuilder(context, resources);
-        })
-    ),
-    _CreateItemData(
-      icon: Icons.videocam,
-      title: 'Record a Video',
-      onTap: (context) =>
-        recordVideo(context).then((resources) {
-          if (!context.mounted) return;
-          linkEditViewBuilder(context, resources);
-        })
-    ),
-    _CreateItemData(
-      icon: Icons.mic,
-      title: 'Record a Audio',
-      onTap: (context) =>
-        recordAudio(context).then((resources) {
-          if (!context.mounted) return;
-          linkEditViewBuilder(context, resources);
-        })
-    ),
-    _CreateItemData(
-      icon: Icons.link,
-      title: 'Attach a Web Link',
-      onTap: (context) {
-        inputWebLink(context).then((resources) {
-          if (!context.mounted) return;
-          linkEditViewBuilder(context, resources);
-        });
-      }
-    ),
-  ];
-
   static void linkEditViewBuilder(BuildContext context, ResourcePickerResult resources) {
     if (resources.isEmpty) return;
+    final l10n = S.of(context)!;
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) =>
         LinkEditView(
-          title: 'Create a Link',
+          title: l10n.createPage_title,
           resourcePickerResult: resources,
         )),
     );
@@ -58,6 +20,47 @@ class CreatePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context)!;
+    final itemsData = [
+      _CreateItemData(
+        icon: Icons.photo_camera,
+        title: l10n.createPage_image,
+        onTap: (context) =>
+          takePhoto(context).then((resources) {
+            if (!context.mounted) return;
+            linkEditViewBuilder(context, resources);
+          })
+      ),
+      _CreateItemData(
+        icon: Icons.videocam,
+        title: l10n.createPage_video,
+        onTap: (context) =>
+          recordVideo(context).then((resources) {
+            if (!context.mounted) return;
+            linkEditViewBuilder(context, resources);
+          })
+      ),
+      _CreateItemData(
+        icon: Icons.mic,
+        title: l10n.createPage_audio,
+        onTap: (context) =>
+          recordAudio(context).then((resources) {
+            if (!context.mounted) return;
+            linkEditViewBuilder(context, resources);
+          })
+      ),
+      _CreateItemData(
+        icon: Icons.link,
+        title: l10n.createPage_weblink,
+        onTap: (context) {
+          inputWebLink(context).then((resources) {
+            if (!context.mounted) return;
+            linkEditViewBuilder(context, resources);
+          });
+        }
+      ),
+    ];
+
     return ListView(
       padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       children: itemsData.map((data) =>
@@ -80,7 +83,6 @@ class _CreateItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4.0,
       child: InkWell(
         onTap: () => onTap(context),
         borderRadius: BorderRadius.circular(12),

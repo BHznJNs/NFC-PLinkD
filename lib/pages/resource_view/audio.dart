@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:nfc_plinkd/components/custom_button.dart';
 import 'package:open_file/open_file.dart';
 
@@ -42,10 +43,8 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
   final AudioPlayer player = AudioPlayer();
   bool isPlaying = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _initAudioPlayer();
+  void share() {
+    Share.shareXFiles([XFile(widget.path)]);
   }
 
   Future<void> _initAudioPlayer() async {
@@ -72,6 +71,12 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
         SnackBar(content: Text('Error loading audio')),
       );
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initAudioPlayer();
   }
 
   @override
@@ -140,7 +145,12 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
       },
     );
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(actions: [
+        IconButton(
+          onPressed: share,
+          icon: Icon(Icons.share),
+        ),
+      ]),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

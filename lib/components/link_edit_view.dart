@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:nfc_manager/nfc_manager.dart';
 import 'package:nfc_plinkd/components/custom_button.dart';
 import 'package:nfc_plinkd/components/resource_list_view.dart';
 import 'package:nfc_plinkd/utils/file.dart';
+import 'package:nfc_plinkd/utils/index.dart';
+import 'package:nfc_plinkd/utils/nfc.dart';
 import 'package:uuid/uuid.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -10,7 +13,6 @@ import 'package:nfc_plinkd/db.dart';
 import 'package:nfc_plinkd/utils/media/picker.dart';
 import 'package:nfc_plinkd/components/snackbar.dart';
 import 'package:nfc_plinkd/components/custom_dialog.dart';
-import 'package:nfc_plinkd/components/nfc_modal.dart';
 
 class LinkEditView extends StatefulWidget {
   const LinkEditView({
@@ -66,41 +68,49 @@ class _LinkEditViewState extends State<LinkEditView> {
       showInfoSnackBar(context, 'There is no content, please add some.');
       return;
     }
-    print('data to save');
-    for (final item in resources) {
-      print('path: ${item.path}, desc: ${item.description}');
-    }
     if (isReadView) {
       await writeIntoDatabase(id, resources, true);
       if (!mounted) return;
-      showSuccessMsg(context,
-        text: 'You data is successfully saved, press "OK" to back.',
-        onConfirm: () => Navigator.of(context).pop()
+      await showSuccessMsg(context,
+        text: 'You data was successfully saved, press "OK" to back.',
       );
+      if (mounted) Navigator.of(context).pop();
+      return;
     }
     if (isCreateView) {
       // only write to NFC tag when creating
-      showNFCWritingModal(
-        context, id,
-        onSuccess: () async {
-          await writeIntoDatabase(id, resources, false);
-          if (!mounted) return;
-          showSuccessMsg(context,
-            text: 'You data is successfully saved, press "OK" to back.',
-            onConfirm: () => Navigator.of(context).pop()
-          );
+      if (!await checkNFCAvailability()) {
+        if (!mounted) return;
+        showCustomError(context, NFCError.NFCFunctionDisabled(context));
+        return;
+      }
+      final linkUri = linkIdUriFactory(id);
+      final dataToWrite = [NdefRecord.createUri(linkUri)];
+      if (!mounted) return;
+      final stopWriting = await tryWriteNFCData(
+        context, dataToWrite,
+        onWrite: () async {
+          Navigator.of(context).pop();
+          await Future.wait([
+            writeIntoDatabase(id, resources, false),
+            showSuccessMsg(context, text: 'Your data was successfully saved, press "OK" to back.')
+          ]);
+          if (mounted) Navigator.of(context).pop();
         },
-        onError: (err) =>
-          showCustomError(context, err),
+        onError: (e) {
+          Navigator.of(context).pop();
+          showCustomError(context, e);
+        }
       );
+      if (!mounted) return;
+      await showNFCApproachingAlert(context);
+      await stopWriting();
     }
   }
 
   @override
   void initState() {
     super.initState();
-
-    // debugPrintInternalFiles('data/$id');
 
     if (widget.initialResources != null) {
       resources = widget.initialResources!;

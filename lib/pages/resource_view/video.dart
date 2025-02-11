@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:universal_video_controls/universal_video_controls.dart';
 import 'package:universal_video_controls_video_player/universal_video_controls_video_player.dart';
 import 'package:open_file/open_file.dart';
@@ -37,6 +38,10 @@ class _VideoPageState extends State<VideoPlayerPage> {
   bool isInitialized = false;
   late Orientation orientation;
 
+  void share() {
+    Share.shareXFiles([XFile(widget.path)]);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -55,13 +60,18 @@ class _VideoPageState extends State<VideoPlayerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(actions: [
+        IconButton(
+          onPressed: isInitialized ? share : null,
+          icon: Icon(Icons.share),
+        )
+      ]),
       body: isInitialized
         ? VideoControls(
             player: VideoPlayerControlsWrapper(controller),
             filterQuality: FilterQuality.medium,
           )
-        : const CircularProgressIndicator(),
+        : const CircularProgressIndicator.adaptive(),
     );
   }
 }

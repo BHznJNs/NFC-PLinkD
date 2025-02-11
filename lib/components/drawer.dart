@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ScaffoldWithDrawer extends StatelessWidget {
   const ScaffoldWithDrawer({
@@ -25,15 +26,15 @@ class ScaffoldWithDrawer extends StatelessWidget {
 class ScaffoldDrawer extends StatelessWidget {
   const ScaffoldDrawer({super.key});
 
-  static const drawerItems = [
-    _DrawerItemData('New Link' , '/create'  , Icons.add_outlined                 , Icons.add                 ),
-    _DrawerItemData('Read Link', '/read'    , Icons.tap_and_play_outlined        , Icons.tap_and_play        ),
-    _DrawerItemData('My Links' , '/gallery' , Icons.collections_bookmark_outlined, Icons.collections_bookmark),
-    _DrawerItemData('Settings' , '/settings', Icons.settings_outlined            , Icons.settings            ),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context)!;
+    final drawerItems = [
+      _DrawerItemData(l10n.drawer_createPage , '/create'  , Icons.add_outlined                 , Icons.add                 ),
+      _DrawerItemData(l10n.drawer_readPage   , '/read'    , Icons.tap_and_play_outlined        , Icons.tap_and_play        ),
+      _DrawerItemData(l10n.drawer_galleryPage, '/gallery' , Icons.collections_bookmark_outlined, Icons.collections_bookmark),
+      _DrawerItemData(l10n.drawer_settingPage, '/settings', Icons.settings_outlined            , Icons.settings            ),
+    ];
     final currentRoute = ModalRoute.of(context)?.settings.name ?? '/create';
     return Drawer(
       child: SafeArea(
@@ -71,6 +72,7 @@ class ScaffoldDrawerHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const leadingWidth = 56;
+    final l10n = S.of(context)!;
     final safeLeftPadding = MediaQuery.of(context).padding.left;
 
     return Container(
@@ -85,13 +87,11 @@ class ScaffoldDrawerHeader extends StatelessWidget {
             icon: const Icon(Icons.menu_open),
           ),
           const SizedBox(width: 12),
-          const SizedBox(
+          SizedBox(
             height: 22,
             child: Text(
-              'NFC PLinkD',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+              l10n.appTitle,
+              style: const TextStyle(fontWeight: FontWeight.bold),
             )
           ),
         ]

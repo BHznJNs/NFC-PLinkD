@@ -11,6 +11,7 @@ class DatabaseHelper {
   static Database? _database;
   static const String linksTableName = 'links';
   static const String resourcesTableName = 'resources';
+  static const int defaultPageSize = 10;
 
   DatabaseHelper._init();
 
@@ -107,7 +108,7 @@ class DatabaseHelper {
 
   Future<List<LinkModel>> fetchLinks({
     int page = 0,
-    int pageSize = 10,
+    int pageSize = defaultPageSize,
     OrderBy orderBy = OrderBy.createTime,
   }) async {
     final db = await database;
@@ -123,6 +124,13 @@ class DatabaseHelper {
     return candidateLinks.map((item) =>
       LinkModel.fromMap(item)
     ).toList();
+  }
+
+  Future<int?> getLinkCount() async {
+    final db = await database;
+    final res = await db.rawQuery('SELECT COUNT (*) from $linksTableName');
+    final count = Sqflite.firstIntValue(res);
+    return count;
   }
 
   Future<void> deleteLink(LinkModel link) async {

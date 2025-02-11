@@ -1,0 +1,10 @@
+{
+  "@@locale": "zh",
+  "appTitle": "电纸链接",
+  "drawer_createPage": "创建",
+  "drawer_readPage": "读取",
+  "drawer_galleryPage": "总览",
+  "drawer_settingPage": "设置",
+
+  "createPage_title": "创建链接"
+}
