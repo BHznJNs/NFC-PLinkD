@@ -12,16 +12,34 @@
   "createPage_audio": "Record a Audio",
   "createPage_weblink": "Attach a Web Link",
  
-  "readPage_approach_tag_hint": "",
+  "readPage_approachNFCTagHint": "Approach an NFC Tag",
+  "readPage_readStopped": "Stopped",
+  "readPage_readError_dialog_title": "NFC tag reading error",
 
   "galleryPage_emptyText": "No links available. Please create one!",
   "galleryPage_popup_open": "Open",
   "galleryPage_popup_delete": "Delete",
 
-
   "settingsPage_applicationTheme_title": "Application theme",
+  "settingsPage_applicationTheme_light": "Light",
+  "settingsPage_applicationTheme_dark": "Dark",
+  "settingsPage_applicationTheme_system": "System",
+  "settingsPage_useBuiltinVideoPlayer_title": "Use built-in video player",
+  "settingsPage_useBuiltinVideoPlayer_description": "Or use system default player",
+  "settingsPage_useBuiltinAudioPlayer_title": "Use built-in audio player",
+  "settingsPage_useBuiltinAudioPlayer_description": "Or use system default player",
 
-  "edit_link_title": "Edit a Link",
+  "recorderPage_title": "Record a Audio",
+
+  "editLinkPage_title": "Edit a Link",
+  "editLinkPage_no_content_msg": "There is no content, please add some.",
+  "editLinkPage_success_msg": "You data was successfully saved, press \"OK\" to back.",
+  "editLinkPage_action_save": "Save",
+  "editLinkPage_actionLabel_image": "Take a photo",
+  "editLinkPage_actionLabel_video": "Record a video",
+  "editLinkPage_actionLabel_audio": "Record a audio",
+  "editLinkPage_actionLabel_weblink": "Attach a web link",
+  "editLinkPage_actionLabel_upload": "Upload some resource",
 
   "custom_dialog_action_cancel": "Cancel",
   "custom_dialog_action_delete": "Delete",

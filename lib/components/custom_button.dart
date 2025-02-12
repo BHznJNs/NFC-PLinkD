@@ -45,10 +45,14 @@ class _CircularElevatedIconButtonState extends State<CircularElevatedIconButton>
 class EnhancedSpeedDial extends StatefulWidget {
   const EnhancedSpeedDial(this.speedDialChildren, {
     super.key,
+    required this.activeLabel,
+    required this.activeIcon,
     this.onDialRootPressed,
   });
 
   final List<SpeedDialChild> speedDialChildren;
+  final String activeLabel;
+  final IconData activeIcon;
   final Function(bool)? onDialRootPressed;
 
   @override
@@ -130,15 +134,15 @@ class _PageSpeedDialState extends State<EnhancedSpeedDial>
               ScaleTransition(
                 scale: scaleRev,
                 child: FloatingActionButton.extended(
-                  heroTag: 'Add-a-photo',
+                  heroTag: 'add-action',
                   onPressed: () {
                     toggleSpeedDial?.call();
                     widget.onDialRootPressed?.call(isSpeedDialOpen);
                   },
-                  label: Text('Add a Photo'),
+                  label: Text(widget.activeLabel),
                   foregroundColor: Theme.of(context).colorScheme.primary,
                   backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                  icon: Icon(Icons.add_a_photo),
+                  icon: Icon(widget.activeIcon),
                 ),
               ),
             ],

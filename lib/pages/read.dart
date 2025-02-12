@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nfc_plinkd/components/custom_dialog.dart';
 import 'package:nfc_plinkd/utils/index.dart';
 import 'package:nfc_plinkd/utils/nfc.dart';
@@ -18,6 +19,7 @@ class _ReadPageState extends State<ReadPage> {
   bool isReading = false;
 
   Future<void> startReadingNFC() async {
+    final l10n = S.of(context)!;
     if (!await checkNFCAvailability()) {
       if (mounted) showCustomError(context, NFCError.NFCFunctionDisabled(context));
       return;
@@ -41,7 +43,7 @@ class _ReadPageState extends State<ReadPage> {
           final e = NFCError.NFCTagDataInvalid(context);
           showCustomError(context, e);
         } else {
-          showAlert(context, 'NFC tag reading error', e.toString());
+          showAlert(context, l10n.readPage_readError_dialog_title, e.toString());
         }
       }
     );
@@ -61,33 +63,33 @@ class _ReadPageState extends State<ReadPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context)!;
+    final approaching = Center(child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          l10n.readPage_approachNFCTagHint,
+          style: const TextStyle(fontSize: 20),
+        ),
+        Container(
+          width: 64,
+          height: 64,
+          margin: const EdgeInsets.symmetric(vertical: 32),
+          alignment: Alignment.center,
+          child: const CircularProgressIndicator.adaptive(),
+        )
+      ],
+    ));
+    final stoppedHint = Center(
+      child: Text(l10n.readPage_readStopped,
+        style: const TextStyle(fontSize: 28)
+      )
+    );
     return Padding(
-      padding: EdgeInsets.only(bottom: 64),
+      padding: const EdgeInsets.only(bottom: 64),
       child: isReading
-        ? Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Approach an NFC Tag',
-                style: TextStyle(fontSize: 20),
-              ),
-              Container(
-                height: 64,
-                margin: const EdgeInsets.symmetric(vertical: 32),
-                child: const Center(
-                  child: SizedBox.square(
-                    dimension: 64,
-                    child: CircularProgressIndicator.adaptive(),
-                  ),
-                )
-              )
-            ],
-          )
-        : Center(
-            child: Text('Stopped',
-              style: TextStyle(fontSize: 28)
-            )
-          ) 
+        ? approaching
+        : stoppedHint,
     );
   }
 }

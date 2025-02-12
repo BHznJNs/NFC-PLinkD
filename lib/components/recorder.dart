@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
-import 'package:nfc_plinkd/components/custom_button.dart';
-import 'package:nfc_plinkd/utils/permission.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
+import 'package:nfc_plinkd/components/custom_button.dart';
+import 'package:nfc_plinkd/utils/permission.dart';
 
 class Recorder extends StatefulWidget {
   const Recorder({super.key, required this.onRecordEnd});
@@ -32,6 +33,7 @@ class _RecorderState extends State<Recorder> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context)!;
     final countupTimer = StreamBuilder(
       stream: timer.rawTime,
       initialData: timer.rawTime.value,
@@ -51,16 +53,16 @@ class _RecorderState extends State<Recorder> {
     );
     final waveform = AudioWaveforms(
       recorderController: recorderController,
-      size: Size.fromHeight(64), 
+      size: const Size.fromHeight(64), 
     );
     return Scaffold(
-      appBar: AppBar(title: Text('Record a Audio')),
+      appBar: AppBar(title: Text(l10n.recorderPage_title)),
       body: Padding(
-        padding: EdgeInsets.symmetric(vertical: 64),
+        padding: const EdgeInsets.symmetric(vertical: 64),
         child: Column(
           children: [
             countupTimer,
-            SizedBox(height: 64),
+            const SizedBox(height: 64),
             waveform,
             Expanded(child: Container()),
             _TimerButton(

@@ -49,7 +49,7 @@ Future<void> _openWithNavigator(
     MaterialPageRoute(builder: (context) =>
       LinkEditView(
         linkId: id,
-        title: l10n.edit_link_title,
+        title: l10n.editLinkPage_title,
         initialResources: resources,
       )
   ));

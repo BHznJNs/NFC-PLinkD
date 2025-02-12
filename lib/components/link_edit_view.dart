@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:nfc_manager/nfc_manager.dart';
-import 'package:nfc_plinkd/components/custom_button.dart';
-import 'package:nfc_plinkd/components/resource_list_view.dart';
-import 'package:nfc_plinkd/utils/file.dart';
-import 'package:nfc_plinkd/utils/index.dart';
-import 'package:nfc_plinkd/utils/nfc.dart';
 import 'package:uuid/uuid.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'package:nfc_plinkd/db.dart';
-import 'package:nfc_plinkd/utils/media/picker.dart';
+import 'package:nfc_plinkd/components/custom_button.dart';
+import 'package:nfc_plinkd/components/resource_list_view.dart';
 import 'package:nfc_plinkd/components/snackbar.dart';
 import 'package:nfc_plinkd/components/custom_dialog.dart';
+import 'package:nfc_plinkd/db.dart';
+import 'package:nfc_plinkd/utils/file.dart';
+import 'package:nfc_plinkd/utils/index.dart';
+import 'package:nfc_plinkd/utils/nfc.dart';
+import 'package:nfc_plinkd/utils/media/picker.dart';
 
 class LinkEditView extends StatefulWidget {
   const LinkEditView({
@@ -64,15 +65,16 @@ class _LinkEditViewState extends State<LinkEditView> {
   }
 
   Future<void> saveLinkData() async {
+    final l10n = S.of(context)!;
     if (resources.isEmpty) {
-      showInfoSnackBar(context, 'There is no content, please add some.');
+      showInfoSnackBar(context, l10n.editLinkPage_no_content_msg);
       return;
     }
     if (isReadView) {
       await writeIntoDatabase(id, resources, true);
       if (!mounted) return;
       await showSuccessMsg(context,
-        text: 'You data was successfully saved, press "OK" to back.',
+        text: l10n.editLinkPage_success_msg,
       );
       if (mounted) Navigator.of(context).pop();
       return;
@@ -93,7 +95,9 @@ class _LinkEditViewState extends State<LinkEditView> {
           Navigator.of(context).pop();
           await Future.wait([
             writeIntoDatabase(id, resources, false),
-            showSuccessMsg(context, text: 'Your data was successfully saved, press "OK" to back.')
+            showSuccessMsg(context,
+              text: l10n.editLinkPage_success_msg,
+            ),
           ]);
           if (mounted) Navigator.of(context).pop();
         },
@@ -127,6 +131,7 @@ class _LinkEditViewState extends State<LinkEditView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context)!;
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final bgColorMap = isDarkMode ? {
       'video': Colors.blueGrey.shade600,
@@ -141,28 +146,28 @@ class _LinkEditViewState extends State<LinkEditView> {
     };
     final speedDialChildren = [
       SpeedDialChild(
-        label: 'Record a video',
+        label: l10n.editLinkPage_actionLabel_video,
         child: Icon(Icons.videocam),
         foregroundColor: Colors.white,
         backgroundColor: bgColorMap['video'],
         onTap: () => filePickerWrapper(recordVideo),
       ),
       SpeedDialChild(
-        label: 'Record a audio',
+        label: l10n.editLinkPage_actionLabel_audio,
         child: Icon(Icons.mic),
         foregroundColor: Colors.white,
         backgroundColor: bgColorMap['audio'],
         onTap: () => filePickerWrapper(recordAudio),
       ),
       SpeedDialChild(
-        label: 'Attach a web link',
+        label: l10n.editLinkPage_actionLabel_weblink,
         child: Icon(Icons.link),
         foregroundColor: Colors.white,
         backgroundColor: bgColorMap['weblink'],
         onTap: () => filePickerWrapper(inputWebLink),
       ),
       SpeedDialChild(
-        label: 'Upload some resource',
+        label: l10n.editLinkPage_actionLabel_upload,
         child: Icon(Icons.upload),
         foregroundColor: Colors.white,
         backgroundColor: bgColorMap['upload'],
@@ -175,11 +180,13 @@ class _LinkEditViewState extends State<LinkEditView> {
         title: Text(widget.title),
         actions: [TextButton(
           onPressed: saveLinkData,
-          child: Text('Save'),
+          child: Text(l10n.editLinkPage_action_save),
         )],
       ),
       floatingActionButton: EnhancedSpeedDial(
         speedDialChildren,
+        activeLabel: l10n.editLinkPage_actionLabel_image,
+        activeIcon: Icons.add_a_photo,
         onDialRootPressed: (isOpen) {
           if (!isOpen) {
             filePickerWrapper(takePhoto);

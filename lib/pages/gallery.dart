@@ -81,7 +81,6 @@ class _GalleryPageState extends State<GalleryPage> {
         margin: EdgeInsets.only(top: 12),
         alignment: Alignment.topCenter,
         child: Text(
-          // 还没有链接，快去创建吧！
           l10n.galleryPage_emptyText,
           style: TextStyle(fontSize: 16),
         ),
@@ -106,15 +105,6 @@ class _GalleryPageState extends State<GalleryPage> {
         ),
       ),
     );
-    // return ListView.builder(
-    //   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    //   itemCount: links!.length,
-    //   itemBuilder: (context, index) => _LinkItem(
-    //     links![index], index,
-    //     onOpen: openLink,
-    //     onDelete: deleteLink,
-    //   ),
-    // );
   }
 }
 

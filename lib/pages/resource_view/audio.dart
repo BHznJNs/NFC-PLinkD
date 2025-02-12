@@ -1,12 +1,20 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:nfc_plinkd/config.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:nfc_plinkd/components/custom_button.dart';
 import 'package:open_file/open_file.dart';
 
 Future<void> openAudioWithDefaultPlayer(BuildContext context, String path) async {
   final result = await OpenFile.open(path);
+  final useBuiltinAudioPlayer = await Configuration.useBuiltinAudioPlayer.read();
+  if ((useBuiltinAudioPlayer ?? false) && context.mounted) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => AudioPlayerPage(path)));
+    return;
+  }
+
   switch (result.type) {
     case ResultType.done: return;
     case ResultType.fileNotFound:

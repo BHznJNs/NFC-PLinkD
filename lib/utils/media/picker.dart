@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:nfc_plinkd/components/audio.dart';
+import 'package:nfc_plinkd/components/recorder.dart';
 import 'package:nfc_plinkd/components/custom_dialog.dart';
 import 'package:nfc_plinkd/db.dart';
 

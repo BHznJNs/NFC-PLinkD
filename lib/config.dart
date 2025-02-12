@@ -22,6 +22,15 @@ class Configuration {
       Configuration.useBuiltinAudioPlayer.save(true),
     ]);
   }
+
+  static Future<List<dynamic>> readAll() async {
+    return Future.wait([
+      Configuration.theme.read(),
+      Configuration.language.read(),
+      Configuration.useBuiltinVideoPlayer.read(),
+      Configuration.useBuiltinAudioPlayer.read(),
+    ]);
+  }
 }
 
 abstract class _ConfigurationItem<T> {

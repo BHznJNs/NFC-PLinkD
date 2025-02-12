@@ -88,7 +88,7 @@ class _CreateItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         child: ListTile(
           leading: Icon(icon, size: 28),
-          title: Text(title, style: const TextStyle(fontSize: 18)),
+          title: Text(title, style: const TextStyle(fontSize: 18, height: 1)),
           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nfc_plinkd/config.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -16,17 +17,25 @@ class _SettingsPageState extends State<SettingsPage> {
   late bool useBuiltinAudioPlayer;
 
   Future<void> loadSettings() async {
-    final [theme, language, useBuiltinVideoPlayer, useBuiltinAudioPlayer] = await Future.wait([
-      Configuration.theme.read(),
-      Configuration.language.read(),
-      Configuration.useBuiltinVideoPlayer.read(),
-      Configuration.useBuiltinAudioPlayer.read(),
-    ]);
+    final [theme, language, useBuiltinVideoPlayer, useBuiltinAudioPlayer] = await Configuration.readAll();
     this.theme = theme as ConfigTheme;
     this.language = language as ConfigLanguage;
     this.useBuiltinVideoPlayer = useBuiltinVideoPlayer as bool;
     this.useBuiltinAudioPlayer = useBuiltinAudioPlayer as bool;
     setState(() => isLoading = false);
+  }
+
+  Future<void> setTheme(ConfigTheme newTheme) async {
+    await Configuration.theme.save(newTheme);
+    setState(() => theme = newTheme);
+  }
+  Future<void> setUseBuiltinVideoPlayer() async {
+    await Configuration.useBuiltinVideoPlayer.save(!useBuiltinVideoPlayer);
+    setState(() => useBuiltinVideoPlayer = !useBuiltinVideoPlayer );
+  }
+  Future<void> setUseBuiltinAudioPlayer() async {
+    await Configuration.useBuiltinAudioPlayer.save(!useBuiltinAudioPlayer);
+    setState(() => useBuiltinAudioPlayer = !useBuiltinAudioPlayer );
   }
 
   @override
@@ -37,6 +46,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context)!;
     if (isLoading) {
       return Center(child: Container(
         width: 64,
@@ -45,18 +55,13 @@ class _SettingsPageState extends State<SettingsPage> {
         child: const CircularProgressIndicator.adaptive(),
       ));
     }
-
-    setTheme(ConfigTheme newTheme) => setState(() => theme = newTheme);
-    setUseBuiltinVideoPlayer() => setState(() => useBuiltinVideoPlayer = !useBuiltinVideoPlayer );
-    setUseBuiltinAudioPlayer() => setState(() => useBuiltinAudioPlayer = !useBuiltinAudioPlayer );
-
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 12),
       children: [
         _ThemeDropdownSelector(theme, setTheme),
         _SettingItem(
-          title: 'Use built-in video player',
-          description: 'Or use system default player',
+          title: l10n.settingsPage_useBuiltinVideoPlayer_title,
+          description: l10n.settingsPage_useBuiltinVideoPlayer_description,
           icon: Icons.movie,
           onTap: setUseBuiltinVideoPlayer,
           editor: Switch.adaptive(
@@ -65,8 +70,8 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
         ),
         _SettingItem(
-          title: 'Use built-in audio player',
-          description: 'Or use system default player',
+          title: l10n.settingsPage_useBuiltinAudioPlayer_title,
+          description: l10n.settingsPage_useBuiltinAudioPlayer_description,
           icon: Icons.music_note,
           onTap: setUseBuiltinAudioPlayer,
           editor: Switch.adaptive(
@@ -123,35 +128,33 @@ class _ThemeDropdownSelector extends StatefulWidget {
 class _ThemeDropdownSelectorState extends State<_ThemeDropdownSelector> {
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context)!;
     final dropdownMenuItems = [
       DropdownMenuItem(
         value: ConfigTheme.light,
-        child: Text('Light'),
+        child: Text(l10n.settingsPage_applicationTheme_light),
       ),
       DropdownMenuItem(
         value: ConfigTheme.dark,
-        child: Text('Dark'),
+        child: Text(l10n.settingsPage_applicationTheme_dark),
       ),
       DropdownMenuItem(
         value: ConfigTheme.system,
-        child: Text('System'),
+        child: Text(l10n.settingsPage_applicationTheme_system),
       ),
     ];
-    return InkWell(
-      onTap: () {},
-      child: ListTile(
-        title: Text('Application theme'),
-        leading: Icon(Icons.brightness_4),
-        trailing: DropdownButton(
-          value: widget.theme,
-          items: dropdownMenuItems,
-          onChanged: (ConfigTheme? newTheme) {
-            if (newTheme == null) return;
-            widget.setTheme(newTheme);
-          },
-        ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+    return _SettingItem(
+      title: l10n.settingsPage_applicationTheme_title,
+      icon: Icons.brightness_4,
+      editor: DropdownButton(
+        value: widget.theme,
+        items: dropdownMenuItems,
+        onChanged: (ConfigTheme? newTheme) {
+          if (newTheme == null) return;
+          widget.setTheme(newTheme);
+        },
       ),
+      onTap: () {},
     );
   }
 }
