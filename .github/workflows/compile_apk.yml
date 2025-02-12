@@ -59,6 +59,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            ${{ env.APK_BUILD_DIR }}/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
-            ${{ env.APK_BUILD_DIR }}/app/outputs/flutter-apk/app-arm64-v8a-release.apk
-            ${{ env.APK_BUILD_DIR }}/app/outputs/flutter-apk/app-x86_64-release.apk
+            ${{ env.APK_BUILD_DIR }}/build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+            ${{ env.APK_BUILD_DIR }}/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+            ${{ env.APK_BUILD_DIR }}/build/app/outputs/flutter-apk/app-x86_64-release.apk
