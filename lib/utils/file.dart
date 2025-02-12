@@ -9,14 +9,14 @@ import 'package:path_provider/path_provider.dart';
 
 const dataDirname = 'data';
 
-Future<String> getDataBasePath(String id) async {
+Future<String> getBasePath(String id) async {
   final idDirname = path.join(dataDirname, id);
   final appDir = await getApplicationDocumentsDirectory();
   return path.join(appDir.path, idDirname);
 }
 
 Future<List<ResourceModel>> copyResourcesToAppDir(String id, List<ResourceModel> resources) async {
-  final dataDirPath = await getDataBasePath(id);
+  final dataDirPath = await getBasePath(id);
   final directory = Directory(dataDirPath);
   if (!await directory.exists()) {
     await directory.create(recursive: true);

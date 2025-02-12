@@ -30,17 +30,18 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   Future<void> initDeepLinks() async {
     appLinks = AppLinks();
-    WidgetsBinding.instance.addObserver(this);
     linkSubscription = appLinks.uriLinkStream.listen((uri) {
       if (isInForeground || !mounted) return;
-      openLinkWithUri(context, uri, navigator: navigatorKey.currentState)
-        .onError((error, stackTrace) {});
+      if (navigatorKey.currentContext == null) return;
+      openLinkWithUri(navigatorKey.currentContext!, uri)
+        .onError((error, stackTrace) {/* do nothing */});
     });
   }
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     initDeepLinks();
   }
 

@@ -19,7 +19,6 @@ class _ReadPageState extends State<ReadPage> {
   bool isReading = false;
 
   Future<void> startReadingNFC() async {
-    final l10n = S.of(context)!;
     if (!await checkNFCAvailability()) {
       if (mounted) showCustomError(context, NFCError.NFCFunctionDisabled(context));
       return;
@@ -29,14 +28,12 @@ class _ReadPageState extends State<ReadPage> {
       context,
       onRead: (data) async {
         final uri = Uri.parse(data);
-        await openLinkWithUri( 
-          context, uri,
-          onBack: startReadingNFC,
-        );
+        openLinkWithUri(context, uri).then((_) => startReadingNFC());
         await stopReading?.call();
         setState(() => isReading = false);
       },
       onError: (e) {
+        final l10n = S.of(context)!;
         if (e is CustomError) {
           showCustomError(context, e);
         } else if (e is FormatException) {
