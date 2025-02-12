@@ -47,11 +47,11 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
       - name: Dependencies
-        working-directory: ${{ env.APK_BUILD_DIR }}/app
+        working-directory: ${{ env.APK_BUILD_DIR }}
         run: flutter pub get
 
       - name: Build APK
-        working-directory: ${{ env.APK_BUILD_DIR }}/app
+        working-directory: ${{ env.APK_BUILD_DIR }}
         run: flutter build apk --split-per-abi
 
       - name: Upload APK
