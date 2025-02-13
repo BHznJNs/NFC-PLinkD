@@ -153,25 +153,32 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
     };
 
     return DynamicColorBuilder(
-      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) => MaterialApp(
-        onGenerateTitle: (BuildContext context) {
-          return S.of(context)?.appTitle ?? 'NFC PLinkD';
-        },
-        navigatorKey: navigatorKey,
-        localizationsDelegates: S.localizationsDelegates,
-        supportedLocales: S.supportedLocales,
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: lightDynamic ?? defaultLightColorScheme,
-        ),
-        darkTheme: ThemeData(
-          useMaterial3: true,
-          colorScheme: darkDynamic ?? defaultDarkColorScheme,
-        ),
-        themeMode: widget.theme?.toThemeMode() ?? ThemeMode.system,
-        initialRoute: '/create',
-        routes: routes,
-      )
+      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        final lightColorScheme = lightDynamic ?? defaultLightColorScheme;
+        final darkColorScheme = darkDynamic ?? defaultDarkColorScheme;
+        return MaterialApp(
+          onGenerateTitle: (BuildContext context) {
+            return S.of(context)?.appTitle ?? 'NFC PLinkD';
+          },
+          navigatorKey: navigatorKey,
+          localizationsDelegates: S.localizationsDelegates,
+          supportedLocales: S.supportedLocales,
+          theme: ThemeData(
+            useMaterial3: true,
+            colorScheme: lightColorScheme,
+          ),
+          darkTheme: ThemeData(
+            useMaterial3: true,
+            colorScheme: darkColorScheme,
+            cardTheme: CardTheme(
+              color: Color.lerp(darkColorScheme.surface, Colors.white, 0.06),
+            ),
+          ),
+          themeMode: widget.theme?.toThemeMode() ?? ThemeMode.system,
+          initialRoute: '/create',
+          routes: routes,
+        );
+      } 
     );
   }
 }
