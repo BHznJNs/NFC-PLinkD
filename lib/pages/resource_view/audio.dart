@@ -7,7 +7,6 @@ import 'package:nfc_plinkd/config.dart';
 import 'package:nfc_plinkd/components/custom_button.dart';
 
 Future<void> openAudioWithDefaultPlayer(BuildContext context, String path) async {
-  final result = await OpenFile.open(path);
   final useBuiltinAudioPlayer = await Configuration.useBuiltinAudioPlayer.read();
   if ((useBuiltinAudioPlayer ?? false) && context.mounted) {
     Navigator.of(context).push(
@@ -15,6 +14,7 @@ Future<void> openAudioWithDefaultPlayer(BuildContext context, String path) async
     return;
   }
 
+  final result = await OpenFile.open(path);
   switch (result.type) {
     case ResultType.done: return;
     case ResultType.fileNotFound:

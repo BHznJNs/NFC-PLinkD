@@ -10,7 +10,6 @@ import 'package:video_player/video_player.dart';
 import 'package:nfc_plinkd/config.dart';
 
 Future<void> openVideoWithDefaultPlayer(BuildContext context, String path) async {
-  final result = await OpenFile.open(path);
   final useBuiltinVideoPlayer = await Configuration.useBuiltinVideoPlayer.read();
   if ((useBuiltinVideoPlayer ?? false) && context.mounted) {
     Navigator.of(context).push(
@@ -18,6 +17,7 @@ Future<void> openVideoWithDefaultPlayer(BuildContext context, String path) async
     return;
   }
 
+  final result = await OpenFile.open(path);
   switch (result.type) {
     case ResultType.done: return;
     case ResultType.fileNotFound:
