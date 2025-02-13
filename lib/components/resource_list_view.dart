@@ -276,8 +276,8 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
       if (generator == null) return;
       final rootIsolateToken = RootIsolateToken.instance;
       (rootIsolateToken == null
-        ? generator([null, widget.path, size.toInt()]) // fallback to block computation
-        : compute(generator, [rootIsolateToken, widget.path, size.toInt()])
+        ? generator([null, widget.path, (size - 16).toInt()]) // fallback to block computation
+        : compute(generator, [rootIsolateToken, widget.path, (size - 16).toInt()])
       ).then((thumbnail_) {
         if (thumbnail_ == null) return;
         setState(() => thumbnail = thumbnail_);

@@ -89,10 +89,8 @@ class _RecorderState extends State<Recorder> {
                 timer.onStartTimer();
               },
               onComplete: () {
-                if (recorderController.isRecording) {
-                  recorderController.stop().then((path) =>
-                    widget.onRecordEnd(path));
-                }
+                recorderController.stop().then((path) =>
+                  widget.onRecordEnd(path));
                 timer.onResetTimer();
                 Navigator.of(context).pop();
               },
@@ -124,46 +122,46 @@ class _TimerButton extends StatefulWidget {
 class _TimerButtonState extends State<_TimerButton>
     with SingleTickerProviderStateMixin {
   bool isPlaying = false;
-  late AnimationController _controller;
-  late Animation<double> _scale;
-  late Animation<Offset> _slideLeft;
-  late Animation<Offset> _slideRight;
-  late Animation<double> _opacity;
-  late Animation<double> _opacityRev;
+  late AnimationController controller;
+  late Animation<double> scale;
+  late Animation<Offset> slideLeft;
+  late Animation<Offset> slideRight;
+  late Animation<double> opacity;
+  late Animation<double> opacityRev;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-    _scale = Tween<double>(begin: 1.0, end: 0.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    scale = Tween<double>(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(parent: controller, curve: Curves.easeInOut),
     );
-    _slideLeft = Tween<Offset>(
+    slideLeft = Tween<Offset>(
       begin: Offset.zero,
       end: const Offset(-0.75, 0.0),
     ).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+      CurvedAnimation(parent: controller, curve: Curves.easeInOut),
     );
-    _slideRight = Tween<Offset>(
+    slideRight = Tween<Offset>(
       begin: Offset.zero,
       end: const Offset(0.75, 0.0),
     ).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+      CurvedAnimation(parent: controller, curve: Curves.easeInOut),
     );
-    _opacity = Tween<double>(begin: 1.0, end: 0.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    opacity = Tween<double>(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(parent: controller, curve: Curves.easeInOut),
     );
-    _opacityRev = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+     opacityRev = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: controller, curve: Curves.easeInOut),
     );
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    controller.dispose();
     super.dispose();
   }
 
@@ -172,7 +170,7 @@ class _TimerButtonState extends State<_TimerButton>
     final startButton = CircularElevatedIconButton(
       icon: Icons.mic,
       onPressed: () {
-        _controller.forward();
+        controller.forward();
         widget.onStart();
         setState(() => isPlaying = true);
       },
@@ -195,7 +193,6 @@ class _TimerButtonState extends State<_TimerButton>
     final stopButton = CircularElevatedIconButton(
       icon: Icons.check,
       onPressed: () {
-        _controller.reverse();
         widget.onComplete();
         setState(() => isPlaying = false);
       },
@@ -206,25 +203,25 @@ class _TimerButtonState extends State<_TimerButton>
       alignment: Alignment.center,
       children: [
         FadeTransition(
-          opacity: _opacityRev,
+          opacity: opacityRev,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SlideTransition(
-                position: _slideLeft,
+                position: slideLeft,
                 child: pauseResumeButton,
               ),
               SlideTransition(
-                position: _slideRight,
+                position: slideRight,
                 child: stopButton,
               ),
             ],
           ),
         ),
         FadeTransition(
-          opacity: _opacity,
+          opacity: opacity,
           child: ScaleTransition(
-            scale: _scale,
+            scale: scale,
             child: startButton,
           ),
         ),
