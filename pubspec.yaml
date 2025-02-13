@@ -41,10 +41,6 @@ dependencies:
   file_picker: ^8.3.1
   nfc_manager: ^3.5.0
   just_audio: ^0.9.45
-  path: ^1.9.0
-  path_provider: ^2.1.5
-  permission_handler: ^11.3.1
-  photo_view: ^0.15.0
   share_plus: ^10.1.4
   shared_preferences: ^2.5.1
   sqflite: ^2.4.1
@@ -52,6 +48,14 @@ dependencies:
   image: ^4.5.2
   image_picker: ^1.1.2
   open_file: ^3.5.10
+  path: ^1.9.0
+  path_provider: ^2.1.5
+  permission_handler: ^11.3.1
+  photo_view: ^0.15.0
+  receive_sharing_intent:
+    git:
+      url: https://github.com/KasemJaffer/receive_sharing_intent
+      ref: 2cea396843cd3ab1b5ec4334be4233864637874e
   universal_video_controls: ^1.0.10
   universal_video_controls_video_player: ^1.0.1
   uuid: ^4.5.1

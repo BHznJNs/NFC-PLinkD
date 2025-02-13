@@ -3,11 +3,12 @@ import 'package:intl/intl.dart';
 
 String formatTimestampToLocalizedDate(BuildContext context, int timestampMilliseconds, {String? locale}) {
   final dateTime = DateTime.fromMillisecondsSinceEpoch(timestampMilliseconds);
-  final currentLocale = locale ?? _getCurrentDeviceLocale(context); // Get locale, prioritize param
+  final currentLocale = locale ?? _getCurrentDeviceLocale(context);
 
   final formatter = switch (currentLocale) {
-    'zh_CN' => DateFormat.yMMMd('zh_CN'),
-    String() when currentLocale.startsWith('en_') =>
+    String() when currentLocale.startsWith('zh') =>
+      DateFormat.yMMMd('zh_CN'),
+    String() when currentLocale.startsWith('en') =>
       DateFormat('MMMM d, y', 'en_US'),
     _ => DateFormat.yMd(),
   };

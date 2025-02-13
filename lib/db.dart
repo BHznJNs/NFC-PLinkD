@@ -166,6 +166,14 @@ enum ResourceType {
   static ResourceType fromInt(int typeId) {
     return ResourceType.values[typeId];
   }
+  static ResourceType? fromMimetype(String mimeType) {
+    switch (mimeType) {
+      case String() when mimeType.startsWith('image'): return ResourceType.image;
+      case String() when mimeType.startsWith('video'): return ResourceType.video;
+      case String() when mimeType.startsWith('audio'): return ResourceType.audio;
+    }
+    return null;
+  }
 }
 
 class LinkError extends CustomError {
