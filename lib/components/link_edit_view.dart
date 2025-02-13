@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:uuid/uuid.dart';
@@ -10,6 +9,7 @@ import 'package:nfc_plinkd/components/resource_list_view.dart';
 import 'package:nfc_plinkd/components/snackbar.dart';
 import 'package:nfc_plinkd/components/custom_dialog.dart';
 import 'package:nfc_plinkd/db.dart';
+import 'package:nfc_plinkd/l10n/app_localizations.dart';
 import 'package:nfc_plinkd/utils/file.dart';
 import 'package:nfc_plinkd/utils/index.dart';
 import 'package:nfc_plinkd/utils/nfc.dart';

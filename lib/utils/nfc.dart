@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:nfc_manager/platform_tags.dart';
+import 'package:nfc_plinkd/l10n/app_localizations.dart';
 import 'package:nfc_plinkd/utils/index.dart';
 
 typedef StopReadingClossure = Future<void> Function();

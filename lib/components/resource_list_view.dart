@@ -3,9 +3,9 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:nfc_plinkd/components/custom_textfield.dart';
+import 'package:nfc_plinkd/l10n/app_localizations.dart';
 import 'package:nfc_plinkd/pages/resource_view/image.dart';
 import 'package:nfc_plinkd/pages/resource_view/audio.dart';
 import 'package:nfc_plinkd/pages/resource_view/video.dart';

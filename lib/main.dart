@@ -1,21 +1,21 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:app_links/app_links.dart';
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:nfc_plinkd/components/link_edit_view.dart';
-import 'package:nfc_plinkd/db.dart';
-import 'package:nfc_plinkd/utils/media/picker.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
  
-import 'package:nfc_plinkd/pages/create.dart';
 import 'package:nfc_plinkd/config.dart';
+import 'package:nfc_plinkd/components/link_edit_view.dart';
 import 'package:nfc_plinkd/components/drawer.dart';
+import 'package:nfc_plinkd/db.dart';
+import 'package:nfc_plinkd/l10n/app_localizations.dart';
+import 'package:nfc_plinkd/pages/create.dart';
 import 'package:nfc_plinkd/pages/gallery.dart';
 import 'package:nfc_plinkd/pages/read.dart';
 import 'package:nfc_plinkd/pages/settings.dart';
 import 'package:nfc_plinkd/utils/open_link.dart';
+import 'package:nfc_plinkd/utils/media/picker.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp(this.theme, {super.key});
