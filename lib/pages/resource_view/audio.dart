@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:nfc_plinkd/config.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:nfc_plinkd/components/custom_button.dart';
 import 'package:open_file/open_file.dart';
+import 'package:nfc_plinkd/config.dart';
+import 'package:nfc_plinkd/components/custom_button.dart';
 
 Future<void> openAudioWithDefaultPlayer(BuildContext context, String path) async {
   final result = await OpenFile.open(path);

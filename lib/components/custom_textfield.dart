@@ -61,7 +61,7 @@ class _UrlTextFieldState extends State<UrlTextField> {
             )
           : IconButton(
               onPressed: clearText,
-              icon: const Icon(Icons.clear),
+              icon: const Icon(Icons.delete),
             ),
       ),
     );

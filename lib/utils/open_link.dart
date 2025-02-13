@@ -24,19 +24,19 @@ Future<void> openLinkWithId(BuildContext context, String id) async {
   ).toList();
 
   if (!context.mounted) return;
-  await _openWithNavigator(context, id, resolvedResources);
+  await _openWithNavigator(context, link, resolvedResources);
 }
 
 Future<void> _openWithNavigator(
   BuildContext context,
-  String id,
+  LinkModel link,
   List<ResourceModel> resources,
 ) async {
   final l10n = S.of(context)!;
   await Navigator.of(context).push(
     MaterialPageRoute(builder: (context) =>
       LinkEditView(
-        linkId: id,
+        link: link,
         title: l10n.editLinkPage_title,
         initialResources: resources,
       )

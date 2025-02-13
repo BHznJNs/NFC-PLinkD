@@ -3,13 +3,14 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:nfc_plinkd/components/custom_textfield.dart';
 import 'package:nfc_plinkd/pages/resource_view/image.dart';
 import 'package:nfc_plinkd/pages/resource_view/audio.dart';
 import 'package:nfc_plinkd/pages/resource_view/video.dart';
 import 'package:nfc_plinkd/utils/media/thumbnail.dart';
 import 'package:nfc_plinkd/db.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 class ResourceListView extends StatefulWidget {
   const ResourceListView(this.children, {super.key});
@@ -126,6 +127,7 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
   }
 
   void openDialog() {
+    final l10n = S.of(context)!;
     // reset TextEditingControllers
     urlController = TextEditingController(text: widget.path);
     descriptionController = TextEditingController(text: widget.description);
@@ -135,9 +137,11 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
         widget.onDelete(widget.index);
         Navigator.of(context).pop();
       },
-      child: Text('Delete', style: TextStyle(
-        color: Theme.of(context).colorScheme.error
-      )),
+      child: Text(l10n.editLinkPage_dialog_action_delete,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.error
+        ),
+      ),
     );
     final saveButton = TextButton(
       onPressed: () {
@@ -150,24 +154,24 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
         Navigator.of(context).pop();
         setState(() {});
       },
-      child: const Text('Save'),
+      child: Text(l10n.editLinkPage_dialog_action_save),
     );
     final dialog = AlertDialog.adaptive(
-      title: Text('Edit Item'),
+      title: Text(l10n.editLinkPage_dialog_title),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (widget.type == ResourceType.webLink)
             ...[
               UrlTextField(urlController),
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
             ],
           TextField(
             minLines: 1,
             maxLines: 3,
             controller: descriptionController,
-            decoration: const InputDecoration(
-              hintText: 'Input the descriptions here...',
+            decoration: InputDecoration(
+              hintText: l10n.editLinkPage_dialog_description_hint,
             ),
           ),
         ],
@@ -284,17 +288,22 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
   @override
   void dispose() {
     urlController.dispose();
+    descriptionController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = S.of(context)!;
     final description = Container(
       height: double.infinity,
       margin: EdgeInsets.symmetric(vertical: 16),
       child: widget.description.isNotEmpty
         ? Text(widget.description, overflow: TextOverflow.ellipsis)
-        : Opacity(opacity: .4, child: Text('No description')),
+        : Opacity(
+          opacity: .4,
+          child: Text(l10n.resourceList_item_noDescription_hint),
+        ),
     );
 
     final draggableRegion = ReorderableDragStartListener(

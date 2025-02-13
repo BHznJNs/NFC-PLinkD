@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:nfc_manager/nfc_manager.dart';
 import 'package:nfc_plinkd/components/custom_dialog.dart';
 import 'package:nfc_plinkd/db.dart';
 import 'package:nfc_plinkd/utils/formatter.dart';
+import 'package:nfc_plinkd/utils/index.dart';
+import 'package:nfc_plinkd/utils/nfc.dart';
 import 'package:nfc_plinkd/utils/open_link.dart';
 
 class GalleryPage extends StatefulWidget {
@@ -38,6 +41,34 @@ class _GalleryPageState extends State<GalleryPage> {
   Future<void> openLink(int index) async {
     final linkId = links[index].id;
     openLinkWithId(context, linkId);
+  }
+
+  Future<void> writeLink(int index) async {
+    final l10n = S.of(context)!;
+    if (!await checkNFCAvailability()) {
+      if (!mounted) return;
+      showCustomError(context, NFCError.NFCFunctionDisabled(context));
+      return;
+    }
+    final id = links[index].id;
+    final linkUri = linkIdUriFactory(id);
+    final dataToWrite = [NdefRecord.createUri(linkUri)];
+
+    if (!mounted) return;
+    final stopWriting = await tryWriteNFCData(
+      context, dataToWrite,
+      onWrite: () async {
+        Navigator.of(context).pop();
+        await showSuccessMsg(context, text: l10n.editLinkPage_success_msg);
+      },
+      onError: (e) {
+        Navigator.of(context).pop();
+        showCustomError(context, e);
+      }
+    );
+    if (!mounted) return;
+    await showNFCApproachingAlert(context);
+    await stopWriting();
   }
 
   Future<void> deleteLink(int index) async {
@@ -101,6 +132,7 @@ class _GalleryPageState extends State<GalleryPage> {
         itemBuilder: (context, index) => _LinkItem(
           links[index], index,
           onOpen: openLink,
+          onWrite: writeLink,
           onDelete: deleteLink,
         ),
       ),
@@ -111,12 +143,14 @@ class _GalleryPageState extends State<GalleryPage> {
 class _LinkItem extends StatelessWidget {
   const _LinkItem(this.metadata, this.index, {
     this.onOpen,
+    this.onWrite,
     this.onDelete,
   });
 
   final LinkModel metadata;
   final int index;
   final Function(int)? onOpen;
+  final Function(int)? onWrite;
   final Function(int)? onDelete;
 
   static List<PopupMenuItem> popupMenuItems(BuildContext context) {
@@ -125,6 +159,10 @@ class _LinkItem extends StatelessWidget {
       PopupMenuItem<String>(
         value: 'open',
         child: Text(l10n.galleryPage_popup_open),
+      ),
+      PopupMenuItem<String>(
+        value: 'write',
+        child: Text(l10n.galleryPage_popup_write),
       ),
       PopupMenuItem<String>(
         value: 'delete',
@@ -137,19 +175,24 @@ class _LinkItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final createTimeDateString = formatTimestampToLocalizedDate(context, metadata.createTime);
     final createTimeHourMinuteString = formatTimestampToHourMinute(metadata.createTime);
+    final title = metadata.name ?? createTimeDateString;
+    final subtitle = metadata.name == null
+      ? createTimeHourMinuteString
+      : '$createTimeDateString $createTimeHourMinuteString';
     return Card(
       child: InkWell(
         onTap: () => onOpen?.call(index),
         borderRadius: BorderRadius.circular(12),
         child: ListTile(
-          title: Text(createTimeDateString),
-          subtitle: Text(createTimeHourMinuteString),
+          title: Text(title),
+          subtitle: Text(subtitle),
           leading: const Icon(Icons.nfc, size: 40),
           trailing: PopupMenuButton(
             icon: const Icon(Icons.more_vert),
             onSelected: (value) {
               switch (value) {
                 case 'open': onOpen?.call(index);
+                case 'write': onWrite?.call(index);
                 case 'delete': onDelete?.call(index);
                 default: throw UnimplementedError();
               }

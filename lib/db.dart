@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:nfc_plinkd/utils/index.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:nfc_plinkd/utils/index.dart';
 
 class DatabaseHelper {
   static const dbName = 'data.db';
@@ -31,7 +31,8 @@ class DatabaseHelper {
     // create table for all types of resources and image resources table
     await db.execute('''
       CREATE TABLE $linksTableName (
-        id TEXT,
+        id TEXT PRIMARY KEY,
+        name TEXT,
         ${OrderBy.createTime.toFieldName()} INTEGER NOT NULL,
         ${OrderBy.modifyTime.toFieldName()} INTEGER NOT NULL
       )
@@ -85,7 +86,7 @@ class DatabaseHelper {
     final candidateLinks = await db.query(
       linksTableName,
       where: "id = ?",
-      whereArgs: [id]
+      whereArgs: [id],
     );
     final linkResources = await db.query(
       resourcesTableName,
@@ -181,10 +182,12 @@ class LinkError extends CustomError {
 
 class LinkModel {
   final String id;
+  final String? name;
   final int createTime;
   final int modifyTime;
 
   LinkModel({
+    this.name,
     required this.id,
     required this.createTime,
     required this.modifyTime,
@@ -193,6 +196,7 @@ class LinkModel {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'name': name,
       'created_at': createTime,
       'modified_at': modifyTime,
     };
@@ -201,6 +205,7 @@ class LinkModel {
   factory LinkModel.fromMap(Map<String, dynamic> map) {
     return LinkModel(
       id: map['id'] as String,
+      name: map['name'] as String?,
       createTime: map['created_at'] as int,
       modifyTime: map['modified_at'] as int,
     );

@@ -18,6 +18,7 @@
 
   "galleryPage_emptyText": "No links available. Please create one!",
   "galleryPage_popup_open": "Open",
+  "galleryPage_popup_write": "Write",
   "galleryPage_popup_delete": "Delete",
 
   "settingsPage_applicationTheme_title": "Application theme",
@@ -34,12 +35,18 @@
   "editLinkPage_title": "Edit a Link",
   "editLinkPage_no_content_msg": "There is no content, please add some.",
   "editLinkPage_success_msg": "You data was successfully saved, press \"OK\" to back.",
-  "editLinkPage_action_save": "Save",
   "editLinkPage_actionLabel_image": "Take a photo",
   "editLinkPage_actionLabel_video": "Record a video",
   "editLinkPage_actionLabel_audio": "Record a audio",
   "editLinkPage_actionLabel_weblink": "Attach a web link",
   "editLinkPage_actionLabel_upload": "Upload some resource",
+  "editLinkPage_linkName_hint": "Input link name here...",
+  "editLinkPage_dialog_action_save": "Save",
+  "editLinkPage_dialog_action_delete": "Delete",
+  "editLinkPage_dialog_title": "Edit Item",
+  "editLinkPage_dialog_description_hint": "Input the descriptions here...",
+
+  "resourceList_item_noDescription_hint": "No description",
 
   "custom_dialog_action_cancel": "Cancel",
   "custom_dialog_action_delete": "Delete",

@@ -18,6 +18,7 @@
 
   "galleryPage_emptyText": "还没有链接，快去创建吧！",
   "galleryPage_popup_open": "打开",
+  "galleryPage_popup_write": "写入",
   "galleryPage_popup_delete": "删除",
 
   "settingsPage_applicationTheme_title": "应用主题",
@@ -34,12 +35,18 @@
   "editLinkPage_title": "编辑链接",
   "editLinkPage_no_content_msg": "没有内容，请添加一些。",
   "editLinkPage_success_msg": "数据已成功保存，按“确定”返回。",
-  "editLinkPage_action_save": "保存",
   "editLinkPage_actionLabel_image": "拍照",
   "editLinkPage_actionLabel_video": "录制视频",
   "editLinkPage_actionLabel_audio": "录制音频",
   "editLinkPage_actionLabel_weblink": "附加网页链接",
   "editLinkPage_actionLabel_upload": "上传资源",
+  "editLinkPage_linkName_hint": "在此输入链接名称...",
+  "editLinkPage_dialog_action_save": "保存",
+  "editLinkPage_dialog_action_delete": "删除",
+  "editLinkPage_dialog_title": "编辑",
+  "editLinkPage_dialog_description_hint": "在此输入描述...",
+
+  "resourceList_item_noDescription_hint": "无描述",
 
   "custom_dialog_action_cancel": "取消",
   "custom_dialog_action_delete": "删除",

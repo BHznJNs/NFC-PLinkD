@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:nfc_plinkd/config.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:universal_video_controls/universal_video_controls.dart';
 import 'package:universal_video_controls_video_player/universal_video_controls_video_player.dart';
 import 'package:open_file/open_file.dart';
 import 'package:video_player/video_player.dart';
+import 'package:nfc_plinkd/config.dart';
 
 Future<void> openVideoWithDefaultPlayer(BuildContext context, String path) async {
   final result = await OpenFile.open(path);

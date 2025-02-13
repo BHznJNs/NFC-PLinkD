@@ -28,20 +28,24 @@ class _ReadPageState extends State<ReadPage> {
       context,
       onRead: (data) async {
         final uri = Uri.parse(data);
-        openLinkWithUri(context, uri).then((_) => startReadingNFC());
         await stopReading?.call();
         setState(() => isReading = false);
+
+        // ignore: use_build_context_synchronously
+        await openLinkWithUri(context, uri);
+        startReadingNFC();
       },
-      onError: (e) {
+      onError: (e) async {
         final l10n = S.of(context)!;
         if (e is CustomError) {
-          showCustomError(context, e);
+          await showCustomError(context, e);
         } else if (e is FormatException) {
           final e = NFCError.NFCTagDataInvalid(context);
-          showCustomError(context, e);
+          await showCustomError(context, e);
         } else {
-          showAlert(context, l10n.readPage_readError_dialog_title, e.toString());
+          await showAlert(context, l10n.readPage_readError_dialog_title, e.toString());
         }
+        startReadingNFC();
       }
     );
     setState(() => isReading = true);

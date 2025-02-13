@@ -21,14 +21,14 @@ class LinkEditView extends StatefulWidget {
     required this.title,
     this.initialResources,
     this.resourcePickerResult,
-    this.linkId,
+    this.link,
   }) : assert(initialResources != null || resourcePickerResult != null,
         'Either `initialResources` or `resourcePickerResult` must be provided');
 
   final List<ResourceModel>? initialResources;
   final ResourcePickerResult? resourcePickerResult;
   final String title;
-  final String? linkId;
+  final LinkModel? link;
 
   @override
   State<StatefulWidget> createState() => _LinkEditViewState();
@@ -36,14 +36,23 @@ class LinkEditView extends StatefulWidget {
 
 class _LinkEditViewState extends State<LinkEditView> {
   final ImagePicker picker = ImagePicker();
-  late String id = widget.linkId ?? Uuid().v4();
+  late String id = widget.link?.id ?? Uuid().v4();
+
   late bool isCreateView = widget.resourcePickerResult != null;
   late bool isReadView = widget.initialResources != null;
   late List<ResourceModel> resources;
 
-  static Future<void> writeIntoDatabase(String id, List<ResourceModel> resources, bool isUpdate) async {
+  Future<void> writeIntoDatabase({bool isUpdate = false}) async {
     final now = DateTime.now().millisecondsSinceEpoch;
-    final link = LinkModel(id: id, createTime: now, modifyTime: now);
+    final linkName = linkNameController.text.isNotEmpty
+      ? linkNameController.text
+      : null;
+    final link = LinkModel(
+      id: id,
+      name: linkName,
+      createTime: now,
+      modifyTime: now,
+    );
     final processedResources = await copyResourcesToAppDir(id, resources);
     isUpdate
       ? await DatabaseHelper.instance.updateLink(link, processedResources)
@@ -71,11 +80,12 @@ class _LinkEditViewState extends State<LinkEditView> {
       return;
     }
     if (isReadView) {
-      await writeIntoDatabase(id, resources, true);
-      if (!mounted) return;
-      await showSuccessMsg(context,
-        text: l10n.editLinkPage_success_msg,
-      );
+      await Future.wait([
+        writeIntoDatabase(isUpdate: true),
+        showSuccessMsg(context,
+          text: l10n.editLinkPage_success_msg,
+        ),
+      ]);
       if (mounted) Navigator.of(context).pop();
       return;
     }
@@ -94,11 +104,12 @@ class _LinkEditViewState extends State<LinkEditView> {
         onWrite: () async {
           Navigator.of(context).pop();
           await Future.wait([
-            writeIntoDatabase(id, resources, false),
+            writeIntoDatabase(),
             showSuccessMsg(context,
               text: l10n.editLinkPage_success_msg,
             ),
           ]);
+          // when successfully saved, close this page
           if (mounted) Navigator.of(context).pop();
         },
         onError: (e) {
@@ -110,6 +121,28 @@ class _LinkEditViewState extends State<LinkEditView> {
       await showNFCApproachingAlert(context);
       await stopWriting();
     }
+  }
+
+  bool isEditingLinkName = false;
+  final linkNameFocusNode = FocusNode();
+  late TextEditingController linkNameController =
+    TextEditingController(text: widget.link?.name);
+  Widget linkNameEditorBuilder() {
+    final l10n = S.of(context)!;
+    return TextField(
+      maxLines: 1,
+      autofocus: true,
+      controller: linkNameController,
+      focusNode: linkNameFocusNode,
+      decoration: InputDecoration(
+        hintText: l10n.editLinkPage_linkName_hint,
+        suffixIcon: IconButton(
+          onPressed: () => linkNameController.clear(),
+          icon: Icon(Icons.delete),
+        ),
+      ),
+      onTapOutside: (_) => linkNameFocusNode.unfocus(),
+    );
   }
 
   @override
@@ -177,11 +210,24 @@ class _LinkEditViewState extends State<LinkEditView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
-        actions: [TextButton(
-          onPressed: saveLinkData,
-          child: Text(l10n.editLinkPage_action_save),
-        )],
+        title: isEditingLinkName
+          ? linkNameEditorBuilder()
+          : Text(widget.title),
+        actions: [
+          isEditingLinkName 
+            ? IconButton(
+                onPressed: () => setState(() => isEditingLinkName = false),
+                icon: const Icon(Icons.close),
+              )
+            : IconButton(
+                onPressed: () => setState(() => isEditingLinkName = true),
+                icon: const Icon(Icons.edit),
+              ),
+          IconButton(
+            onPressed: saveLinkData,
+            icon: const Icon(Icons.check),
+          ),
+        ],
       ),
       floatingActionButton: EnhancedSpeedDial(
         speedDialChildren,
