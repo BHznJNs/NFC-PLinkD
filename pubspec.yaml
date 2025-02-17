@@ -65,6 +65,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
+  flutter_fgbg: ^0.7.1
 
 dev_dependencies:
   flutter_test:

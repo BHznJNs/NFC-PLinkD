@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:app_links/app_links.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
  
 import 'package:nfc_plinkd/config.dart';
@@ -26,12 +27,21 @@ class MyApp extends StatefulWidget {
   State<StatefulWidget> createState() => MyAppState();
 }
 
-class MyAppState extends State<MyApp> with WidgetsBindingObserver {
+class MyAppState extends State<MyApp> {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>(); 
-  late AppLinks appLinks;
-  late StreamSubscription intentSubscription;
+  late StreamSubscription<List<SharedMediaFile>> sharedSubscription;
   late StreamSubscription<Uri> linkSubscription;
+  late StreamSubscription<FGBGType> fgbgSubscription;
   bool isInForeground = true;
+
+  Future<void> initFgbg() async {
+    fgbgSubscription = FGBGEvents.instance.stream.listen((event) {
+      isInForeground = switch(event) {
+        FGBGType.foreground => true,
+        FGBGType.background => false,
+      };
+    });
+  }
 
   Future<void> initMediaSharing() async {
     ResourcePickerResult resolveSharedFiles(List<SharedMediaFile> sharedFiles) {
@@ -60,7 +70,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
       );
       ReceiveSharingIntent.instance.reset();
     });
-    intentSubscription = ReceiveSharingIntent.instance.getMediaStream().listen((sharedFiles) {
+    sharedSubscription = ReceiveSharingIntent.instance.getMediaStream().listen((sharedFiles) {
       final resources = resolveSharedFiles(sharedFiles);
       if (navigatorKey.currentContext == null) return;
       if (resources.isEmpty) return;
@@ -77,13 +87,14 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   Future<void> initDeepLinks() async {
-    appLinks = AppLinks();
+    final appLinks = AppLinks();
+
     appLinks.getInitialLink().then((uri) {
       if (uri == null) return;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (navigatorKey.currentContext == null) return;
         openLinkWithUri(navigatorKey.currentContext!, uri)
-          .onError((error, _) => {/* do nothing */});
+          .onError((error, _) {/* do nothing */});
       });
     });
     linkSubscription = appLinks.uriLinkStream.listen((uri) {
@@ -97,7 +108,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
+    initFgbg();
     initDeepLinks();
     initMediaSharing();
   }
@@ -105,16 +116,9 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void dispose() {
     linkSubscription.cancel();
-    intentSubscription.cancel();
-    WidgetsBinding.instance.removeObserver(this);
+    sharedSubscription.cancel();
+    fgbgSubscription.cancel();
     super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    isInForeground =
-      state == AppLifecycleState.resumed ||
-      state == AppLifecycleState.inactive;
   }
 
   @override
