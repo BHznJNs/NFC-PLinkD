@@ -245,6 +245,30 @@ abstract class S {
   /// **'Or use system default player'**
   String get settingsPage_useBuiltinAudioPlayer_description;
 
+  /// No description provided for @settingsPage_exportData_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Data'**
+  String get settingsPage_exportData_title;
+
+  /// No description provided for @settingsPage_exportData_generatingArchive.
+  ///
+  /// In en, this message translates to:
+  /// **'Packing data, please wait...'**
+  String get settingsPage_exportData_generatingArchive;
+
+  /// No description provided for @settingsPage_exportData_successMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data was saved successfully.'**
+  String get settingsPage_exportData_successMsg;
+
+  /// No description provided for @settingsPage_importData_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Data'**
+  String get settingsPage_importData_title;
+
   /// No description provided for @recorderPage_title.
   ///
   /// In en, this message translates to:

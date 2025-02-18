@@ -84,6 +84,18 @@ class SEn extends S {
   String get settingsPage_useBuiltinAudioPlayer_description => 'Or use system default player';
 
   @override
+  String get settingsPage_exportData_title => 'Export Data';
+
+  @override
+  String get settingsPage_exportData_generatingArchive => 'Packing data, please wait...';
+
+  @override
+  String get settingsPage_exportData_successMsg => 'Your data was saved successfully.';
+
+  @override
+  String get settingsPage_importData_title => 'Import Data';
+
+  @override
   String get recorderPage_title => 'Record a Audio';
 
   @override

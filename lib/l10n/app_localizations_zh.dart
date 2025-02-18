@@ -84,6 +84,18 @@ class SZh extends S {
   String get settingsPage_useBuiltinAudioPlayer_description => '或使用系统默认播放器';
 
   @override
+  String get settingsPage_exportData_title => '导出数据';
+
+  @override
+  String get settingsPage_exportData_generatingArchive => '正在整理文件，请稍候…';
+
+  @override
+  String get settingsPage_exportData_successMsg => '你的数据已成功保存。';
+
+  @override
+  String get settingsPage_importData_title => '导入数据';
+
+  @override
   String get recorderPage_title => '录制音频';
 
   @override

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:nfc_plinkd/components/custom_dialog.dart';
@@ -55,20 +57,27 @@ class _GalleryPageState extends State<GalleryPage> {
     final dataToWrite = [NdefRecord.createUri(linkUri)];
 
     if (!mounted) return;
-    final stopWriting = await tryWriteNFCData(
-      context, dataToWrite,
-      onWrite: () async {
-        Navigator.of(context).pop();
-        await showSuccessMsg(context, text: l10n.editLinkPage_success_msg);
+    Function? stopWriting;
+    final isWriten = await showWaitingDialog(context,
+      title: l10n.custom_dialog_nfc_approach_title,
+      task: () async {
+        final completer = Completer();
+        stopWriting = await tryWriteNFCData(
+          context, dataToWrite,
+          onWrite: () => completer.complete(true),
+          onError: (e) {
+            Navigator.of(context).pop();
+            showCustomError(context, e);
+            completer.complete(false);
+          }
+        );
+        return completer.future;
       },
-      onError: (e) {
-        Navigator.of(context).pop();
-        showCustomError(context, e);
-      }
+      onCanceled: () => false,
     );
-    if (!mounted) return;
-    await showNFCApproachingAlert(context);
-    await stopWriting();
+    await stopWriting?.call();
+    if (!isWriten) return;
+    if (mounted) await showSuccessMsg(context, text: l10n.editLinkPage_success_msg);
   }
 
   Future<void> deleteLink(int index) async {

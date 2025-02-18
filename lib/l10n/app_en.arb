@@ -29,6 +29,10 @@
   "settingsPage_useBuiltinVideoPlayer_description": "Or use system default player",
   "settingsPage_useBuiltinAudioPlayer_title": "Use built-in audio player",
   "settingsPage_useBuiltinAudioPlayer_description": "Or use system default player",
+  "settingsPage_exportData_title": "Export Data",
+  "settingsPage_exportData_generatingArchive": "Packing data, please wait...",
+  "settingsPage_exportData_successMsg": "Your data was saved successfully.",
+  "settingsPage_importData_title": "Import Data",
 
   "recorderPage_title": "Record a Audio",
 

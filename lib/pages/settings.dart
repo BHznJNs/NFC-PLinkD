@@ -1,6 +1,12 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:nfc_plinkd/components/custom_dialog.dart';
+import 'package:nfc_plinkd/components/snackbar.dart';
 import 'package:nfc_plinkd/config.dart';
 import 'package:nfc_plinkd/l10n/app_localizations.dart';
+import 'package:nfc_plinkd/utils/file.dart';
+import 'package:nfc_plinkd/utils/permission.dart';
+import 'package:path/path.dart' as path;
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -36,6 +42,28 @@ class _SettingsPageState extends State<SettingsPage> {
   Future<void> setUseBuiltinAudioPlayer() async {
     await Configuration.useBuiltinAudioPlayer.save(!useBuiltinAudioPlayer);
     setState(() => useBuiltinAudioPlayer = !useBuiltinAudioPlayer );
+  }
+
+  Future<void> exportData() async {
+    final l10n = S.of(context)!;
+
+    final hasPermission = await requestWritingPermission();
+    if (!hasPermission) return;
+
+    if (!mounted) return;
+    final archiveFile = await showWaitingDialog(context,
+      title: l10n.settingsPage_exportData_generatingArchive,
+      task: creatBackupArchive
+    );
+    if (archiveFile == null) return;
+
+    final directoryPath = await FilePicker.platform.getDirectoryPath();
+    if (directoryPath == null) return;
+
+    final targetPath = path.join(directoryPath, path.basename(archiveFile.path));
+    archiveFile.copySync(targetPath);
+    archiveFile.deleteSync();
+    if (mounted) showInfoSnackBar(context, l10n.settingsPage_exportData_successMsg);
   }
 
   @override
@@ -79,6 +107,16 @@ class _SettingsPageState extends State<SettingsPage> {
             onChanged: (_) => setUseBuiltinAudioPlayer(),
           ),
         ),
+        _SettingItem(
+          title: l10n.settingsPage_exportData_title,
+          icon: Icons.download,
+          onTap: exportData,
+        ),
+        _SettingItem(
+          title: l10n.settingsPage_importData_title,
+          icon: Icons.upload,
+          onTap: () {},
+        ),
       ],
     );
   }
@@ -88,8 +126,8 @@ class _SettingItem extends StatelessWidget {
   const _SettingItem({
     required this.title,
     required this.icon,
-    required this.editor,
     required this.onTap,
+    this.editor,
     this.description,
   });
 
@@ -97,7 +135,7 @@ class _SettingItem extends StatelessWidget {
   final String? description;
   final IconData icon;
   final VoidCallback onTap;
-  final Widget editor;
+  final Widget? editor;
 
   @override
   Widget build(BuildContext context) {

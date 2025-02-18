@@ -1,17 +1,31 @@
 import 'package:permission_handler/permission_handler.dart';
 
-Future<void> requestRecordingPermission({
-  required Function onGranted,
-  required Function onDenied,
+Future<bool> requestRecordingPermission({
   Function? onPermanentlyDenied,
 }) async {
-  PermissionStatus status = await Permission.microphone.request();
+  final status = await Permission.microphone.request();
 
-  if (status.isGranted) {
-    onGranted();
-  } else if (status.isDenied) {
-    onDenied();
-  } else if (status.isPermanentlyDenied) {
-    (onPermanentlyDenied ?? openAppSettings)();
+  switch (status) {
+    case PermissionStatus.denied: return false;
+    case PermissionStatus.granted: return true;
+    case PermissionStatus.permanentlyDenied:
+      (onPermanentlyDenied ?? openAppSettings)();
+      return false;
+    default: return false;
+  }
+}
+
+Future<bool> requestWritingPermission({
+  Function? onPermanentlyDenied,
+}) async {
+  final status = await Permission.storage.request();
+
+  switch (status) {
+    case PermissionStatus.denied: return false;
+    case PermissionStatus.granted: return true;
+    case PermissionStatus.permanentlyDenied:
+      (onPermanentlyDenied ?? openAppSettings)();
+      return false;
+    default: return false;
   }
 }

@@ -29,6 +29,10 @@
   "settingsPage_useBuiltinVideoPlayer_description": "或使用系统默认播放器",
   "settingsPage_useBuiltinAudioPlayer_title": "使用内置音频播放器",
   "settingsPage_useBuiltinAudioPlayer_description": "或使用系统默认播放器",
+  "settingsPage_exportData_title": "导出数据",
+  "settingsPage_exportData_successMsg": "你的数据已成功保存。",
+  "settingsPage_exportData_generatingArchive": "正在整理文件，请稍候…",
+  "settingsPage_importData_title": "导入数据",
 
   "recorderPage_title": "录制音频",
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:nfc_plinkd/l10n/app_localizations.dart';
 import 'package:nfc_plinkd/components/custom_textfield.dart';
@@ -51,6 +53,43 @@ Future<void> showSuccessMsg(BuildContext context, { String? text }) async {
   );
 }
 
+Future<T?> showWaitingDialog<T>(BuildContext context, {
+  required String title,
+  required Future<T> Function() task,
+  FutureOr<T?> Function()? onCanceled,
+}) async {
+  final l10n = S.of(context)!;
+  final completer = Completer<T>();
+  final cancelButton = TextButton(
+    onPressed: () async {
+      Navigator.of(context).pop();
+      final result = await onCanceled?.call();
+      completer.complete(result);
+    },
+    child: Text(l10n.custom_dialog_action_cancel),
+  );
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) => AlertDialog.adaptive(
+      title: Text(title),
+      content: Container(
+        height: 40,
+        margin: const EdgeInsets.symmetric(vertical: 16),
+        child: const Center(
+          child: CircularProgressIndicator.adaptive(),
+        )
+      ),
+      actions: [cancelButton],
+    ),
+  );
+  task().then((result) {
+    if (context.mounted) Navigator.of(context).pop();
+    completer.complete(result);
+  });
+  return completer.future;
+}
+
 Future<bool> showDeleteDialog(BuildContext context) async {
   final l10n = S.of(context)!;
   final cancelButton = TextButton(
@@ -76,29 +115,6 @@ Future<bool> showDeleteDialog(BuildContext context) async {
   );
   if (result == null) return false;
   return result as bool;
-}
-
-Future<void> showNFCApproachingAlert(BuildContext context) async {
-  final l10n = S.of(context)!;
-  await showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog.adaptive(
-        title: Text(l10n.custom_dialog_nfc_approach_title),
-        content: Container(
-          height: 40,
-          margin: const EdgeInsets.symmetric(vertical: 16),
-          child: const Center(
-            child: CircularProgressIndicator.adaptive(),
-          )
-        ),
-        actions: [TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.custom_dialog_action_cancel)
-        )],
-      );
-    },
-  );
 }
 
 // --- --- --- --- --- ---

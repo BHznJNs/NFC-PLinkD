@@ -17,6 +17,13 @@ String formatTimestampToLocalizedDate(BuildContext context, int timestampMillise
   return formattedDate;
 }
 
+String formatDateTimeToHyphenSeparated(DateTime date) {
+  return [
+    date.year, date.month,  date.day,
+    date.hour, date.minute, date.second,
+  ].join('-');
+}
+
 String formatTimestampToHourMinute(int timestampMilliseconds, {String? locale}) {
   DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestampMilliseconds);
   final formatter = DateFormat.Hm(locale);

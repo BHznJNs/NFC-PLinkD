@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:nfc_plinkd/components/custom_button.dart';
@@ -66,18 +67,19 @@ class _RecorderState extends State<Recorder> {
             waveform,
             Expanded(child: Container()),
             _TimerButton(
-              onStart: () {
-                requestRecordingPermission(
-                  onGranted: () async {
-                    timer.onStartTimer();
-                    recorderController.record(
-                      sampleRate: 44100,
-                      bitRate: 128 * 1000,
-                      path: '${(await getDownloadsDirectory())!.path}/test.m4a'
-                    );
-                  },
-                  onDenied: () =>
-                    Navigator.of(context).pop(),
+              onStart: () async {
+                final hasPermission = await requestRecordingPermission();
+                if (!hasPermission) {
+                  if (!context.mounted) return;
+                  Navigator.of(context).pop();
+                }
+
+                final targetPath = path.join((await getTemporaryDirectory()).path, 'temp.m4a');
+                timer.onStartTimer();
+                recorderController.record(
+                  sampleRate: 44100,
+                  bitRate: 128 * 1000,
+                  path: targetPath,
                 );
               },
               onPause: () {

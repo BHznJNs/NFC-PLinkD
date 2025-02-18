@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:nfc_manager/nfc_manager.dart';
@@ -80,12 +82,8 @@ class _LinkEditViewState extends State<LinkEditView> {
       return;
     }
     if (isReadView) {
-      await Future.wait([
-        writeIntoDatabase(isUpdate: true),
-        showSuccessMsg(context,
-          text: l10n.editLinkPage_success_msg,
-        ),
-      ]);
+      await writeIntoDatabase(isUpdate: true);
+      if (mounted) await showSuccessMsg(context, text: l10n.editLinkPage_success_msg);
       if (mounted) Navigator.of(context).pop();
       return;
     }
@@ -98,28 +96,33 @@ class _LinkEditViewState extends State<LinkEditView> {
       }
       final linkUri = linkIdUriFactory(id);
       final dataToWrite = [NdefRecord.createUri(linkUri)];
+      
       if (!mounted) return;
-      final stopWriting = await tryWriteNFCData(
-        context, dataToWrite,
-        onWrite: () async {
-          Navigator.of(context).pop();
-          await Future.wait([
-            writeIntoDatabase(),
-            showSuccessMsg(context,
-              text: l10n.editLinkPage_success_msg,
-            ),
-          ]);
-          // when successfully saved, close this page
-          if (mounted) Navigator.of(context).pop();
+
+      Function? stopWriting;
+      final isWriten = await showWaitingDialog(context,
+        title: l10n.custom_dialog_nfc_approach_title,
+        task: () async {
+          final completer = Completer();
+          stopWriting = await tryWriteNFCData(context, dataToWrite,
+            onWrite: () async {
+              await writeIntoDatabase();
+              completer.complete(true);
+            },
+            onError: (e) {
+              Navigator.of(context).pop();
+              showCustomError(context, e);
+              completer.complete(false);
+            }
+          );
+          return completer.future;
         },
-        onError: (e) {
-          Navigator.of(context).pop();
-          showCustomError(context, e);
-        }
+        onCanceled: () => false,
       );
-      if (!mounted) return;
-      await showNFCApproachingAlert(context);
-      await stopWriting();
+      await stopWriting?.call();
+      if (!isWriten) return;
+      if (mounted) await showSuccessMsg(context, text: l10n.editLinkPage_success_msg);
+      if (mounted) Navigator.of(context).pop(); // when successfully saved, close this page
     }
   }
 
