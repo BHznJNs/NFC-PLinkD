@@ -7,7 +7,7 @@ import 'package:uuid/uuid.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:nfc_plinkd/components/custom_button.dart';
-import 'package:nfc_plinkd/components/resource_list_view.dart';
+import 'package:nfc_plinkd/pages/resource_view/resource_list_view.dart';
 import 'package:nfc_plinkd/components/snackbar.dart';
 import 'package:nfc_plinkd/components/custom_dialog.dart';
 import 'package:nfc_plinkd/db.dart';

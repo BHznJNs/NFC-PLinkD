@@ -66,6 +66,8 @@ class _ConfigurationEnumItem<T extends Enum> extends _ConfigurationItem<Enum> {
   }
 }
 
+// --- --- --- --- --- ---
+
 enum ConfigTheme {
   dark,
   light,
@@ -84,12 +86,38 @@ enum ConfigTheme {
 }
 enum ConfigLanguage {
   simplifiedChinese,
-  traditionalChinese,
+  // traditionalChinese,
   english,
   system;
 
   static ConfigLanguage fromName(String name) {
     return ConfigLanguage.values.byName(name);
+  }
+
+  static ConfigLanguage fromLocale(Locale locale) {
+    if (locale.languageCode == 'en') {
+      return ConfigLanguage.english;
+    } else
+    if (locale.languageCode == 'zh') {
+      return ConfigLanguage.simplifiedChinese;
+    }
+    throw Exception('Unresolved locale: $locale');
+  }
+
+  Locale? toLocale() {
+    switch (this) {
+      case ConfigLanguage.simplifiedChinese: return Locale('zh', 'CN');
+      case ConfigLanguage.english: return Locale('en');
+      case ConfigLanguage.system: return null;
+    }
+  }
+
+  String toLanguageDisplayName() {
+    switch (this) {
+      case ConfigLanguage.simplifiedChinese: return '简体中文';
+      case ConfigLanguage.english: return 'English';
+      default: throw Exception('Unresolved locale: $this');
+    }
   }
 }
 

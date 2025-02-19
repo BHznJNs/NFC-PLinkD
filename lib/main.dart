@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:app_links/app_links.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
+import 'package:nfc_plinkd/providers/language_provider.dart';
+import 'package:nfc_plinkd/providers/theme_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
  
 import 'package:nfc_plinkd/config.dart';
@@ -14,14 +17,15 @@ import 'package:nfc_plinkd/l10n/app_localizations.dart';
 import 'package:nfc_plinkd/pages/create.dart';
 import 'package:nfc_plinkd/pages/gallery.dart';
 import 'package:nfc_plinkd/pages/read.dart';
-import 'package:nfc_plinkd/pages/settings.dart';
+import 'package:nfc_plinkd/pages/settings/settings.dart';
 import 'package:nfc_plinkd/utils/open_link.dart';
 import 'package:nfc_plinkd/utils/media/picker.dart';
 
 class MyApp extends StatefulWidget {
-  const MyApp(this.theme, {super.key});
+  const MyApp({super.key});
 
-  final ConfigTheme? theme;
+  // final ConfigTheme? theme;
+  // final ConfigLanguage? language;
 
   @override
   State<StatefulWidget> createState() => MyAppState();
@@ -123,8 +127,9 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final sharedDrawer = ScaffoldDrawer();
-    final colorTheme = Colors.blue;
+    const sharedDrawer = ScaffoldDrawer();
+    const colorTheme = Colors.blue;
+
     final defaultLightColorScheme = ColorScheme.fromSeed(
       seedColor: colorTheme,
       brightness: Brightness.light,
@@ -156,6 +161,9 @@ class MyAppState extends State<MyApp> {
       ),
     };
 
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
         final lightColorScheme = lightDynamic ?? defaultLightColorScheme;
@@ -164,9 +172,11 @@ class MyAppState extends State<MyApp> {
           onGenerateTitle: (BuildContext context) {
             return S.of(context)?.appTitle ?? 'NFC PLinkD';
           },
-          navigatorKey: navigatorKey,
+          locale: languageProvider.language.toLocale(),
           localizationsDelegates: S.localizationsDelegates,
           supportedLocales: S.supportedLocales,
+          navigatorKey: navigatorKey,
+
           theme: ThemeData(
             useMaterial3: true,
             colorScheme: lightColorScheme,
@@ -178,11 +188,11 @@ class MyAppState extends State<MyApp> {
               color: Color.lerp(darkColorScheme.surface, Colors.white, 0.06),
             ),
           ),
-          themeMode: widget.theme?.toThemeMode() ?? ThemeMode.system,
+          themeMode: themeProvider.theme.toThemeMode(),
           initialRoute: '/create',
           routes: routes,
         );
-      } 
+      }
     );
   }
 }
@@ -190,14 +200,29 @@ class MyAppState extends State<MyApp> {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final [isFirstLaunch, theme] = await Future.wait([
+  final [isFirstLaunch, theme, language] = await Future.wait([
     Configuration.isFirstLaunch,
     Configuration.theme.read(),
+    Configuration.language.read(),
   ]);
-  if (isFirstLaunch as bool) {
-    await Configuration.init();
-    runApp(const MyApp(null));
-  } else {
-    runApp(MyApp(theme as ConfigTheme));
-  }
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) =>
+          LanguageProvider(language as ConfigLanguage?)),
+        ChangeNotifierProvider(create: (_) =>
+          ThemeProvider(theme as ConfigTheme?)),
+      ],
+      child: const MyApp(),
+    ),
+  );
+  // if (isFirstLaunch as bool) {
+  //   await Configuration.init();
+  //   runApp(const MyApp());
+  // } else {
+  //   runApp(MyApp(
+  //     theme: theme as ConfigTheme,
+  //     language: language as ConfigLanguage,
+  //   ));
+  // }
 }

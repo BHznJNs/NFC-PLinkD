@@ -67,6 +67,7 @@ dependencies:
   intl: any
   flutter_fgbg: ^0.7.1
   archive: ^4.0.2
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:

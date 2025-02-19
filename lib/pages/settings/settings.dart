@@ -7,10 +7,14 @@ import 'package:nfc_plinkd/components/snackbar.dart';
 import 'package:nfc_plinkd/config.dart';
 import 'package:nfc_plinkd/db.dart';
 import 'package:nfc_plinkd/l10n/app_localizations.dart';
+import 'package:nfc_plinkd/pages/settings/language_settings.dart';
+import 'package:nfc_plinkd/providers/language_provider.dart';
+import 'package:nfc_plinkd/providers/theme_provider.dart';
 import 'package:nfc_plinkd/utils/file.dart';
 import 'package:nfc_plinkd/utils/index.dart';
 import 'package:nfc_plinkd/utils/permission.dart';
 import 'package:path/path.dart' as path;
+import 'package:provider/provider.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -36,7 +40,9 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> setTheme(ConfigTheme newTheme) async {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     await Configuration.theme.save(newTheme);
+    themeProvider.change(newTheme);
     setState(() => theme = newTheme);
   }
   Future<void> setUseBuiltinVideoPlayer() async {
@@ -46,6 +52,22 @@ class _SettingsPageState extends State<SettingsPage> {
   Future<void> setUseBuiltinAudioPlayer() async {
     await Configuration.useBuiltinAudioPlayer.save(!useBuiltinAudioPlayer);
     setState(() => useBuiltinAudioPlayer = !useBuiltinAudioPlayer );
+  }
+
+  Future<void> openLanguageSettings() async {
+    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+    final currentLanguage = await Configuration.language.read()
+      ?? ConfigLanguage.system;
+
+    if (!mounted) return;
+    final selectedLanguage = await Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) {
+        return LanguageSettings(currentLanguage);
+      })
+    ) as ConfigLanguage?;
+    if (selectedLanguage == null || selectedLanguage == currentLanguage) return;
+    await Configuration.language.save(selectedLanguage);
+    languageProvider.change(selectedLanguage);
   }
 
   Future<void> exportData() async {
@@ -172,6 +194,11 @@ class _SettingsPageState extends State<SettingsPage> {
             value: useBuiltinAudioPlayer,
             onChanged: (_) => setUseBuiltinAudioPlayer(),
           ),
+        ),
+        _SettingItem(
+          title: l10n.settingsPage_languages_title,
+          icon: Icons.language,
+          onTap: openLanguageSettings,
         ),
         _SettingItem(
           title: l10n.settingsPage_exportData_title,

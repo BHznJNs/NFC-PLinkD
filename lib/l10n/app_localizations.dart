@@ -92,7 +92,8 @@ abstract class S {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
-    Locale('zh')
+    Locale('zh'),
+    Locale('zh', 'CN')
   ];
 
   /// No description provided for @appTitle.
@@ -245,6 +246,12 @@ abstract class S {
   /// **'Or use system default player'**
   String get settingsPage_useBuiltinAudioPlayer_description;
 
+  /// No description provided for @settingsPage_languages_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Languages'**
+  String get settingsPage_languages_title;
+
   /// No description provided for @settingsPage_exportData_title.
   ///
   /// In en, this message translates to:
@@ -280,6 +287,18 @@ abstract class S {
   /// In en, this message translates to:
   /// **'Data has been successfully imported.'**
   String get settingsPage_importData_successMsg;
+
+  /// No description provided for @settingsPage_languageSettingsPage_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Languages'**
+  String get settingsPage_languageSettingsPage_title;
+
+  /// No description provided for @settingsPage_languageSettingsPage_useDevideLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Use device language'**
+  String get settingsPage_languageSettingsPage_useDevideLanguage;
 
   /// No description provided for @recorderPage_title.
   ///
@@ -545,6 +564,15 @@ class _SDelegate extends LocalizationsDelegate<S> {
 
 S lookupS(Locale locale) {
 
+  // Lookup logic when language+country codes are specified.
+  switch (locale.languageCode) {
+    case 'zh': {
+  switch (locale.countryCode) {
+    case 'CN': return SZhCn();
+   }
+  break;
+   }
+  }
 
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {

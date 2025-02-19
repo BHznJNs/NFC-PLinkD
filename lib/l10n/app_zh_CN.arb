@@ -1,5 +1,5 @@
 {
-  "@@locale": "zh",
+  "@@locale": "zh_CN",
   "appTitle": "电纸链接",
   "drawer_createPage": "创建链接",
   "drawer_readPage": "读取链接",
