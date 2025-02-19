@@ -10,3 +10,17 @@
 </div>
 
 An **NFC** application that helps you create **link**s between your **p**aper materials and **d**igital resources.
+
+## 🖼️ Screenshots
+
+☀️ Light mode:
+
+| Creating | Reading | Gallery | Settings |
+| -------- | ------- | ------- | -------- |
+| ![creating screenshot](docs/screenshots/creating-page_light_en.jpg) | ![reading screenshot](docs/screenshots/reading-page_light_en.jpg) | ![gallery screenshot](docs/screenshots/gallery-page_light_en.jpg) | ![settings screenshot](docs/screenshots/settings-page_light_en.jpg) |
+
+🌙 Dark mode:
+
+| Creating | Reading | Gallery | Settings |
+| -------- | ------- | ------- | -------- |
+| ![creating screenshot](docs/screenshots/creating-page_dark_en.jpg) | ![reading screenshot](docs/screenshots/reading-page_dark_en.jpg) | ![gallery screenshot](docs/screenshots/gallery-page_dark_en.jpg) | ![settings screenshot](docs/screenshots/settings-page_dark_en.jpg) |
