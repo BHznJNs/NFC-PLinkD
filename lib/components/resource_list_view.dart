@@ -38,17 +38,13 @@ class _ResourceListViewState extends State<ResourceListView> {
   }
 
   void deleteItem(int index) {
-    setState(() {
-      resources.removeAt(index);
-    });
-  }
-
-  Widget proxyDecorator(Widget child, int index, Animation<double> animation) {
-    return child;
+    setState(() => resources.removeAt(index));
   }
 
   @override
   Widget build(BuildContext context) {
+    Widget proxyDecorator(Widget child, int index, Animation<double> animation) => child;
+
     return ReorderableListView.builder(
       buildDefaultDragHandles: false,
       proxyDecorator: proxyDecorator,

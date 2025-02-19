@@ -96,6 +96,12 @@ class SZh extends S {
   String get settingsPage_importData_title => '导入数据';
 
   @override
+  String get settingsPage_importData_processingArchive => 'Processing data, please wait...';
+
+  @override
+  String get settingsPage_importData_successMsg => 'Data has been successfully imported.';
+
+  @override
   String get recorderPage_title => '录制音频';
 
   @override
@@ -147,6 +153,9 @@ class SZh extends S {
   String get custom_dialog_action_delete => '删除';
 
   @override
+  String get custom_dialog_action_copyErrMsg => 'Copy error message';
+
+  @override
   String get custom_dialog_action_confirm => '确认';
 
   @override
@@ -168,41 +177,50 @@ class SZh extends S {
   String get custom_dialog_success_title => '成功';
 
   @override
+  String get custom_dialog_unexpectedError_title => 'Unexpected Error';
+
+  @override
   String get custom_dialog_nfc_approach_title => '靠近 NFC 标签';
 
   @override
-  String get nfc_error_function_disabled_title => 'NFC 功能已禁用';
+  String get nfcError_function_disabled_title => 'NFC Function Disabled';
 
   @override
-  String get nfc_error_function_disabled_content => '请启用手机的 NFC 功能后重试。';
+  String get nfcError_function_disabled_content => 'Please enable the NFC function of your phone and retry.';
 
   @override
-  String get nfc_error_tag_unusable_title => 'NFC 标签不可用';
+  String get nfcError_tag_unusable_title => 'NFC Tag Unusable';
 
   @override
-  String get nfc_error_tag_unusable_content => '靠近的 NFC 标签不可读写，可能已锁定或不支持 NDEF。';
+  String get nfcError_tag_unusable_content => 'The approached NFC tag is not writable or readable, it may be locked or does not support NDEF.';
 
   @override
-  String get nfc_error_tag_write_failed_title => 'NFC 写入失败';
+  String get nfcError_tag_write_failed_title => 'NFC Write Failed';
 
   @override
-  String get nfc_error_tag_write_failed_content => '写入 NFC 标签时发生错误，请重试。';
+  String get nfcError_tag_write_failed_content => 'An error occurred while writing to the NFC tag. Please try again.';
 
   @override
-  String get nfc_error_tag_data_invalid_title => 'NFC 标签数据无效';
+  String get nfcError_tag_data_invalid_title => 'NFC Tag Data Invalid';
 
   @override
-  String get nfc_error_tag_data_invalid_content => '从 NFC 标签读取的数据格式不符合预期。它可能不是有效的 URI，或与本应用不兼容。请确保标签包含正确的数据类型。';
+  String get nfcError_tag_data_invalid_content => 'The data read from the NFC tag is not in the expected format. It may not be a valid URI or not compatible with this application. Please ensure the tag contains the correct data type for this app.';
 
   @override
-  String get nfc_error_tag_formated_title => 'NFC 标签已格式化';
+  String get nfcError_tag_formated_title => 'NFC Tag Formated';
 
   @override
-  String get nfc_error_tag_formated_content => '靠近的 NFC 标签已格式化，请再次靠近以写入数据。';
+  String get nfcError_tag_formated_content => 'The approached NFC tag is formated, please approach again to write data.';
 
   @override
-  String get nfc_error_tag_empty_title => 'NFC 标签为空';
+  String get nfcError_tag_empty_title => 'NFC Tag Empty';
 
   @override
-  String get nfc_error_tag_empty_content => '靠近的 NFC 标签为空。';
+  String get nfcError_tag_empty_content => 'The approached NFC tag is empty.';
+
+  @override
+  String get importError_invalidData_title => 'Invalid Data';
+
+  @override
+  String get importError_invalidData_content => 'It appears the selected file is not a valid NFC PLinkD data file. Please try importing the correct file.';
 }

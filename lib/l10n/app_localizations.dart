@@ -269,6 +269,18 @@ abstract class S {
   /// **'Import Data'**
   String get settingsPage_importData_title;
 
+  /// No description provided for @settingsPage_importData_processingArchive.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing data, please wait...'**
+  String get settingsPage_importData_processingArchive;
+
+  /// No description provided for @settingsPage_importData_successMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Data has been successfully imported.'**
+  String get settingsPage_importData_successMsg;
+
   /// No description provided for @recorderPage_title.
   ///
   /// In en, this message translates to:
@@ -371,6 +383,12 @@ abstract class S {
   /// **'Delete'**
   String get custom_dialog_action_delete;
 
+  /// No description provided for @custom_dialog_action_copyErrMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy error message'**
+  String get custom_dialog_action_copyErrMsg;
+
   /// No description provided for @custom_dialog_action_confirm.
   ///
   /// In en, this message translates to:
@@ -413,83 +431,101 @@ abstract class S {
   /// **'Success'**
   String get custom_dialog_success_title;
 
+  /// No description provided for @custom_dialog_unexpectedError_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected Error'**
+  String get custom_dialog_unexpectedError_title;
+
   /// No description provided for @custom_dialog_nfc_approach_title.
   ///
   /// In en, this message translates to:
   /// **'Approach an NFC Tag'**
   String get custom_dialog_nfc_approach_title;
 
-  /// No description provided for @nfc_error_function_disabled_title.
+  /// No description provided for @nfcError_function_disabled_title.
   ///
   /// In en, this message translates to:
   /// **'NFC Function Disabled'**
-  String get nfc_error_function_disabled_title;
+  String get nfcError_function_disabled_title;
 
-  /// No description provided for @nfc_error_function_disabled_content.
+  /// No description provided for @nfcError_function_disabled_content.
   ///
   /// In en, this message translates to:
   /// **'Please enable the NFC function of your phone and retry.'**
-  String get nfc_error_function_disabled_content;
+  String get nfcError_function_disabled_content;
 
-  /// No description provided for @nfc_error_tag_unusable_title.
+  /// No description provided for @nfcError_tag_unusable_title.
   ///
   /// In en, this message translates to:
   /// **'NFC Tag Unusable'**
-  String get nfc_error_tag_unusable_title;
+  String get nfcError_tag_unusable_title;
 
-  /// No description provided for @nfc_error_tag_unusable_content.
+  /// No description provided for @nfcError_tag_unusable_content.
   ///
   /// In en, this message translates to:
   /// **'The approached NFC tag is not writable or readable, it may be locked or does not support NDEF.'**
-  String get nfc_error_tag_unusable_content;
+  String get nfcError_tag_unusable_content;
 
-  /// No description provided for @nfc_error_tag_write_failed_title.
+  /// No description provided for @nfcError_tag_write_failed_title.
   ///
   /// In en, this message translates to:
   /// **'NFC Write Failed'**
-  String get nfc_error_tag_write_failed_title;
+  String get nfcError_tag_write_failed_title;
 
-  /// No description provided for @nfc_error_tag_write_failed_content.
+  /// No description provided for @nfcError_tag_write_failed_content.
   ///
   /// In en, this message translates to:
   /// **'An error occurred while writing to the NFC tag. Please try again.'**
-  String get nfc_error_tag_write_failed_content;
+  String get nfcError_tag_write_failed_content;
 
-  /// No description provided for @nfc_error_tag_data_invalid_title.
+  /// No description provided for @nfcError_tag_data_invalid_title.
   ///
   /// In en, this message translates to:
   /// **'NFC Tag Data Invalid'**
-  String get nfc_error_tag_data_invalid_title;
+  String get nfcError_tag_data_invalid_title;
 
-  /// No description provided for @nfc_error_tag_data_invalid_content.
+  /// No description provided for @nfcError_tag_data_invalid_content.
   ///
   /// In en, this message translates to:
   /// **'The data read from the NFC tag is not in the expected format. It may not be a valid URI or not compatible with this application. Please ensure the tag contains the correct data type for this app.'**
-  String get nfc_error_tag_data_invalid_content;
+  String get nfcError_tag_data_invalid_content;
 
-  /// No description provided for @nfc_error_tag_formated_title.
+  /// No description provided for @nfcError_tag_formated_title.
   ///
   /// In en, this message translates to:
   /// **'NFC Tag Formated'**
-  String get nfc_error_tag_formated_title;
+  String get nfcError_tag_formated_title;
 
-  /// No description provided for @nfc_error_tag_formated_content.
+  /// No description provided for @nfcError_tag_formated_content.
   ///
   /// In en, this message translates to:
   /// **'The approached NFC tag is formated, please approach again to write data.'**
-  String get nfc_error_tag_formated_content;
+  String get nfcError_tag_formated_content;
 
-  /// No description provided for @nfc_error_tag_empty_title.
+  /// No description provided for @nfcError_tag_empty_title.
   ///
   /// In en, this message translates to:
   /// **'NFC Tag Empty'**
-  String get nfc_error_tag_empty_title;
+  String get nfcError_tag_empty_title;
 
-  /// No description provided for @nfc_error_tag_empty_content.
+  /// No description provided for @nfcError_tag_empty_content.
   ///
   /// In en, this message translates to:
   /// **'The approached NFC tag is empty.'**
-  String get nfc_error_tag_empty_content;
+  String get nfcError_tag_empty_content;
+
+  /// No description provided for @importError_invalidData_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Data'**
+  String get importError_invalidData_title;
+
+  /// No description provided for @importError_invalidData_content.
+  ///
+  /// In en, this message translates to:
+  /// **'It appears the selected file is not a valid NFC PLinkD data file. Please try importing the correct file.'**
+  String get importError_invalidData_content;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

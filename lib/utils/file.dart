@@ -4,18 +4,21 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:archive/archive_io.dart';
-import 'package:nfc_plinkd/utils/formatter.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:nfc_plinkd/db.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:nfc_plinkd/utils/formatter.dart';
 
 const dataDirname = 'data';
 
-Future<String> getBasePath(String id) async {
-  final idDirPath = path.join(dataDirname, id);
+Future<String> getDataPath() async {
   final appDir = await getApplicationDocumentsDirectory();
-  return path.join(appDir.path, idDirPath);
+  return path.join(appDir.path, dataDirname);
+}
+
+Future<String> getBasePath(String id) async {
+  final dataPath = await getDataPath();
+  return path.join(dataPath, id);
 }
 
 Future<List<ResourceModel>> copyResourcesToAppDir(String id, List<ResourceModel> resources) async {
@@ -43,55 +46,74 @@ Future<List<ResourceModel>> copyResourcesToAppDir(String id, List<ResourceModel>
   return resultResources;
 }
 
-Future<File> creatBackupArchive() async {
-  String getRelativePath({required Directory root, required FileSystemEntity item}) {
-    // root: the root directory to add to archive
-    // item: the file or directory to add
-    final rootPath = root.path;
-    final itemPath = item.path;
+Future<void> mergeFolder({
+  required Directory source,
+  required Directory destination,
+}) async {
+  if (!source.existsSync()) return;
 
-    if (itemPath.startsWith(rootPath)) {
-      final relativePath = itemPath
-        .substring(rootPath.length)
-        .replaceAll(r'^\/', '');
-      return relativePath;
-    } else {
-      throw Exception('The `item` is not a subitem of `root`');
+  await destination.create(recursive: true);
+  final contents = source.listSync();
+
+  for (final item in contents) {
+    final itemName = path.basename(item.path);
+    final destinationPath = path.join(destination.path, itemName);
+
+    if (item is File) {
+      await item.copy(destinationPath);
+    } else if (item is Directory) {
+      final destinationDir = Directory(destinationPath);
+      await mergeFolder(source: Directory(item.path), destination: destinationDir); // 递归合并文件夹
     }
   }
-  Future<void> addDirectoryToArchive(Archive archive, Directory directory) async {
-    List<FileSystemEntity> items = directory.listSync();
-    for (FileSystemEntity item in items) {
-      if (item is File) {
-        final fileBytes = await item.readAsBytes();
-        final relativePath = getRelativePath(root: directory, item: item);
-        archive.add(ArchiveFile.typedData(relativePath, fileBytes));
-      } else if (item is Directory) {
-        await addDirectoryToArchive(archive, item);
-      }
-    }
-  }
+}
 
-  final archive = Archive();
+Future<String> creatBackupArchive() async {
+  const archiveFilePrefix = 'NFC-PLinkD-archive';
 
-  final dbFile = File(await getDatabasesPath());
-  if (dbFile.existsSync()) {
-    final dbBytes = await dbFile.readAsBytes();
-    archive.addFile(ArchiveFile.typedData(DatabaseHelper.dbName, dbBytes));
-  }
-
-  final appDir = await getApplicationDocumentsDirectory();
-  final dataDir = Directory(path.join(appDir.path, dataDirname));
-  await addDirectoryToArchive(archive, dataDir);
-
-  final encoder = ZipEncoder();
-  final zipBytes = encoder.encode(archive);
+  print(await DatabaseHelper.dbPath);
+  final dbFile = File(await DatabaseHelper.dbPath);
+  final dataDir = Directory(await getDataPath());
 
   final tempDir = await getTemporaryDirectory();
   final dateTimeString = formatDateTimeToHyphenSeparated(DateTime.now());
-  final tempZipFile = File('${tempDir.path}/nfc_plinkd-archive-$dateTimeString.zip');
-  await tempZipFile.writeAsBytes(zipBytes);
-  return tempZipFile;
+  final tempZipPath = '${tempDir.path}/$archiveFilePrefix-$dateTimeString.zip';
+
+  final encoder = ZipFileEncoder();
+  encoder.create(tempZipPath);
+  if (dbFile .existsSync()) await encoder.addFile(dbFile);
+  if (dataDir.existsSync()) await encoder.addDirectory(dataDir);
+  encoder.closeSync();
+
+  return tempZipPath;
+}
+
+Future<Directory> extractArchiveToTemp(String archivePath) async {
+  final input = InputFileStream(archivePath);
+  final archive = ZipDecoder().decodeStream(input);
+
+  final tempDir = await getTemporaryDirectory();
+  final outputDirPath = path.join(tempDir.path, path.basename(archivePath));
+  final outputDir = Directory(outputDirPath);
+  outputDir.createSync();
+
+  for (final archiveFile in archive.files) {
+    final outputPath = path.join(outputDir.path, archiveFile.name);
+
+    if (archiveFile.isFile) {
+      final outFile = File(outputPath);
+      if (!outFile.parent.existsSync()) {
+        outFile.parent.createSync(recursive: true);
+      }
+      outFile.writeAsBytesSync(archiveFile.content);
+    } else {
+      final dir = Directory(outputPath);
+      if (!dir.existsSync()) {
+        dir.createSync(recursive: true);
+      }
+    }
+  }
+  return outputDir;
 }
 
 Future<void> debugPrintInternalFiles(String base) async {

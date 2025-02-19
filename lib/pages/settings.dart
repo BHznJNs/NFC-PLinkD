@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:nfc_plinkd/components/custom_dialog.dart';
 import 'package:nfc_plinkd/components/snackbar.dart';
 import 'package:nfc_plinkd/config.dart';
+import 'package:nfc_plinkd/db.dart';
 import 'package:nfc_plinkd/l10n/app_localizations.dart';
 import 'package:nfc_plinkd/utils/file.dart';
+import 'package:nfc_plinkd/utils/index.dart';
 import 'package:nfc_plinkd/utils/permission.dart';
 import 'package:path/path.dart' as path;
 
@@ -47,23 +51,85 @@ class _SettingsPageState extends State<SettingsPage> {
   Future<void> exportData() async {
     final l10n = S.of(context)!;
 
-    final hasPermission = await requestWritingPermission();
+    final hasPermission = await requestFsAccessingPermission();
     if (!hasPermission) return;
 
     if (!mounted) return;
-    final archiveFile = await showWaitingDialog(context,
+    final archiveFilePath = await showWaitingDialog(context,
       title: l10n.settingsPage_exportData_generatingArchive,
       task: creatBackupArchive
     );
-    if (archiveFile == null) return;
+    if (archiveFilePath == null) return;
 
+    final archiveFile = File(archiveFilePath);
     final directoryPath = await FilePicker.platform.getDirectoryPath();
-    if (directoryPath == null) return;
+    if (!archiveFile.existsSync() || directoryPath == null) return;
 
     final targetPath = path.join(directoryPath, path.basename(archiveFile.path));
     archiveFile.copySync(targetPath);
     archiveFile.deleteSync();
     if (mounted) showInfoSnackBar(context, l10n.settingsPage_exportData_successMsg);
+  }
+
+  Future<void> importData() async {
+    (File, Directory)? findTargetsInArchiveData(Directory archiveData) {
+      Directory? dataDir;
+      File? databaseFile;
+      for (final item in archiveData.listSync()) {
+        final itemName = path.basename(item.path);
+        if (item is File && itemName == DatabaseHelper.dbName) {
+          databaseFile = item;
+        } else if (item is Directory && itemName == dataDirname) {
+          dataDir = item;
+        }
+        if (databaseFile != null && dataDir != null) {
+          return (databaseFile, dataDir);
+        }
+      }
+      return null;
+    }
+
+    final l10n = S.of(context)!;
+    final hasPermission = await requestFsAccessingPermission();
+    if (!hasPermission) return;
+
+    final pickResult = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['zip'],
+      allowMultiple: false,
+    );
+    if (pickResult == null || pickResult.files.isEmpty) return;
+
+    final targetArchivePath = pickResult.files[0].path;
+    if (targetArchivePath == null) return;
+    if (!mounted) return;
+
+    await showWaitingDialog(context,
+      title: l10n.settingsPage_importData_processingArchive,
+      task: () async {
+        final extractedDir = await extractArchiveToTemp(targetArchivePath);
+        final targetItems = findTargetsInArchiveData(extractedDir);
+        if (targetItems == null) {
+          if (mounted) throw ImportError.invalidData(context);
+          return;
+        }
+
+        if (targetItems.$2.listSync().isEmpty) return; // empty archive
+        final mergeDbTask = DatabaseHelper.instance.mergeDatabases(targetItems.$1.path);
+        final mergeDataDirTask = mergeFolder(source: targetItems.$2, destination: Directory(await getDataPath()));
+        await Future.wait([mergeDbTask, mergeDataDirTask]);
+      }
+    ).then((_) {
+      if (!mounted) return;
+      showSuccessMsg(context, text: l10n.settingsPage_importData_successMsg);
+    }).catchError((e, b) {
+      if (!mounted) return;
+      if (e is CustomError) {
+        showCustomError(context, e);
+      } else {
+        showUnexpectedError(context, e);
+      }
+    });
   }
 
   @override
@@ -115,7 +181,7 @@ class _SettingsPageState extends State<SettingsPage> {
         _SettingItem(
           title: l10n.settingsPage_importData_title,
           icon: Icons.upload,
-          onTap: () {},
+          onTap: importData,
         ),
       ],
     );
@@ -193,6 +259,18 @@ class _ThemeDropdownSelectorState extends State<_ThemeDropdownSelector> {
         },
       ),
       onTap: () {},
+    );
+  }
+}
+
+class ImportError extends CustomError {
+  ImportError({required super.title, required super.content});
+
+  static ImportError invalidData(BuildContext context) {
+    final l10n = S.of(context)!;
+    return ImportError(
+      title: l10n.importError_invalidData_title,
+      content: l10n.importError_invalidData_content,
     );
   }
 }

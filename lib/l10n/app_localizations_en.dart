@@ -96,6 +96,12 @@ class SEn extends S {
   String get settingsPage_importData_title => 'Import Data';
 
   @override
+  String get settingsPage_importData_processingArchive => 'Processing data, please wait...';
+
+  @override
+  String get settingsPage_importData_successMsg => 'Data has been successfully imported.';
+
+  @override
   String get recorderPage_title => 'Record a Audio';
 
   @override
@@ -147,6 +153,9 @@ class SEn extends S {
   String get custom_dialog_action_delete => 'Delete';
 
   @override
+  String get custom_dialog_action_copyErrMsg => 'Copy error message';
+
+  @override
   String get custom_dialog_action_confirm => 'Confirm';
 
   @override
@@ -168,41 +177,50 @@ class SEn extends S {
   String get custom_dialog_success_title => 'Success';
 
   @override
+  String get custom_dialog_unexpectedError_title => 'Unexpected Error';
+
+  @override
   String get custom_dialog_nfc_approach_title => 'Approach an NFC Tag';
 
   @override
-  String get nfc_error_function_disabled_title => 'NFC Function Disabled';
+  String get nfcError_function_disabled_title => 'NFC Function Disabled';
 
   @override
-  String get nfc_error_function_disabled_content => 'Please enable the NFC function of your phone and retry.';
+  String get nfcError_function_disabled_content => 'Please enable the NFC function of your phone and retry.';
 
   @override
-  String get nfc_error_tag_unusable_title => 'NFC Tag Unusable';
+  String get nfcError_tag_unusable_title => 'NFC Tag Unusable';
 
   @override
-  String get nfc_error_tag_unusable_content => 'The approached NFC tag is not writable or readable, it may be locked or does not support NDEF.';
+  String get nfcError_tag_unusable_content => 'The approached NFC tag is not writable or readable, it may be locked or does not support NDEF.';
 
   @override
-  String get nfc_error_tag_write_failed_title => 'NFC Write Failed';
+  String get nfcError_tag_write_failed_title => 'NFC Write Failed';
 
   @override
-  String get nfc_error_tag_write_failed_content => 'An error occurred while writing to the NFC tag. Please try again.';
+  String get nfcError_tag_write_failed_content => 'An error occurred while writing to the NFC tag. Please try again.';
 
   @override
-  String get nfc_error_tag_data_invalid_title => 'NFC Tag Data Invalid';
+  String get nfcError_tag_data_invalid_title => 'NFC Tag Data Invalid';
 
   @override
-  String get nfc_error_tag_data_invalid_content => 'The data read from the NFC tag is not in the expected format. It may not be a valid URI or not compatible with this application. Please ensure the tag contains the correct data type for this app.';
+  String get nfcError_tag_data_invalid_content => 'The data read from the NFC tag is not in the expected format. It may not be a valid URI or not compatible with this application. Please ensure the tag contains the correct data type for this app.';
 
   @override
-  String get nfc_error_tag_formated_title => 'NFC Tag Formated';
+  String get nfcError_tag_formated_title => 'NFC Tag Formated';
 
   @override
-  String get nfc_error_tag_formated_content => 'The approached NFC tag is formated, please approach again to write data.';
+  String get nfcError_tag_formated_content => 'The approached NFC tag is formated, please approach again to write data.';
 
   @override
-  String get nfc_error_tag_empty_title => 'NFC Tag Empty';
+  String get nfcError_tag_empty_title => 'NFC Tag Empty';
 
   @override
-  String get nfc_error_tag_empty_content => 'The approached NFC tag is empty.';
+  String get nfcError_tag_empty_content => 'The approached NFC tag is empty.';
+
+  @override
+  String get importError_invalidData_title => 'Invalid Data';
+
+  @override
+  String get importError_invalidData_content => 'It appears the selected file is not a valid NFC PLinkD data file. Please try importing the correct file.';
 }

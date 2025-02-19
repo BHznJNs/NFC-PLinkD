@@ -1,8 +1,18 @@
 import 'dart:io';
 
-import 'package:path/path.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:nfc_plinkd/utils/index.dart';
+
+extension on Database {
+  Future<void> attach(sourceDbPath, sourceDbName) async {
+    await execute('ATTACH DATABASE ? AS ?', [sourceDbPath, sourceDbName]); 
+  }
+  Future<void> detach(sourceDbName) async {
+    await execute('DETACH DATABASE ?', [sourceDbName]);
+  }
+}
 
 class DatabaseHelper {
   static const dbName = 'data.db';
@@ -15,6 +25,11 @@ class DatabaseHelper {
 
   DatabaseHelper._init();
 
+  static get dbPath async {
+    final appDir = await getApplicationDocumentsDirectory();
+    return path.join(appDir.path, dbName);
+  }
+
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDB(dbName);
@@ -22,9 +37,11 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDB(String filePath) async {
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, filePath);
-    return openDatabase(path, version: 1, onCreate: _onCreate);
+    return openDatabase(
+      await dbPath,
+      version: 1,
+      onCreate: _onCreate,
+    );
   }
 
   Future _onCreate(Database db, int version) async {
@@ -48,6 +65,34 @@ class DatabaseHelper {
         FOREIGN KEY (link_id) REFERENCES links(id)
       )
     ''');
+  }
+
+  Future<void> mergeDatabases(String sourceDbPath) async {
+    const mergeMode = 'INSERT OR REPLACE';
+    const sourceDbName = 'source_db';
+    final mainDb = await database;
+
+    try {
+      await mainDb.attach(sourceDbPath, sourceDbName);
+      final createTimeFieldName = OrderBy.createTime.toFieldName();
+      final modifyTimeFieldName = OrderBy.modifyTime.toFieldName();
+      await mainDb.transaction((txn) async {
+        await txn.rawInsert("""
+            $mergeMode INTO $linksTableName (id, name, $createTimeFieldName, $modifyTimeFieldName)
+            SELECT id, name, $createTimeFieldName, $modifyTimeFieldName
+            FROM source_db.$linksTableName
+        """);
+        await txn.rawInsert("""
+            $mergeMode INTO $resourcesTableName (id, order_index, path, type, link_id, description)
+            SELECT id, order_index, path, type, link_id, description
+            FROM source_db.$resourcesTableName
+        """);
+      });
+    } catch (e) {
+      rethrow;
+    } finally {
+      await mainDb.detach(sourceDbName);
+    }
   }
 
   Future<void> insertLink(LinkModel link, List<ResourceModel> resources) async {
@@ -147,10 +192,9 @@ class DatabaseHelper {
   }
 
   Future<void> reset() async {
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, dbName);
-    if (await File(path).exists()) {
-      await deleteDatabase(path);
+    final dbPath = DatabaseHelper.dbPath;
+    if (await File(dbPath).exists()) {
+      await deleteDatabase(dbPath);
     }
   }
 }

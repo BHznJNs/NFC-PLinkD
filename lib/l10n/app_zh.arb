@@ -30,9 +30,11 @@
   "settingsPage_useBuiltinAudioPlayer_title": "使用内置音频播放器",
   "settingsPage_useBuiltinAudioPlayer_description": "或使用系统默认播放器",
   "settingsPage_exportData_title": "导出数据",
-  "settingsPage_exportData_successMsg": "你的数据已成功保存。",
   "settingsPage_exportData_generatingArchive": "正在整理文件，请稍候…",
+  "settingsPage_exportData_successMsg": "你的数据已成功保存。",
   "settingsPage_importData_title": "导入数据",
+  "settingsPage_importData_processingArchive": "解析数据中，请等待...",
+  "settingsPage_importData_successMsg": "数据已被成功导入。",
 
   "recorderPage_title": "录制音频",
 
@@ -54,6 +56,7 @@
 
   "custom_dialog_action_cancel": "取消",
   "custom_dialog_action_delete": "删除",
+  "custom_dialog_action_copyErrMsg": "复制错误信息",
   "custom_dialog_action_confirm": "确认",
   "custom_dialog_action_ok": "确定",
   "custom_dialog_delete_title": "确认删除",
@@ -61,18 +64,22 @@
   "custom_dialog_weblink_title": "网站链接",
   "custom_dialog_weblink_invalidUrlMsg": "无效的 URL",
   "custom_dialog_success_title": "成功",
+  "custom_dialog_unexpectedError_title": "未知错误",
   "custom_dialog_nfc_approach_title": "靠近 NFC 标签",
 
-  "nfc_error_function_disabled_title": "NFC 功能已禁用",
-  "nfc_error_function_disabled_content": "请启用手机的 NFC 功能后重试。",
-  "nfc_error_tag_unusable_title": "NFC 标签不可用",
-  "nfc_error_tag_unusable_content": "靠近的 NFC 标签不可读写，可能已锁定或不支持 NDEF。",
-  "nfc_error_tag_write_failed_title": "NFC 写入失败",
-  "nfc_error_tag_write_failed_content": "写入 NFC 标签时发生错误，请重试。",
-  "nfc_error_tag_data_invalid_title": "NFC 标签数据无效",
-  "nfc_error_tag_data_invalid_content": "从 NFC 标签读取的数据格式不符合预期。它可能不是有效的 URI，或与本应用不兼容。请确保标签包含正确的数据类型。",
-  "nfc_error_tag_formated_title": "NFC 标签已格式化",
-  "nfc_error_tag_formated_content": "靠近的 NFC 标签已格式化，请再次靠近以写入数据。",
-  "nfc_error_tag_empty_title": "NFC 标签为空",
-  "nfc_error_tag_empty_content": "靠近的 NFC 标签为空。"
+  "nfcError_function_disabled_title": "NFC 功能已禁用",
+  "nfcError_function_disabled_content": "请启用手机的 NFC 功能后重试。",
+  "nfcError_tag_unusable_title": "NFC 标签不可用",
+  "nfcError_tag_unusable_content": "靠近的 NFC 标签不可读写，可能已锁定或不支持 NDEF。",
+  "nfcError_tag_write_failed_title": "NFC 写入失败",
+  "nfcError_tag_write_failed_content": "写入 NFC 标签时发生错误，请重试。",
+  "nfcError_tag_data_invalid_title": "NFC 标签数据无效",
+  "nfcError_tag_data_invalid_content": "从 NFC 标签读取的数据格式不符合预期。它可能不是有效的 URI，或与本应用不兼容。请确保标签包含正确的数据类型。",
+  "nfcError_tag_formated_title": "NFC 标签已格式化",
+  "nfcError_tag_formated_content": "靠近的 NFC 标签已格式化，请再次靠近以写入数据。",
+  "nfcError_tag_empty_title": "NFC 标签为空",
+  "nfcError_tag_empty_content": "靠近的 NFC 标签为空。",
+
+  "importError_invalidData_title": "无效的数据文件",
+  "importError_invalidData_content": "数据文件格式不匹配。请确保您选择的是由本应用导出的数据文件。"
 }

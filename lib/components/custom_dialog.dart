@@ -1,18 +1,19 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nfc_plinkd/l10n/app_localizations.dart';
 import 'package:nfc_plinkd/components/custom_textfield.dart';
 import 'package:nfc_plinkd/utils/index.dart';
 
-Future<void> showAlert(BuildContext context, String title, String content) async {
+Future<void> showCustomError(BuildContext context, CustomError err) async {
   final l10n = S.of(context)!;
   await showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog.adaptive(
-        title: Text(title),
-        content: Text(content),
+        title: Text(err.title),
+        content: Text(err.content),
         actions: [TextButton(
           child: Text(l10n.custom_dialog_action_ok),
           onPressed: () => Navigator.of(context).pop(),
@@ -22,8 +23,31 @@ Future<void> showAlert(BuildContext context, String title, String content) async
   );
 }
 
-Future<void> showCustomError(BuildContext context, CustomError err) async {
-  await showAlert(context, err.title, err.content);
+Future<void> showUnexpectedError(BuildContext context, dynamic err) async {
+  final l10n = S.of(context)!;
+  final errMsg = err.toString();
+  await showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog.adaptive(
+        title: Text(l10n.custom_dialog_unexpectedError_title),
+        content: Text(errMsg),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              await Clipboard.setData(ClipboardData(text: errMsg));
+              if (context.mounted) Navigator.of(context).pop();
+            },
+            child: Text(l10n.custom_dialog_action_copyErrMsg)
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(l10n.custom_dialog_action_ok),
+          ),
+        ],
+      );
+    },
+  );
 }
 
 Future<void> showSuccessMsg(BuildContext context, { String? text }) async {
@@ -86,6 +110,9 @@ Future<T?> showWaitingDialog<T>(BuildContext context, {
   task().then((result) {
     if (context.mounted) Navigator.of(context).pop();
     completer.complete(result);
+  }).catchError((e) {
+    if (context.mounted) Navigator.of(context).pop();
+    completer.completeError(e);
   });
   return completer.future;
 }

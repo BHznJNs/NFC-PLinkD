@@ -2,21 +2,23 @@ package org.nfc_plinkd.bhznjns
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Build
 import android.util.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity: FlutterActivity() {
-    private val VIDEO_UTIL_CHANNEL = "org.nfc_plinkd.bhznjns/video_util"
+    private val CHANNEL_NAME = "org.nfc_plinkd.bhznjns/channel"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        val videoMetadataHelper = VideoMetadataHelper()
 
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, VIDEO_UTIL_CHANNEL).setMethodCallHandler { call, result ->
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL_NAME).setMethodCallHandler { call, result ->
             when (call.method) {
+                "getApiLevel" -> result.success(Build.VERSION.SDK_INT)
                 "getVideoRotation" -> {
+                    val videoMetadataHelper = VideoMetadataHelper()
                     val videoPath = call.argument<String>("videoPath")
                     if (videoPath != null) {
                         val rotation = videoMetadataHelper.getRotation(videoPath)

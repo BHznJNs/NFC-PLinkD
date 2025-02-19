@@ -96,48 +96,48 @@ class NFCError extends CustomError {
   static NFCError NFCFunctionDisabled(BuildContext context) {
     final l10n = S.of(context)!;
     return NFCError(
-      title: l10n.nfc_error_function_disabled_title,
-      content: l10n.nfc_error_function_disabled_content,
+      title: l10n.nfcError_function_disabled_title,
+      content: l10n.nfcError_function_disabled_content,
     );
   }
   // ignore: non_constant_identifier_names
   static NFCError NFCTagUnusable(BuildContext context) {
     final l10n = S.of(context)!;
     return NFCError(
-      title: l10n.nfc_error_tag_unusable_title,
-      content: l10n.nfc_error_tag_unusable_content,
+      title: l10n.nfcError_tag_unusable_title,
+      content: l10n.nfcError_tag_unusable_content,
     );
   }
   // ignore: non_constant_identifier_names
   static NFCError NFCTagWriteFailed(BuildContext context) {
     final l10n = S.of(context)!;
     return NFCError(
-      title: l10n.nfc_error_tag_write_failed_title,
-      content: l10n.nfc_error_tag_write_failed_content,
+      title: l10n.nfcError_tag_write_failed_title,
+      content: l10n.nfcError_tag_write_failed_content,
     );
   }
   // ignore: non_constant_identifier_names
   static NFCError NFCTagDataInvalid(BuildContext context) {
     final l10n = S.of(context)!;
     return NFCError(
-      title: l10n.nfc_error_tag_data_invalid_title,
-      content: l10n.nfc_error_tag_data_invalid_content,
+      title: l10n.nfcError_tag_data_invalid_title,
+      content: l10n.nfcError_tag_data_invalid_content,
     );
   }
   // ignore: non_constant_identifier_names
   static NFCError NFCTagFormated(BuildContext context) {
     final l10n = S.of(context)!;
     return NFCError(
-      title: l10n.nfc_error_tag_formated_title,
-      content: l10n.nfc_error_tag_formated_content,
+      title: l10n.nfcError_tag_formated_title,
+      content: l10n.nfcError_tag_formated_content,
     );
   }
   // ignore: non_constant_identifier_names
   static NFCError NFCTagEmpty(BuildContext context) {
     final l10n = S.of(context)!;
     return NFCError(
-      title: l10n.nfc_error_tag_empty_title,
-      content: l10n.nfc_error_tag_empty_content,
+      title: l10n.nfcError_tag_empty_title,
+      content: l10n.nfcError_tag_empty_content,
     );
   }
 }

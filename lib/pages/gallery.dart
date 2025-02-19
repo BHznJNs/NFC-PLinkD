@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:nfc_plinkd/components/custom_dialog.dart';
 import 'package:nfc_plinkd/db.dart';
 import 'package:nfc_plinkd/l10n/app_localizations.dart';
+import 'package:nfc_plinkd/utils/file.dart';
 import 'package:nfc_plinkd/utils/formatter.dart';
 import 'package:nfc_plinkd/utils/index.dart';
 import 'package:nfc_plinkd/utils/nfc.dart';
@@ -85,6 +87,8 @@ class _GalleryPageState extends State<GalleryPage> {
     if (!result) return;
 
     await DatabaseHelper.instance.deleteLink(links[index]);
+    final linkDir = Directory(await getBasePath(links[index].id));
+    if (linkDir.existsSync()) linkDir.deleteSync;
     setState(() => links.removeAt(index));
   }
 

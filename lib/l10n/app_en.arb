@@ -33,6 +33,8 @@
   "settingsPage_exportData_generatingArchive": "Packing data, please wait...",
   "settingsPage_exportData_successMsg": "Your data was saved successfully.",
   "settingsPage_importData_title": "Import Data",
+  "settingsPage_importData_processingArchive": "Processing data, please wait...",
+  "settingsPage_importData_successMsg": "Data has been successfully imported.",
 
   "recorderPage_title": "Record a Audio",
 
@@ -54,6 +56,7 @@
 
   "custom_dialog_action_cancel": "Cancel",
   "custom_dialog_action_delete": "Delete",
+  "custom_dialog_action_copyErrMsg": "Copy error message",
   "custom_dialog_action_confirm": "Confirm",
   "custom_dialog_action_ok": "OK",
   "custom_dialog_delete_title": "Confirm Deletion",
@@ -61,18 +64,22 @@
   "custom_dialog_weblink_title": "Website Link",
   "custom_dialog_weblink_invalidUrlMsg": "Invalid URL",
   "custom_dialog_success_title": "Success",
+  "custom_dialog_unexpectedError_title": "Unexpected Error",
   "custom_dialog_nfc_approach_title": "Approach an NFC Tag",
 
-  "nfc_error_function_disabled_title": "NFC Function Disabled",
-  "nfc_error_function_disabled_content": "Please enable the NFC function of your phone and retry.",
-  "nfc_error_tag_unusable_title": "NFC Tag Unusable",
-  "nfc_error_tag_unusable_content": "The approached NFC tag is not writable or readable, it may be locked or does not support NDEF.",
-  "nfc_error_tag_write_failed_title": "NFC Write Failed",
-  "nfc_error_tag_write_failed_content": "An error occurred while writing to the NFC tag. Please try again.",
-  "nfc_error_tag_data_invalid_title": "NFC Tag Data Invalid",
-  "nfc_error_tag_data_invalid_content": "The data read from the NFC tag is not in the expected format. It may not be a valid URI or not compatible with this application. Please ensure the tag contains the correct data type for this app.",
-  "nfc_error_tag_formated_title": "NFC Tag Formated",
-  "nfc_error_tag_formated_content": "The approached NFC tag is formated, please approach again to write data.",
-  "nfc_error_tag_empty_title": "NFC Tag Empty",
-  "nfc_error_tag_empty_content": "The approached NFC tag is empty."
+  "nfcError_function_disabled_title": "NFC Function Disabled",
+  "nfcError_function_disabled_content": "Please enable the NFC function of your phone and retry.",
+  "nfcError_tag_unusable_title": "NFC Tag Unusable",
+  "nfcError_tag_unusable_content": "The approached NFC tag is not writable or readable, it may be locked or does not support NDEF.",
+  "nfcError_tag_write_failed_title": "NFC Write Failed",
+  "nfcError_tag_write_failed_content": "An error occurred while writing to the NFC tag. Please try again.",
+  "nfcError_tag_data_invalid_title": "NFC Tag Data Invalid",
+  "nfcError_tag_data_invalid_content": "The data read from the NFC tag is not in the expected format. It may not be a valid URI or not compatible with this application. Please ensure the tag contains the correct data type for this app.",
+  "nfcError_tag_formated_title": "NFC Tag Formated",
+  "nfcError_tag_formated_content": "The approached NFC tag is formated, please approach again to write data.",
+  "nfcError_tag_empty_title": "NFC Tag Empty",
+  "nfcError_tag_empty_content": "The approached NFC tag is empty.",
+
+  "importError_invalidData_title": "Invalid Data",
+  "importError_invalidData_content": "It appears the selected file is not a valid NFC PLinkD data file. Please try importing the correct file."
 }
