@@ -228,6 +228,12 @@ class SZh extends S {
   String get nfcError_tag_empty_content => '靠近的 NFC 标签为空。';
 
   @override
+  String get linkError_dataNotFound_title => '未找到链接数据';
+
+  @override
+  String get linkError_dataNotFound_content => '此链接的数据未找到，可能已被删除。';
+
+  @override
   String get importError_invalidData_title => '无效的数据文件';
 
   @override
@@ -456,6 +462,12 @@ class SZhCn extends SZh {
 
   @override
   String get nfcError_tag_empty_content => '靠近的 NFC 标签为空。';
+
+  @override
+  String get linkError_dataNotFound_title => '未找到链接数据';
+
+  @override
+  String get linkError_dataNotFound_content => '此链接的数据未找到，可能已被删除。';
 
   @override
   String get importError_invalidData_title => '无效的数据文件';

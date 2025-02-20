@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -71,7 +69,6 @@ Future<void> mergeFolder({
 Future<String> creatBackupArchive() async {
   const archiveFilePrefix = 'NFC-PLinkD-archive';
 
-  print(await DatabaseHelper.dbPath);
   final dbFile = File(await DatabaseHelper.dbPath);
   final dataDir = Directory(await getDataPath());
 
@@ -119,20 +116,20 @@ Future<Directory> extractArchiveToTemp(String archivePath) async {
 Future<void> debugPrintInternalFiles(String base) async {
   if (!kDebugMode) return;
   try {
-    print('--- Internal Storage Files ---');
+    debugPrint('--- Internal Storage Files ---');
     final directory = await getApplicationDocumentsDirectory();
     final subDir = Directory(path.join(directory.path, base));
     List<FileSystemEntity> files = subDir.listSync();
     if (files.isEmpty) {
-      print('$base directory is empty.');
+      debugPrint('$base directory is empty.');
       return;
     }
     for (var file in files) {
-      print(file.path);
+      debugPrint(file.path);
     }
-    print('--- End of Internal Storage Files ---');
+    debugPrint('--- End of Internal Storage Files ---');
 
   } catch (e) {
-    print('Error listing internal storage files: $e');
+    debugPrint('Error listing internal storage files: $e');
   }
 }

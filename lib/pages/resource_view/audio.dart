@@ -8,7 +8,7 @@ import 'package:nfc_plinkd/components/custom_button.dart';
 
 Future<void> openAudioWithDefaultPlayer(BuildContext context, String path) async {
   final useBuiltinAudioPlayer = await Configuration.useBuiltinAudioPlayer.read();
-  if ((useBuiltinAudioPlayer ?? false) && context.mounted) {
+  if (useBuiltinAudioPlayer && context.mounted) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => AudioPlayerPage(path)));
     return;
@@ -18,7 +18,7 @@ Future<void> openAudioWithDefaultPlayer(BuildContext context, String path) async
   switch (result.type) {
     case ResultType.done: return;
     case ResultType.fileNotFound:
-      if (kDebugMode) print('Target file not found: $path');
+      if (kDebugMode) debugPrint('Target file not found: $path');
     case ResultType.noAppToOpen:
     case ResultType.permissionDenied:
     case ResultType.error:

@@ -44,16 +44,12 @@ class _LinkEditViewState extends State<LinkEditView> {
   late bool isReadView = widget.initialResources != null;
   late List<ResourceModel> resources;
 
-  Future<void> writeIntoDatabase({bool isUpdate = false}) async {
-    final now = DateTime.now().millisecondsSinceEpoch;
-    final linkName = linkNameController.text.isNotEmpty
-      ? linkNameController.text
-      : null;
+  Future<void> writeIntoDatabase(DateTime now, {bool isUpdate = false}) async {
     final link = LinkModel(
       id: id,
-      name: linkName,
-      createTime: now,
-      modifyTime: now,
+      name: linkNameController.text,
+      createTime: now.millisecondsSinceEpoch,
+      modifyTime: now.millisecondsSinceEpoch,
     );
     final processedResources = await copyResourcesToAppDir(id, resources);
     isUpdate
@@ -65,7 +61,7 @@ class _LinkEditViewState extends State<LinkEditView> {
     final result = await picker(context);
     if (result.isEmpty) return;
     setState(() {
-      for (var item in result) {
+      for (final item in result) {
         resources.add(ResourceModel(
           linkId: id,
           type: item.$2,
@@ -82,9 +78,15 @@ class _LinkEditViewState extends State<LinkEditView> {
       return;
     }
     if (isReadView) {
-      await writeIntoDatabase(isUpdate: true);
+      final now = DateTime.now();
+      await writeIntoDatabase(now, isUpdate: true);
       if (mounted) await showSuccessMsg(context, text: l10n.editLinkPage_success_msg);
-      if (mounted) Navigator.of(context).pop();
+      if (mounted) {
+        return Navigator.of(context).pop(LinkEditResult(
+          linkNameController.text,
+          now.millisecondsSinceEpoch,
+        ));
+      }
       return;
     }
     if (isCreateView) {
@@ -106,7 +108,8 @@ class _LinkEditViewState extends State<LinkEditView> {
           final completer = Completer();
           stopWriting = await tryWriteNFCData(context, dataToWrite,
             onWrite: () async {
-              await writeIntoDatabase();
+              final now = DateTime.now();
+              await writeIntoDatabase(now);
               completer.complete(true);
             },
             onError: (e) {
@@ -128,6 +131,7 @@ class _LinkEditViewState extends State<LinkEditView> {
 
   bool isEditingLinkName = false;
   final linkNameFocusNode = FocusNode();
+  late String? initialLinkName = widget.link?.name;
   late TextEditingController linkNameController =
     TextEditingController(text: widget.link?.name);
   Widget linkNameEditorBuilder() {
@@ -245,4 +249,10 @@ class _LinkEditViewState extends State<LinkEditView> {
       body: ResourceListView(resources),
     );
   }
+}
+
+class LinkEditResult {
+  const LinkEditResult(this.name, this.modifyTime);
+  final String name;
+  final int modifyTime;
 }

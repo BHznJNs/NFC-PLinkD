@@ -93,19 +93,19 @@ class MyAppState extends State<MyApp> {
   Future<void> initDeepLinks() async {
     final appLinks = AppLinks();
 
-    appLinks.getInitialLink().then((uri) {
-      if (uri == null) return;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (navigatorKey.currentContext == null) return;
-        openLinkWithUri(navigatorKey.currentContext!, uri)
-          .onError((error, _) {/* do nothing */});
-      });
-    });
+    // appLinks.getInitialLink().then((uri) {
+    //   if (uri == null) return;
+    //   WidgetsBinding.instance.addPostFrameCallback((_) {
+    //     if (navigatorKey.currentContext == null) return;
+    //     openLinkWithUri(navigatorKey.currentContext!, uri)
+    //       .onError((error, _) => null);
+    //   });
+    // });
     linkSubscription = appLinks.uriLinkStream.listen((uri) {
       if (isInForeground) return;
       if (navigatorKey.currentContext == null) return;
       openLinkWithUri(navigatorKey.currentContext!, uri)
-        .onError((error, _) {/* do nothing */});
+        .onError((error, _) => null /* do nothing */);
     });
   }
 
@@ -216,13 +216,4 @@ void main() async {
       child: const MyApp(),
     ),
   );
-  // if (isFirstLaunch as bool) {
-  //   await Configuration.init();
-  //   runApp(const MyApp());
-  // } else {
-  //   runApp(MyApp(
-  //     theme: theme as ConfigTheme,
-  //     language: language as ConfigLanguage,
-  //   ));
-  // }
 }

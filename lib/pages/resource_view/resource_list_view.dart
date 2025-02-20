@@ -79,10 +79,10 @@ class _ResourceListViewState extends State<ResourceListView> {
 class _GenericResourceItem extends StatefulWidget {
   const _GenericResourceItem({
     super.key,
+    this.description,
     required this.path,
     required this.type,
     required this.index,
-    required this.description,
     required this.onSave,
     required this.onDelete,
   });
@@ -90,7 +90,7 @@ class _GenericResourceItem extends StatefulWidget {
   final String path;
   final ResourceType type;
   final int index;
-  final String description;
+  final String? description;
   final Function(int, {String? path, String? description}) onSave;
   final Function(int) onDelete;
 
@@ -294,8 +294,8 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
     final description = Container(
       height: double.infinity,
       margin: EdgeInsets.symmetric(vertical: 16),
-      child: widget.description.isNotEmpty
-        ? Text(widget.description, overflow: TextOverflow.ellipsis)
+      child: widget.description != null && widget.description!.isNotEmpty
+        ? Text(widget.description!, overflow: TextOverflow.ellipsis)
         : Opacity(
           opacity: .4,
           child: Text(l10n.resourceList_item_noDescription_hint),

@@ -83,6 +83,9 @@
   "nfcError_tag_empty_title": "NFC Tag Empty",
   "nfcError_tag_empty_content": "The approached NFC tag is empty.",
 
+  "linkError_dataNotFound_title": "Link Data Not Found",
+  "linkError_dataNotFound_content": "The data for this link is not found, it may has been deleted.",
+
   "importError_invalidData_title": "Invalid Data",
   "importError_invalidData_content": "It appears the selected file is not a valid NFC PLinkD data file. Please try importing the correct file."
 }

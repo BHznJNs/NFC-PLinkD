@@ -228,6 +228,12 @@ class SEn extends S {
   String get nfcError_tag_empty_content => 'The approached NFC tag is empty.';
 
   @override
+  String get linkError_dataNotFound_title => 'Link Data Not Found';
+
+  @override
+  String get linkError_dataNotFound_content => 'The data for this link is not found, it may has been deleted.';
+
+  @override
   String get importError_invalidData_title => 'Invalid Data';
 
   @override

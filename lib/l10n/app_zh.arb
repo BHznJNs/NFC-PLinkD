@@ -83,6 +83,9 @@
   "nfcError_tag_empty_title": "NFC 标签为空",
   "nfcError_tag_empty_content": "靠近的 NFC 标签为空。",
 
+  "linkError_dataNotFound_title": "未找到链接数据",
+  "linkError_dataNotFound_content": "此链接的数据未找到，可能已被删除。",
+
   "importError_invalidData_title": "无效的数据文件",
   "importError_invalidData_content": "数据文件格式不匹配。请确保您选择的是由本应用导出的数据文件。"
 }

@@ -44,7 +44,12 @@ class _GalleryPageState extends State<GalleryPage> {
 
   Future<void> openLink(int index) async {
     final linkId = links[index].id;
-    openLinkWithId(context, linkId);
+    final editResult = await openLinkWithId(context, linkId);
+    if (editResult == null) return;
+    setState(() => links[index] = links[index].copyWith(
+      name: editResult.name,
+      modifyTime: editResult.modifyTime,
+    ));
   }
 
   Future<void> writeLink(int index) async {
@@ -188,7 +193,9 @@ class _LinkItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final createTimeDateString = formatTimestampToLocalizedDate(context, metadata.createTime);
     final createTimeHourMinuteString = formatTimestampToHourMinute(metadata.createTime);
-    final title = metadata.name ?? createTimeDateString;
+
+    final hasName = metadata.name?.isNotEmpty ?? false;
+    final title = hasName ? metadata.name! : createTimeDateString;
     final subtitle = metadata.name == null
       ? createTimeHourMinuteString
       : '$createTimeDateString $createTimeHourMinuteString';

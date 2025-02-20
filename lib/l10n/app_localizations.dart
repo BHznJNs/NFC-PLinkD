@@ -534,6 +534,18 @@ abstract class S {
   /// **'The approached NFC tag is empty.'**
   String get nfcError_tag_empty_content;
 
+  /// No description provided for @linkError_dataNotFound_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Link Data Not Found'**
+  String get linkError_dataNotFound_title;
+
+  /// No description provided for @linkError_dataNotFound_content.
+  ///
+  /// In en, this message translates to:
+  /// **'The data for this link is not found, it may has been deleted.'**
+  String get linkError_dataNotFound_content;
+
   /// No description provided for @importError_invalidData_title.
   ///
   /// In en, this message translates to:

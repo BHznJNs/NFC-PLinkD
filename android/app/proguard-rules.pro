@@ -1,0 +1,2 @@
+-dontwarn io.flutter.plugins.pathprovider.Messages$FlutterError
+-dontwarn io.flutter.plugins.pathprovider.Messages$StorageDirectory

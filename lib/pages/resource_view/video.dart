@@ -11,7 +11,7 @@ import 'package:nfc_plinkd/config.dart';
 
 Future<void> openVideoWithDefaultPlayer(BuildContext context, String path) async {
   final useBuiltinVideoPlayer = await Configuration.useBuiltinVideoPlayer.read();
-  if ((useBuiltinVideoPlayer ?? false) && context.mounted) {
+  if (useBuiltinVideoPlayer && context.mounted) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => VideoPlayerPage(path)));
     return;
@@ -21,7 +21,7 @@ Future<void> openVideoWithDefaultPlayer(BuildContext context, String path) async
   switch (result.type) {
     case ResultType.done: return;
     case ResultType.fileNotFound:
-      if (kDebugMode) print('Target file not found: $path');
+      if (kDebugMode) debugPrint('Target file not found: $path');
     case ResultType.noAppToOpen:
     case ResultType.permissionDenied:
     case ResultType.error:

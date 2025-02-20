@@ -56,8 +56,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Future<void> openLanguageSettings() async {
     final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
-    final currentLanguage = await Configuration.language.read()
-      ?? ConfigLanguage.system;
+    final currentLanguage = await Configuration.language.read();
 
     if (!mounted) return;
     final selectedLanguage = await Navigator.of(context).push(

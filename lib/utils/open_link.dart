@@ -6,34 +6,39 @@ import 'package:nfc_plinkd/utils/file.dart';
 import 'package:nfc_plinkd/utils/index.dart';
 import 'package:nfc_plinkd/utils/nfc.dart';
 
-Future<void> openLinkWithUri(BuildContext context, Uri uri) async {
+Future<LinkEditResult?> openLinkWithUri(BuildContext context, Uri uri) async {
   if (uri.host != linkHost || uri.pathSegments.isEmpty) {
     throw NFCError.NFCTagDataInvalid(context);
   }
   final targetId = uri.pathSegments[0];
-
-  await openLinkWithId(context, targetId);
+  return await openLinkWithId(context, targetId);
 }
 
-Future<void> openLinkWithId(BuildContext context, String id) async {
-  final (link, resources) = await DatabaseHelper.instance.fetchLink(id);
+Future<LinkEditResult?> openLinkWithId(BuildContext context, String id) async {
+  final fetchResult = await DatabaseHelper.instance.fetchLink(id);
+  if (fetchResult == null) {
+    if (context.mounted) throw LinkError.DataNotFound(context);
+    return null;
+  }
+
+  final (link, resources) = fetchResult;
   final basePath = await getBasePath(link.id);
   final resolvedResources = resources.map((resource) =>
     resource.copyWith(
       path: '$basePath/${resource.path}')
   ).toList();
 
-  if (!context.mounted) return;
-  await _openWithNavigator(context, link, resolvedResources);
+  if (!context.mounted) return null;
+  return await _openWithNavigator(context, link, resolvedResources);
 }
 
-Future<void> _openWithNavigator(
+Future<LinkEditResult?> _openWithNavigator(
   BuildContext context,
   LinkModel link,
   List<ResourceModel> resources,
 ) async {
   final l10n = S.of(context)!;
-  await Navigator.of(context).push(
+  return await Navigator.of(context).push(
     MaterialPageRoute(builder: (context) =>
       LinkEditView(
         link: link,

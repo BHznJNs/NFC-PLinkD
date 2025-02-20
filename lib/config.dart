@@ -3,10 +3,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Configuration {
   static final _prefs = SharedPreferencesAsync(options: SharedPreferencesOptions());
-  static final theme = _ConfigurationEnumItem(_prefs, 'theme', ConfigTheme.fromName);
-  static final language = _ConfigurationEnumItem(_prefs, 'language', ConfigLanguage.fromName);
-  static final useBuiltinVideoPlayer = _ConfigurationBoolItem(_prefs, 'use_buildin_video_player');
-  static final useBuiltinAudioPlayer = _ConfigurationBoolItem(_prefs, 'use_buildin_audio_player');
+  static final theme = _ConfigurationEnumItem(_prefs, 'theme', ConfigTheme.fromName, ConfigTheme.system);
+  static final language = _ConfigurationEnumItem(_prefs, 'language', ConfigLanguage.fromName, ConfigLanguage.system);
+  static final useBuiltinVideoPlayer = _ConfigurationBoolItem(_prefs, 'use_buildin_video_player', false);
+  static final useBuiltinAudioPlayer = _ConfigurationBoolItem(_prefs, 'use_buildin_audio_player', true);
 
   static Future<bool> get isFirstLaunch async {
     final res = await _prefs.getBool('is_first_launch') ?? true;
@@ -34,34 +34,35 @@ class Configuration {
 }
 
 abstract class _ConfigurationItem<T> {
-  const _ConfigurationItem(this.prefs, this.key);
+  const _ConfigurationItem(this.prefs, this.key, this.defaultValue);
   final SharedPreferencesAsync prefs;
   final String key;
+  final T defaultValue;
 
   Future<void> save(T value);
-  Future<T?> read();
+  Future<T> read(); // return stored value or defaultValue
 }
 class _ConfigurationBoolItem extends _ConfigurationItem<bool> {
-  _ConfigurationBoolItem(super.prefs, super.key);
+  _ConfigurationBoolItem(super.prefs, super.key, super.defaultValue);
 
   @override Future<void> save(bool value) async {
     await prefs.setBool(key, value);
   }
-  @override Future<bool?> read() async {
-    return await prefs.getBool(key);
+  @override Future<bool> read() async {
+    return await prefs.getBool(key) ?? defaultValue;
   }
 }
 class _ConfigurationEnumItem<T extends Enum> extends _ConfigurationItem<Enum> {
-  const _ConfigurationEnumItem(super.prefs, super.key, this.creator);
+  const _ConfigurationEnumItem(super.prefs, super.key, this.creator, super.defaultValue);
 
   final T Function(String) creator;
 
   @override Future<void> save(Enum value) async {
     await prefs.setString(key, value.name);
   }
-  @override Future<T?> read() async {
+  @override Future<T> read() async {
     final res = await prefs.getString(key);
-    if (res == null) return null;
+    if (res == null) return defaultValue as T;
     return creator(res);
   }
 }

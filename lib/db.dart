@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
+import 'package:nfc_plinkd/l10n/app_localizations.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -25,7 +27,7 @@ class DatabaseHelper {
 
   DatabaseHelper._init();
 
-  static get dbPath async {
+  static Future<String> get dbPath async {
     final appDir = await getApplicationDocumentsDirectory();
     return path.join(appDir.path, dbName);
   }
@@ -61,7 +63,7 @@ class DatabaseHelper {
         path TEXT NOT NULL,
         type INTEGER NOT NULL,
         link_id INTEGER NOT NULL,
-        description TEXT NOT NULL,
+        description TEXT,
         FOREIGN KEY (link_id) REFERENCES links(id)
       )
     ''');
@@ -108,8 +110,10 @@ class DatabaseHelper {
 
   Future<void> updateLink(LinkModel link, List<ResourceModel> resources) async {
     final db = await database;
-    await db.update(linksTableName,
-      { 'modified_at': link.modifyTime },
+    await db.update(linksTableName, {
+      'name': link.name,
+      'modified_at': link.modifyTime,
+    },
       where: 'id = ?',
       whereArgs: [link.id],
     );
@@ -126,7 +130,7 @@ class DatabaseHelper {
     }
   }
 
-  Future<(LinkModel, List<ResourceModel>)> fetchLink(String id) async {
+  Future<(LinkModel, List<ResourceModel>)?> fetchLink(String id) async {
     final db = await database;
     final candidateLinks = await db.query(
       linksTableName,
@@ -139,9 +143,7 @@ class DatabaseHelper {
       whereArgs: [id],
       orderBy: 'order_index',
     );
-    if (candidateLinks.isEmpty || linkResources.isEmpty) {
-      throw LinkError.DataNotFound;
-    }
+    if (candidateLinks.isEmpty || linkResources.isEmpty) return null;
 
     final targetLink = candidateLinks[0];
     return (
@@ -192,7 +194,7 @@ class DatabaseHelper {
   }
 
   Future<void> reset() async {
-    final dbPath = DatabaseHelper.dbPath;
+    final dbPath = await DatabaseHelper.dbPath;
     if (await File(dbPath).exists()) {
       await deleteDatabase(dbPath);
     }
@@ -224,12 +226,13 @@ class LinkError extends CustomError {
   LinkError({required super.title, required super.content});
 
   // ignore: non_constant_identifier_names
-  static final DataNotFound = LinkError(
-    title: 'Link Data Not Found',
-    content:
-      'The data for this link is not found,'
-      'it may has been deleted.',
-  );
+  static LinkError DataNotFound(BuildContext context) {
+    final l10n = S.of(context)!;
+    return LinkError(
+      title: l10n.linkError_dataNotFound_title,
+      content: l10n.linkError_dataNotFound_content,
+    );
+  }
 }
 
 class LinkModel {
@@ -239,52 +242,62 @@ class LinkModel {
   final int modifyTime;
 
   LinkModel({
-    this.name,
     required this.id,
     required this.createTime,
     required this.modifyTime,
+    this.name,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
-      'created_at': createTime,
-      'modified_at': modifyTime,
-    };
-  }
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'name': (name?.isNotEmpty ?? false)
+           ? name : null,
+    'created_at': createTime,
+    'modified_at': modifyTime,
+  };
 
-  factory LinkModel.fromMap(Map<String, dynamic> map) {
-    return LinkModel(
-      id: map['id'] as String,
-      name: map['name'] as String?,
-      createTime: map['created_at'] as int,
-      modifyTime: map['modified_at'] as int,
-    );
-  }
+  LinkModel copyWith({
+    String? id,
+    String? name,
+    int? createTime,
+    int? modifyTime,
+  }) => LinkModel(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    createTime: createTime ?? this.createTime,
+    modifyTime: modifyTime ?? this.modifyTime,
+  );
+
+  factory LinkModel.fromMap(
+    Map<String, dynamic> map,
+  ) => LinkModel(
+    id: map['id'] as String,
+    name: map['name'] as String?,
+    createTime: map['created_at'] as int,
+    modifyTime: map['modified_at'] as int,
+  );
 }
 
 class ResourceModel {
   final String linkId;
   final String path;
   final ResourceType type;
-  final String description;
+  final String? description;
 
   ResourceModel({
     required this.linkId,
     required this.type,
     required this.path,
-    this.description = '',
+    this.description,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'link_id': linkId,
-      'type': type.index,
-      'path': path,
-      'description': description,
-    };
-  }
+  Map<String, dynamic> toMap() => {
+    'link_id': linkId,
+    'type': type.index,
+    'path': path,
+    'description': (description?.isNotEmpty ?? false)
+                  ? description : null,
+  };
 
   ResourceModel copyWith({
     String? linkId,
@@ -298,14 +311,14 @@ class ResourceModel {
     description: description ?? this.description,
   );
 
-  factory ResourceModel.fromMap(Map<String, dynamic> map) {
-    return ResourceModel(
-      linkId: map['link_id'] as String,
-      type: ResourceType.fromInt(map['type'] as int),
-      path: map['path'] as String,
-      description: map['description'] as String,
-    );
-  }
+  factory ResourceModel.fromMap(
+    Map<String, dynamic> map,
+  ) => ResourceModel(
+    linkId: map['link_id'] as String,
+    type: ResourceType.fromInt(map['type'] as int),
+    path: map['path'] as String,
+    description: map['description'] as String?,
+  );
 }
 
 enum OrderBy {
