@@ -24,9 +24,6 @@ import 'package:nfc_plinkd/utils/media/picker.dart';
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // final ConfigTheme? theme;
-  // final ConfigLanguage? language;
-
   @override
   State<StatefulWidget> createState() => MyAppState();
 }
@@ -93,14 +90,14 @@ class MyAppState extends State<MyApp> {
   Future<void> initDeepLinks() async {
     final appLinks = AppLinks();
 
-    // appLinks.getInitialLink().then((uri) {
-    //   if (uri == null) return;
-    //   WidgetsBinding.instance.addPostFrameCallback((_) {
-    //     if (navigatorKey.currentContext == null) return;
-    //     openLinkWithUri(navigatorKey.currentContext!, uri)
-    //       .onError((error, _) => null);
-    //   });
-    // });
+    appLinks.getInitialLink().then((uri) {
+      if (uri == null) return;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (navigatorKey.currentContext == null) return;
+        openLinkWithUri(navigatorKey.currentContext!, uri)
+          .onError((error, _) => null);
+      });
+    });
     linkSubscription = appLinks.uriLinkStream.listen((uri) {
       if (isInForeground) return;
       if (navigatorKey.currentContext == null) return;
@@ -140,24 +137,24 @@ class MyAppState extends State<MyApp> {
     );
     final routes = {
       '/create': (context) => ScaffoldWithDrawer(
-          title: S.of(context)?.drawer_createPage ?? 'Create a Link',
-          body: CreatePage(),
-          drawer: sharedDrawer,
+        title: S.of(context)?.drawer_createPage ?? 'Create a Link',
+        body: CreatePage(),
+        drawer: sharedDrawer,
       ),
       '/read': (context) => ScaffoldWithDrawer(
-          title: S.of(context)?.drawer_readPage ?? 'Read a Link',
-          body: ReadPage(),
-          drawer: sharedDrawer,
+        title: S.of(context)?.drawer_readPage ?? 'Read a Link',
+        body: ReadPage(),
+        drawer: sharedDrawer,
       ),
       '/gallery': (context) => ScaffoldWithDrawer(
-          title: S.of(context)?.drawer_galleryPage ?? 'Link Gallery',
-          body: GalleryPage(),
-          drawer: sharedDrawer,
+        title: S.of(context)?.drawer_galleryPage ?? 'Link Gallery',
+        body: GalleryPage(),
+        drawer: sharedDrawer,
       ),
       '/settings': (context) => ScaffoldWithDrawer(
-          title: S.of(context)?.drawer_settingPage ?? 'Settings',
-          body: SettingsPage(),
-          drawer: sharedDrawer,
+        title: S.of(context)?.drawer_settingPage ?? 'Settings',
+        body: SettingsPage(),
+        drawer: sharedDrawer,
       ),
     };
 
@@ -189,7 +186,15 @@ class MyAppState extends State<MyApp> {
             ),
           ),
           themeMode: themeProvider.theme.toThemeMode(),
-          initialRoute: '/create',
+          home: Builder(
+            builder: (context) {
+              return ScaffoldWithDrawer(
+                title: S.of(context)?.drawer_createPage ?? 'Create a Link',
+                body: CreatePage(),
+                drawer: sharedDrawer,
+              );
+            },
+          ),
           routes: routes,
         );
       }
