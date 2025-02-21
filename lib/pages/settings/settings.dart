@@ -79,7 +79,10 @@ class _SettingsPageState extends State<SettingsPage> {
     final archiveFilePath = await showWaitingDialog(context,
       title: l10n.settingsPage_exportData_generatingArchive,
       task: creatBackupArchive
-    );
+    ).onError((e, b) {
+      if (mounted) showUnexpectedError(context, e);
+      return null;
+    });
     if (archiveFilePath == null) return;
 
     final archiveFile = File(archiveFilePath);

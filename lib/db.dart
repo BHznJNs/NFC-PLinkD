@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:nfc_plinkd/l10n/app_localizations.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:nfc_plinkd/l10n/app_localizations.dart';
 import 'package:nfc_plinkd/utils/index.dart';
 
 extension on Database {
@@ -179,6 +179,11 @@ class DatabaseHelper {
     final res = await db.rawQuery('SELECT COUNT (*) from $linksTableName');
     final count = Sqflite.firstIntValue(res);
     return count;
+  }
+
+  Future<void> createCheckpoint() async {
+    final db = await database;
+    await db.rawQuery("PRAGMA wal_checkpoint;");
   }
 
   Future<void> deleteLink(LinkModel link) async {

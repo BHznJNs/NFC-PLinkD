@@ -69,6 +69,7 @@ Future<void> mergeFolder({
 Future<String> creatBackupArchive() async {
   const archiveFilePrefix = 'NFC-PLinkD-archive';
 
+  await DatabaseHelper.instance.createCheckpoint();
   final dbFile = File(await DatabaseHelper.dbPath);
   final dataDir = Directory(await getDataPath());
 
@@ -78,8 +79,10 @@ Future<String> creatBackupArchive() async {
 
   final encoder = ZipFileEncoder();
   encoder.create(tempZipPath);
-  if (dbFile .existsSync()) await encoder.addFile(dbFile);
-  if (dataDir.existsSync()) await encoder.addDirectory(dataDir);
+  await Future.wait([
+    dbFile .exists().then((_) => encoder.addFile(dbFile)),
+    dataDir.exists().then((_) => encoder.addDirectory(dataDir)),
+  ]);
   encoder.closeSync();
 
   return tempZipPath;
