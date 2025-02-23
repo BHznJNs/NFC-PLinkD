@@ -28,3 +28,7 @@
 | 创建链接 | 读取链接 | 总览 | 设置 |
 | ------ | ------- | ---- | ---- |
 | ![创建链接截图](docs/screenshots/creating-page_dark_zh.jpg) | ![reading截图](docs/screenshots/reading-page_dark_zh.jpg) | ![gallery截图](docs/screenshots/gallery-page_dark_zh.jpg) | ![settings截图](docs/screenshots/settings-page_dark_zh.jpg) |
+
+## 用户文档
+
+- [常见问题](./docs/faqs_zh.md)

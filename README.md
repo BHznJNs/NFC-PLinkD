@@ -28,3 +28,7 @@ An **NFC** application that helps you create **link**s between your **p**aper ma
 | Creating | Reading | Gallery | Settings |
 | -------- | ------- | ------- | -------- |
 | ![creating screenshot](docs/screenshots/creating-page_dark_en.jpg) | ![reading screenshot](docs/screenshots/reading-page_dark_en.jpg) | ![gallery screenshot](docs/screenshots/gallery-page_dark_en.jpg) | ![settings screenshot](docs/screenshots/settings-page_dark_en.jpg) |
+
+## User Documents
+
+- [FAQs](./docs/faqs.md)
