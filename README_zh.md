@@ -11,7 +11,9 @@
 
 这是一个通过 NFC 创建能够连接**纸**质材料和**电**子材料的**链接**。
 
-<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=114051631878362&bvid=BV1NKA2eTEBJ&cid=25761027947&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+## ▶️ 视频演示
+
+[![Demo Video](http://img.youtube.com/vi/Vr0gKqifdtM/0.jpg)](https://www.youtube.com/watch?v=Vr0gKqifdtM)
 
 ## 🖼️ 屏幕截图
 
