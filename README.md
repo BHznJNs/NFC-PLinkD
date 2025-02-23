@@ -4,7 +4,8 @@
     <h1>NFC PLinkD</h1>
     <a href="README_zh.md">中文介绍</a> | 
     <a href="https://github.com/BHznJNs/NFC-PLinkD/releases">Install</a> |
-    <a href="https://github.com/BHznJNs/NFC-PLinkD/issues">Feedback</a>
+    <a href="https://github.com/BHznJNs/NFC-PLinkD/issues">Feedback</a> | 
+    <a href="./docs/faqs.md">FAQs</a>
     <br />
     <br />
 </div>
