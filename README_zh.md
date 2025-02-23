@@ -14,7 +14,8 @@
 
 ## ▶️ 视频演示
 
-[![Demo Video](http://img.youtube.com/vi/Vr0gKqifdtM/0.jpg)](https://www.youtube.com/watch?v=Vr0gKqifdtM)
+Bilibili: https://www.bilibili.com/video/BV1NKA2eTEBJ/
+Youtube: [![Demo Video](http://img.youtube.com/vi/Vr0gKqifdtM/0.jpg)](https://www.youtube.com/watch?v=Vr0gKqifdtM)
 
 ## 🖼️ 屏幕截图
 
