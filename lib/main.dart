@@ -135,7 +135,7 @@ class MyAppState extends State<MyApp> {
       seedColor: colorTheme,
       brightness: Brightness.dark,
     );
-    final routes = {
+    final routes = <String, Widget Function(BuildContext)>{
       '/create': (context) => ScaffoldWithDrawer(
         title: S.of(context)?.drawer_createPage ?? 'Create a Link',
         body: CreatePage(),
@@ -186,15 +186,7 @@ class MyAppState extends State<MyApp> {
             ),
           ),
           themeMode: themeProvider.theme.toThemeMode(),
-          home: Builder(
-            builder: (context) {
-              return ScaffoldWithDrawer(
-                title: S.of(context)?.drawer_createPage ?? 'Create a Link',
-                body: CreatePage(),
-                drawer: sharedDrawer,
-              );
-            },
-          ),
+          home: Builder(builder: routes['/create']!),
           routes: routes,
         );
       }

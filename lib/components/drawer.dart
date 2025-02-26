@@ -35,7 +35,11 @@ class ScaffoldDrawer extends StatelessWidget {
       _DrawerItemData(l10n.drawer_galleryPage, '/gallery' , Icons.collections_bookmark_outlined, Icons.collections_bookmark),
       _DrawerItemData(l10n.drawer_settingPage, '/settings', Icons.settings_outlined            , Icons.settings            ),
     ];
-    final currentRoute = ModalRoute.of(context)?.settings.name ?? '/create';
+    final currentRoute = (() {
+      final routeName = ModalRoute.of(context)?.settings.name;
+      if (routeName == null || routeName == '/') return '/create';
+      return routeName;
+    })();
     return Drawer(
       child: SafeArea(
         child: Column(
