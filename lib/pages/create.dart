@@ -52,15 +52,22 @@ class CreatePage extends StatelessWidget {
       _CreateItemData(
         icon: Icons.link,
         title: l10n.createPage_weblink,
-        onTap: (context) {
+        onTap: (context) =>
           inputWebLink(context).then((resources) {
             if (!context.mounted) return;
             linkEditViewBuilder(context, resources);
-          });
-        }
+          })
+      ),
+      _CreateItemData(
+        icon: Icons.text_snippet,
+        title: l10n.createPage_note,
+        onTap: (context) =>
+          inputNoteLink(context).then((resources) {
+            if (!context.mounted) return;
+            linkEditViewBuilder(context, resources);
+          })
       ),
     ];
-
     return ListView(
       padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       children: itemsData.map((data) =>

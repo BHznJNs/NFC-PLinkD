@@ -11,6 +11,7 @@
   "createPage_video": "Record a Video",
   "createPage_audio": "Record a Audio",
   "createPage_weblink": "Attach a Web Link",
+  "createPage_note": "Link to Your Note",
  
   "readPage_approachNFCTagHint": "Approach an NFC Tag",
   "readPage_readStopped": "Stopped",
@@ -48,6 +49,7 @@
   "editLinkPage_actionLabel_video": "Record a video",
   "editLinkPage_actionLabel_audio": "Record a audio",
   "editLinkPage_actionLabel_weblink": "Attach a web link",
+  "editLinkPage_actionLabel_note": "Link to your note",
   "editLinkPage_actionLabel_upload": "Upload some resource",
   "editLinkPage_linkName_hint": "Input link name here...",
   "editLinkPage_dialog_action_save": "Save",
@@ -64,8 +66,9 @@
   "custom_dialog_action_ok": "OK",
   "custom_dialog_delete_title": "Confirm Deletion",
   "custom_dialog_delete_content": "Are you sure you want to delete this item? This action cannot be undone, so please proceed with caution.",
-  "custom_dialog_weblink_title": "Website Link",
-  "custom_dialog_weblink_invalidUrlMsg": "Invalid URL",
+  "custom_dialog_uri_weblink_title": "Website Link",
+  "custom_dialog_uri_note_title": "Note Link",
+  "custom_dialog_uri_invalidUrlMsg": "Invalid URL",
   "custom_dialog_success_title": "Success",
   "custom_dialog_unexpectedError_title": "Unexpected Error",
   "custom_dialog_nfc_approach_title": "Approach an NFC Tag",
@@ -87,5 +90,8 @@
   "linkError_dataNotFound_content": "The data for this link is not found, it may has been deleted.",
 
   "importError_invalidData_title": "Invalid Data",
-  "importError_invalidData_content": "It appears the selected file is not a valid NFC PLinkD data file. Please try importing the correct file."
+  "importError_invalidData_content": "It appears the selected file is not a valid NFC PLinkD data file. Please try importing the correct file.",
+
+  "pickerError_unsupportedNoteLink_title": "Unsupported Note Link",
+  "pickerError_unsupportedNoteLink_content": "The link you submitted is from an unsupported note-taking platform. Currently, we only accept links from Notion and Obsidian. Please verify your link and try again."
 }

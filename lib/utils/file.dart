@@ -5,6 +5,7 @@ import 'package:archive/archive_io.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:nfc_plinkd/db.dart';
+import 'package:nfc_plinkd/models.dart';
 import 'package:nfc_plinkd/utils/formatter.dart';
 
 const dataDirname = 'data';
@@ -28,7 +29,10 @@ Future<List<ResourceModel>> copyResourcesToAppDir(String id, List<ResourceModel>
 
   final List<ResourceModel> resultResources = [];
   for (final resource in resources) {
-    if (resource.type == ResourceType.webLink) continue;
+    if ([ResourceType.webLink, ResourceType.note].contains(resource.type)) {
+      resultResources.add(resource);
+      continue;
+    }
 
     final originalFile = File(resource.path);
     final filename = path.basename(resource.path);

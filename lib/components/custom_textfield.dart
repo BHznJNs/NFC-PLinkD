@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class UrlTextField extends StatefulWidget {
-  const UrlTextField(this._controller, {
+class UriTextField extends StatefulWidget {
+  const UriTextField(this._controller, {
     super.key,
-    this.errorMessage,
+    this.hintText,
+    this.errorText,
     this.onChange,
   });
 
   final TextEditingController _controller;
-  final String? errorMessage;
+  final String? hintText;
+  final String? errorText;
   final Function(String)? onChange;
 
   @override
-  State<StatefulWidget> createState() => _UrlTextFieldState();
+  State<StatefulWidget> createState() => _UriTextFieldState();
 }
 
-class _UrlTextFieldState extends State<UrlTextField> {
+class _UriTextFieldState extends State<UriTextField> {
   bool isTextFieldEmpty = true;
 
   void pasteText() async {
@@ -53,7 +55,8 @@ class _UrlTextFieldState extends State<UrlTextField> {
       autofocus: true,
       controller: widget._controller,
       decoration: InputDecoration(
-        errorText: widget.errorMessage,
+        hintText: widget.hintText,
+        errorText: widget.errorText,
         suffixIcon: isTextFieldEmpty
           ? IconButton(
               onPressed: pasteText,

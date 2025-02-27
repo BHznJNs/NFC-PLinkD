@@ -10,7 +10,7 @@
     <br />
 </div>
 
-An **NFC** application that helps you create **link**s between your **p**aper materials and **d**igital resources.
+A mobile application that helps you create **link**s between your **p**aper materials and **d**igital resources via **NFC**.
 
 ## ▶️ Video Demo
 

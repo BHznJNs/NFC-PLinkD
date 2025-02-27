@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nfc_plinkd/components/link_edit_view.dart';
 import 'package:nfc_plinkd/db.dart';
 import 'package:nfc_plinkd/l10n/app_localizations.dart';
+import 'package:nfc_plinkd/models.dart';
 import 'package:nfc_plinkd/utils/file.dart';
 import 'package:nfc_plinkd/utils/index.dart';
 import 'package:nfc_plinkd/utils/nfc.dart';
@@ -23,11 +24,16 @@ Future<LinkEditResult?> openLinkWithId(BuildContext context, String id) async {
 
   final (link, resources) = fetchResult;
   final basePath = await getBasePath(link.id);
-  final resolvedResources = resources.map((resource) =>
-    resource.copyWith(
-      path: '$basePath/${resource.path}')
-  ).toList();
-
+  final resolvedResources = <ResourceModel>[];
+  for (final resource in resources) {
+    if ([ResourceType.webLink, ResourceType.note].contains(resource.type)) {
+      resolvedResources.add(resource);
+      continue;
+    }
+    resolvedResources.add(resource.copyWith(
+      path: '$basePath/${resource.path}'
+    ));
+  }
   if (!context.mounted) return null;
   return await _openWithNavigator(context, link, resolvedResources);
 }

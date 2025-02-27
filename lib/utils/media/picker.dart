@@ -6,6 +6,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:nfc_plinkd/components/recorder.dart';
 import 'package:nfc_plinkd/components/custom_dialog.dart';
 import 'package:nfc_plinkd/db.dart';
+import 'package:nfc_plinkd/l10n/app_localizations.dart';
+import 'package:nfc_plinkd/utils/index.dart';
 
 final picker = ImagePicker();
 
@@ -84,12 +86,47 @@ Future<ResourcePickerResult> recordAudio(BuildContext context) async {
 Future<ResourcePickerResult> inputWebLink(BuildContext context) async {
   final result = await showDialog(
     context: context,
-    builder: (BuildContext context) {
-      return WebLinkInputDialog();
-    },
-  );
+    builder: (BuildContext context) =>
+      UriInputDialog(title: S.of(context)!.custom_dialog_uri_weblink_title),
+  ) as String?;
   if (result == null) return [];
   return [(result, ResourceType.webLink)];
+}
+
+final noteLinkProcessors = [
+  (Uri inputUri) => inputUri.host.contains('notion.so')
+    ? inputUri.replace(scheme: 'notion').toString()
+    : null, // notion
+  (Uri inputUri) => inputUri.scheme == 'obsidian'
+    ? inputUri.toString()
+    : null, // obsidian
+];
+/// Throw `PickerError.NotSupportedNote` if the input uri is not supported
+String tryResolveNoteLink(BuildContext context, Uri inputUri) {
+  for (final processor in noteLinkProcessors) {
+    final output = processor(inputUri);
+    if (output != null) return output;
+  }
+  throw PickerError.NotSupportedNote(context);
+}
+Future<ResourcePickerResult> inputNoteLink(BuildContext context) async {
+  final result = await showDialog(
+    context: context,
+    builder: (BuildContext context) =>
+      UriInputDialog(title: S.of(context)!.custom_dialog_uri_note_title),
+  ) as String?;
+  if (result == null) return [];
+  if (!context.mounted) return [];
+
+  try {
+    // since there is a check in the UriInputDialog,
+    // there is not need to check if uri valid here.
+    final resolvedLink = tryResolveNoteLink(context, Uri.parse(result));
+    return [(resolvedLink, ResourceType.note)];
+  } catch (e) {
+    resolveDynamicError(context, e);
+    return [];
+  }
 }
 
 Future<ResourcePickerResult> pickMediaFile(BuildContext _) async {
@@ -111,4 +148,17 @@ Future<ResourcePickerResult> pickMediaFile(BuildContext _) async {
     resultList.add((file.path!, fileType));
   }
   return resultList;
+}
+
+class PickerError extends CustomError {
+  PickerError({required super.title, required super.content});
+
+  // ignore: non_constant_identifier_names
+  static PickerError NotSupportedNote(BuildContext context) {
+    final l10n = S.of(context)!;
+    return PickerError(
+      title: l10n.pickerError_unsupportedNoteLink_title,
+      content: l10n.pickerError_unsupportedNoteLink_content,
+    );
+  }
 }

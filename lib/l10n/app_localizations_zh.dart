@@ -39,6 +39,9 @@ class SZh extends S {
   String get createPage_weblink => '附加网页链接';
 
   @override
+  String get createPage_note => '链接你的笔记';
+
+  @override
   String get readPage_approachNFCTagHint => '请靠近 NFC 标签';
 
   @override
@@ -135,6 +138,9 @@ class SZh extends S {
   String get editLinkPage_actionLabel_weblink => '附加网页链接';
 
   @override
+  String get editLinkPage_actionLabel_note => '链接你的笔记';
+
+  @override
   String get editLinkPage_actionLabel_upload => '上传资源';
 
   @override
@@ -177,10 +183,13 @@ class SZh extends S {
   String get custom_dialog_delete_content => '您确定要删除此项目吗？此操作无法撤销，请谨慎操作。';
 
   @override
-  String get custom_dialog_weblink_title => '网站链接';
+  String get custom_dialog_uri_weblink_title => '网站链接';
 
   @override
-  String get custom_dialog_weblink_invalidUrlMsg => '无效的 URL';
+  String get custom_dialog_uri_note_title => '笔记链接';
+
+  @override
+  String get custom_dialog_uri_invalidUrlMsg => '无效的 URL';
 
   @override
   String get custom_dialog_success_title => '成功';
@@ -238,6 +247,12 @@ class SZh extends S {
 
   @override
   String get importError_invalidData_content => '数据文件格式不匹配。请确保您选择的是由本应用导出的数据文件。';
+
+  @override
+  String get pickerError_unsupportedNoteLink_title => '不支持的笔记链接';
+
+  @override
+  String get pickerError_unsupportedNoteLink_content => '您提交的链接来自于不受支持的笔记应用。目前仅支持 Notion 和 Obsidian 的笔记链接，请检查并重新提交正确的链接。';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -275,6 +290,9 @@ class SZhCn extends SZh {
   String get createPage_weblink => '附加网页链接';
 
   @override
+  String get createPage_note => '链接你的笔记';
+
+  @override
   String get readPage_approachNFCTagHint => '请靠近 NFC 标签';
 
   @override
@@ -371,6 +389,9 @@ class SZhCn extends SZh {
   String get editLinkPage_actionLabel_weblink => '附加网页链接';
 
   @override
+  String get editLinkPage_actionLabel_note => '链接你的笔记';
+
+  @override
   String get editLinkPage_actionLabel_upload => '上传资源';
 
   @override
@@ -413,10 +434,13 @@ class SZhCn extends SZh {
   String get custom_dialog_delete_content => '您确定要删除此项目吗？此操作无法撤销，请谨慎操作。';
 
   @override
-  String get custom_dialog_weblink_title => '网站链接';
+  String get custom_dialog_uri_weblink_title => '网站链接';
 
   @override
-  String get custom_dialog_weblink_invalidUrlMsg => '无效的 URL';
+  String get custom_dialog_uri_note_title => '笔记链接';
+
+  @override
+  String get custom_dialog_uri_invalidUrlMsg => '无效的 URL';
 
   @override
   String get custom_dialog_success_title => '成功';
@@ -474,4 +498,10 @@ class SZhCn extends SZh {
 
   @override
   String get importError_invalidData_content => '数据文件格式不匹配。请确保您选择的是由本应用导出的数据文件。';
+
+  @override
+  String get pickerError_unsupportedNoteLink_title => '不支持的笔记链接';
+
+  @override
+  String get pickerError_unsupportedNoteLink_content => '您提交的链接来自于不受支持的笔记应用。目前仅支持 Notion 和 Obsidian 的笔记链接，请检查并重新提交正确的链接。';
 }

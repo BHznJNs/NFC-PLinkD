@@ -147,12 +147,7 @@ class _SettingsPageState extends State<SettingsPage> {
       if (!mounted) return;
       showSuccessMsg(context, text: l10n.settingsPage_importData_successMsg);
     }).catchError((e, b) {
-      if (!mounted) return;
-      if (e is CustomError) {
-        showCustomError(context, e);
-      } else {
-        showUnexpectedError(context, e);
-      }
+      if (mounted) resolveDynamicError(context, e);
     });
   }
 

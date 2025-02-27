@@ -39,6 +39,9 @@ class SEn extends S {
   String get createPage_weblink => 'Attach a Web Link';
 
   @override
+  String get createPage_note => 'Link to Your Note';
+
+  @override
   String get readPage_approachNFCTagHint => 'Approach an NFC Tag';
 
   @override
@@ -135,6 +138,9 @@ class SEn extends S {
   String get editLinkPage_actionLabel_weblink => 'Attach a web link';
 
   @override
+  String get editLinkPage_actionLabel_note => 'Link to your note';
+
+  @override
   String get editLinkPage_actionLabel_upload => 'Upload some resource';
 
   @override
@@ -177,10 +183,13 @@ class SEn extends S {
   String get custom_dialog_delete_content => 'Are you sure you want to delete this item? This action cannot be undone, so please proceed with caution.';
 
   @override
-  String get custom_dialog_weblink_title => 'Website Link';
+  String get custom_dialog_uri_weblink_title => 'Website Link';
 
   @override
-  String get custom_dialog_weblink_invalidUrlMsg => 'Invalid URL';
+  String get custom_dialog_uri_note_title => 'Note Link';
+
+  @override
+  String get custom_dialog_uri_invalidUrlMsg => 'Invalid URL';
 
   @override
   String get custom_dialog_success_title => 'Success';
@@ -238,4 +247,10 @@ class SEn extends S {
 
   @override
   String get importError_invalidData_content => 'It appears the selected file is not a valid NFC PLinkD data file. Please try importing the correct file.';
+
+  @override
+  String get pickerError_unsupportedNoteLink_title => 'Unsupported Note Link';
+
+  @override
+  String get pickerError_unsupportedNoteLink_content => 'The link you submitted is from an unsupported note-taking platform. Currently, we only accept links from Notion and Obsidian. Please verify your link and try again.';
 }

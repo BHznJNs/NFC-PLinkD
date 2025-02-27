@@ -11,6 +11,7 @@ import 'package:nfc_plinkd/pages/resource_view/resource_list_view.dart';
 import 'package:nfc_plinkd/components/snackbar.dart';
 import 'package:nfc_plinkd/components/custom_dialog.dart';
 import 'package:nfc_plinkd/db.dart';
+import 'package:nfc_plinkd/models.dart';
 import 'package:nfc_plinkd/l10n/app_localizations.dart';
 import 'package:nfc_plinkd/utils/file.dart';
 import 'package:nfc_plinkd/utils/index.dart';
@@ -177,11 +178,13 @@ class _LinkEditViewState extends State<LinkEditView> {
       'video': Colors.blueGrey.shade600,
       'audio': Colors.purple.shade700,
       'weblink': Colors.teal.shade700,
+      'note': Colors.deepOrange.shade600,
       'upload': Colors.amber.shade700,
     } : {
       'video': Colors.indigo.shade400,
       'audio': Colors.deepPurple.shade400,
       'weblink': Colors.teal.shade400,
+      'note': Colors.deepOrange.shade400,
       'upload': Colors.amber.shade400,
     };
     final speedDialChildren = [
@@ -207,12 +210,19 @@ class _LinkEditViewState extends State<LinkEditView> {
         onTap: () => filePickerWrapper(inputWebLink),
       ),
       SpeedDialChild(
+        label: l10n.editLinkPage_actionLabel_note,
+        child: Icon(Icons.text_snippet),
+        foregroundColor: Colors.white,
+        backgroundColor: bgColorMap['note'],
+        onTap: () => filePickerWrapper(inputNoteLink),
+      ),
+      SpeedDialChild(
         label: l10n.editLinkPage_actionLabel_upload,
         child: Icon(Icons.upload),
         foregroundColor: Colors.white,
         backgroundColor: bgColorMap['upload'],
         onTap: () => filePickerWrapper(pickMediaFile),
-      )
+      ),
     ];
 
     return Scaffold(

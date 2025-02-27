@@ -11,6 +11,7 @@
   "createPage_video": "录制视频",
   "createPage_audio": "录制音频",
   "createPage_weblink": "附加网页链接",
+  "createPage_note": "链接你的笔记",
 
   "readPage_approachNFCTagHint": "请靠近 NFC 标签",
   "readPage_readStopped": "已停止",
@@ -48,6 +49,7 @@
   "editLinkPage_actionLabel_video": "录制视频",
   "editLinkPage_actionLabel_audio": "录制音频",
   "editLinkPage_actionLabel_weblink": "附加网页链接",
+  "editLinkPage_actionLabel_note": "链接你的笔记",
   "editLinkPage_actionLabel_upload": "上传资源",
   "editLinkPage_linkName_hint": "在此输入链接名称...",
   "editLinkPage_dialog_action_save": "保存",
@@ -64,8 +66,9 @@
   "custom_dialog_action_ok": "确定",
   "custom_dialog_delete_title": "确认删除",
   "custom_dialog_delete_content": "您确定要删除此项目吗？此操作无法撤销，请谨慎操作。",
-  "custom_dialog_weblink_title": "网站链接",
-  "custom_dialog_weblink_invalidUrlMsg": "无效的 URL",
+  "custom_dialog_uri_weblink_title": "网站链接",
+  "custom_dialog_uri_note_title": "笔记链接",
+  "custom_dialog_uri_invalidUrlMsg": "无效的 URL",
   "custom_dialog_success_title": "成功",
   "custom_dialog_unexpectedError_title": "未知错误",
   "custom_dialog_nfc_approach_title": "靠近 NFC 标签",
@@ -87,5 +90,8 @@
   "linkError_dataNotFound_content": "此链接的数据未找到，可能已被删除。",
 
   "importError_invalidData_title": "无效的数据文件",
-  "importError_invalidData_content": "数据文件格式不匹配。请确保您选择的是由本应用导出的数据文件。"
+  "importError_invalidData_content": "数据文件格式不匹配。请确保您选择的是由本应用导出的数据文件。",
+
+  "pickerError_unsupportedNoteLink_title": "不支持的笔记链接",
+  "pickerError_unsupportedNoteLink_content": "您提交的链接来自于不受支持的笔记应用。目前仅支持 Notion 和 Obsidian 的笔记链接，请检查并重新提交正确的链接。"
 }

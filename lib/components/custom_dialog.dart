@@ -146,23 +146,31 @@ Future<bool> showDeleteDialog(BuildContext context) async {
 
 // --- --- --- --- --- ---
 
-class WebLinkInputDialog extends StatefulWidget {
-  const WebLinkInputDialog({super.key});
+class UriInputDialog extends StatefulWidget {
+  const UriInputDialog({
+    super.key,
+    required this.title,
+    this.hintText,
+  });
+
+  final String title;
+  final String? hintText;
 
   @override
-  State<StatefulWidget> createState() => _WebLinkInputDialogState();
+  State<StatefulWidget> createState() => _UriInputDialogState();
 }
-class _WebLinkInputDialogState extends State<WebLinkInputDialog> {
+class _UriInputDialogState extends State<UriInputDialog> {
   final TextEditingController textEditingController = TextEditingController();
   bool isUrlEmpty = true;
-  String? errorMessage;
+  String? errorText;
 
   @override
   Widget build(BuildContext context) {
     final l10n = S.of(context)!;
-    final textField = UrlTextField(
+    final textField = UriTextField(
       textEditingController,
-      errorMessage: errorMessage,
+      hintText: widget.hintText,
+      errorText: errorText,
       onChange: (text) =>
         setState(() => isUrlEmpty = text.isEmpty),
     );
@@ -172,21 +180,17 @@ class _WebLinkInputDialogState extends State<WebLinkInputDialog> {
     );
     final confirmButton = TextButton(
       onPressed: isUrlEmpty ? null : () {
-        final uri = Uri.tryParse(textEditingController.text);
-        final isValidUri = uri != null
-          && uri.scheme.isNotEmpty
-          && uri.host.isNotEmpty;
-        if (isValidUri) {
+        if (isValidUri(textEditingController.text)) {
           Navigator.of(context).pop(textEditingController.text);
         } else {
           setState(() =>
-            errorMessage = l10n.custom_dialog_weblink_invalidUrlMsg);
+            errorText = l10n.custom_dialog_uri_invalidUrlMsg);
         }
       },
       child: Text(l10n.custom_dialog_action_confirm),
     );
     return AlertDialog.adaptive(
-      title: Text(l10n.custom_dialog_weblink_title),
+      title: Text(widget.title),
       content: textField,
       actions: [
         cancelButton,

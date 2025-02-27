@@ -3,9 +3,11 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:nfc_plinkd/utils/index.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:nfc_plinkd/components/custom_textfield.dart';
 import 'package:nfc_plinkd/l10n/app_localizations.dart';
+import 'package:nfc_plinkd/models.dart';
 import 'package:nfc_plinkd/pages/resource_view/image.dart';
 import 'package:nfc_plinkd/pages/resource_view/audio.dart';
 import 'package:nfc_plinkd/pages/resource_view/video.dart';
@@ -101,161 +103,114 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
   static const double size = 128;
   File? thumbnail;
 
-  late TextEditingController urlController = TextEditingController(text: widget.path);
-  late TextEditingController descriptionController = TextEditingController(text: widget.description);
+  // late TextEditingController urlController = TextEditingController(text: widget.path);
+  // late TextEditingController descriptionController = TextEditingController(text: widget.description);
 
   void openResource() {
     switch (widget.type) {
       case ResourceType.image:
         Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => ImagePage(widget.path)));
-        break;
       case ResourceType.video:
         openVideoWithDefaultPlayer(context, widget.path);
-        break;
       case ResourceType.audio:
         openAudioWithDefaultPlayer(context, widget.path);
-        break;
       case ResourceType.webLink:
         launchUrlString(widget.path);
-        break;
+      case ResourceType.note:
+        launchUrlString(widget.path);
     }
   }
 
-  void openDialog() {
-    final l10n = S.of(context)!;
-    // reset TextEditingControllers
-    urlController = TextEditingController(text: widget.path);
-    descriptionController = TextEditingController(text: widget.description);
-
-    final deleteButton = TextButton(
-      onPressed: () {
-        widget.onDelete(widget.index);
-        Navigator.of(context).pop();
-      },
-      child: Text(l10n.editLinkPage_dialog_action_delete,
-        style: TextStyle(
-          color: Theme.of(context).colorScheme.error
-        ),
-      ),
-    );
-    final saveButton = TextButton(
-      onPressed: () {
-        widget.onSave(widget.index,
-          path: widget.type == ResourceType.webLink
-            ? urlController.text
-            : null,
-          description: descriptionController.text,
-        );
-        Navigator.of(context).pop();
-        setState(() {});
-      },
-      child: Text(l10n.editLinkPage_dialog_action_save),
-    );
-    final dialog = AlertDialog.adaptive(
-      title: Text(l10n.editLinkPage_dialog_title),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (widget.type == ResourceType.webLink)
-            ...[
-              UrlTextField(urlController),
-              const SizedBox(height: 32),
-            ],
-          TextField(
-            minLines: 1,
-            maxLines: 3,
-            controller: descriptionController,
-            decoration: InputDecoration(
-              hintText: l10n.editLinkPage_dialog_description_hint,
-            ),
-          ),
-        ],
-      ),
-      actions: [
-        deleteButton,
-        saveButton,
-      ],
-    );
-    showDialog(
+  Future<void> openEditingDialog() async {
+    final result = await showDialog(
       context: context,
-      builder: (BuildContext context) => dialog,
+      builder: (context) => _ResourceEditingDialog(
+        index: widget.index,
+        path: widget.path,
+        type: widget.type,
+        description: widget.description,
+      )
+    ) as _ResourceEditingResult?;
+    if (result == null) return;
+    if (result.path == null && result.description == null) {
+      widget.onDelete(result.index);
+      return;
+    }
+    widget.onSave(widget.index,
+      path: [ResourceType.webLink, ResourceType.note]
+        .contains(widget.type)
+          ? result.path : null,
+      description: result.description,
     );
   }
 
   Widget thumbnailBuilder() {
-    if (thumbnail != null && (
-      widget.type == ResourceType.image ||
-      widget.type == ResourceType.video
-    )) {
-      final videoThumbnailMask = Container(
-        width: size - 16,
-        height: size - 16,
-        margin: const EdgeInsets.all(8),
-        decoration: const BoxDecoration(
-          color: Color.fromRGBO(0, 0, 0, 0.4), 
-          borderRadius: BorderRadius.all(Radius.circular(8))
-        ),
-        alignment: Alignment.center,
-        child: const Icon(
-          Icons.play_arrow,
-          color: Colors.white,
-          size: 32,
-        ),
-      );
-      return Stack(children: [
-        Container(
-          width: size - 16,
-          height: size - 16,
-          margin: EdgeInsets.all(8),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.file(thumbnail!, fit: BoxFit.cover),
-          ),
-        ),
-        if (widget.type == ResourceType.video)
-          videoThumbnailMask,
-      ]);
-    } else if (widget.type == ResourceType.audio) {
-      return Container(
-        width: size,
-        height: size,
-        alignment: Alignment.center,
-        child: Icon(
-          Icons.audio_file,
-          size: 80,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-      );
-    } else if (widget.type == ResourceType.webLink) {
-      final faviconUri = Uri
-        .parse(widget.path)
-        .replace(path: 'favicon.ico');
-      return Container(
-        width: size - 16,
-        height: size - 16,
-        margin: EdgeInsets.all(8),
-        alignment: Alignment.center,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.network(
-            width: 72,
-            height: 72,
-            faviconUri.toString(),
-            fit: BoxFit.contain,
-            errorBuilder: (context, object, stackTrace) {
-              return Icon(Icons.link, size: 72);
-            },
-          ),
-        ),
-      );
-    }
-    return Container(
+    Widget thumbnailContainerBuilder({required Widget child,}) => Container(
+      width: size - 16,
+      height: size - 16,
+      margin: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        // color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: child,
+    );
+
+    final loadingThumbnail = Container(
       width: size,
       height: size,
       alignment: Alignment.center,
       child: CircularProgressIndicator.adaptive(),
     );
+    final videoThumbnailMask = thumbnailContainerBuilder(
+      child: const Icon(
+        Icons.play_arrow,
+        color: Colors.white,
+        size: 32,
+      ),
+    );
+    switch (widget.type) {
+      case ResourceType.image when thumbnail != null:
+      case ResourceType.video when thumbnail != null:
+        return Stack(children: [
+          thumbnailContainerBuilder(
+            child: Image.file(thumbnail!, fit: BoxFit.cover)
+          ),
+          if (widget.type == ResourceType.video)
+            videoThumbnailMask,
+        ]);
+      case ResourceType.audio:
+        return thumbnailContainerBuilder(
+          child: Icon(
+            Icons.audio_file,
+            size: 80,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        );
+      case ResourceType.webLink:
+        final faviconUri = Uri
+          .parse(widget.path)
+          .replace(path: 'favicon.ico');
+        return thumbnailContainerBuilder(
+          child: Padding(
+            padding: EdgeInsets.all(20),
+            child: Image.network(
+              faviconUri.toString(),
+              fit: BoxFit.contain,
+              errorBuilder: (context, object, stackTrace) {
+                return Icon(Icons.link, size: size - 16 - 40);
+              },
+            ),
+          ),
+        );
+      case ResourceType.note:
+        final uri = Uri.parse(widget.path);
+        final image = Image.asset('assets/images/${uri.scheme}-icon.png');
+        return thumbnailContainerBuilder(child: image);
+      default: return loadingThumbnail;
+    }
   }
 
   @override
@@ -267,7 +222,7 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
       final generator = switch (widget.type) {
         ResourceType.image => generateImageThumbnail,
         ResourceType.video => generateVideoThumbnail,
-        ResourceType.audio || ResourceType.webLink => null,
+        ResourceType.audio || ResourceType.webLink || ResourceType.note => null,
       };
       if (generator == null) return;
       final rootIsolateToken = RootIsolateToken.instance;
@@ -279,13 +234,6 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
         setState(() => thumbnail = thumbnail_);
       });
     }
-  }
-
-  @override
-  void dispose() {
-    urlController.dispose();
-    descriptionController.dispose();
-    super.dispose();
   }
 
   @override
@@ -324,7 +272,7 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
           children: [
             Expanded(child: InkWell(
               onTap: openResource,
-              onLongPress: openDialog,
+              onLongPress: openEditingDialog,
               child: Row(children: [
                 thumbnailBuilder(),
                 Expanded(child: Padding(
@@ -337,6 +285,105 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ResourceEditingResult {
+  const _ResourceEditingResult(this.index, {this.path, this.description});
+  final int index;
+  final String? path;
+  final String? description;
+}
+class _ResourceEditingDialog extends StatefulWidget {
+  const _ResourceEditingDialog({
+    required this.index,
+    required this.path,
+    required this.type,
+    this.description,
+  });
+
+  final int index;
+  final String path;
+  final ResourceType type;
+  final String? description;
+
+  @override
+  State<StatefulWidget> createState() => _ResourceEditingDialogState();
+}
+class _ResourceEditingDialogState extends State<_ResourceEditingDialog> {
+  late TextEditingController urlController = TextEditingController(text: widget.path);
+  late TextEditingController descriptionController = TextEditingController(text: widget.description);
+  late bool isNeededToEditPath = [ResourceType.webLink, ResourceType.note].contains(widget.type);
+  String? errorText;
+
+  void onDelete() {
+    Navigator.of(context).pop(_ResourceEditingResult(widget.index));
+  }
+
+  void onSave() {
+    if (isNeededToEditPath && !isValidUri(urlController.text)) {
+      final l10n = S.of(context)!;
+      setState(() =>
+        errorText = l10n.custom_dialog_uri_invalidUrlMsg);
+      return;
+    }
+    final res = _ResourceEditingResult(
+      widget.index,
+      path: isNeededToEditPath
+        ? urlController.text
+        : null,
+      description: descriptionController.text,
+    );
+    Navigator.of(context).pop(res);
+  }
+
+  @override
+  void dispose() {
+    urlController.dispose();
+    descriptionController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = S.of(context)!;
+    final deleteButton = TextButton(
+      onPressed: onDelete,
+      child: Text(l10n.editLinkPage_dialog_action_delete,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.error
+        ),
+      ),
+    );
+    final saveButton = TextButton(
+      onPressed: onSave,
+      child: Text(l10n.editLinkPage_dialog_action_save),
+    );
+    return AlertDialog.adaptive(
+      title: Text(l10n.editLinkPage_dialog_title),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (isNeededToEditPath)
+            ...[
+              UriTextField(urlController, errorText: errorText),
+              const SizedBox(height: 32),
+            ],
+          TextField(
+            minLines: 1,
+            maxLines: 3,
+            controller: descriptionController,
+            decoration: InputDecoration(
+              hintText: l10n.editLinkPage_dialog_description_hint,
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        deleteButton,
+        saveButton,
+      ],
     );
   }
 }

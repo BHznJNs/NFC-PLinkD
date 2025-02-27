@@ -156,6 +156,12 @@ abstract class S {
   /// **'Attach a Web Link'**
   String get createPage_weblink;
 
+  /// No description provided for @createPage_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Link to Your Note'**
+  String get createPage_note;
+
   /// No description provided for @readPage_approachNFCTagHint.
   ///
   /// In en, this message translates to:
@@ -348,6 +354,12 @@ abstract class S {
   /// **'Attach a web link'**
   String get editLinkPage_actionLabel_weblink;
 
+  /// No description provided for @editLinkPage_actionLabel_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Link to your note'**
+  String get editLinkPage_actionLabel_note;
+
   /// No description provided for @editLinkPage_actionLabel_upload.
   ///
   /// In en, this message translates to:
@@ -432,17 +444,23 @@ abstract class S {
   /// **'Are you sure you want to delete this item? This action cannot be undone, so please proceed with caution.'**
   String get custom_dialog_delete_content;
 
-  /// No description provided for @custom_dialog_weblink_title.
+  /// No description provided for @custom_dialog_uri_weblink_title.
   ///
   /// In en, this message translates to:
   /// **'Website Link'**
-  String get custom_dialog_weblink_title;
+  String get custom_dialog_uri_weblink_title;
 
-  /// No description provided for @custom_dialog_weblink_invalidUrlMsg.
+  /// No description provided for @custom_dialog_uri_note_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Note Link'**
+  String get custom_dialog_uri_note_title;
+
+  /// No description provided for @custom_dialog_uri_invalidUrlMsg.
   ///
   /// In en, this message translates to:
   /// **'Invalid URL'**
-  String get custom_dialog_weblink_invalidUrlMsg;
+  String get custom_dialog_uri_invalidUrlMsg;
 
   /// No description provided for @custom_dialog_success_title.
   ///
@@ -557,6 +575,18 @@ abstract class S {
   /// In en, this message translates to:
   /// **'It appears the selected file is not a valid NFC PLinkD data file. Please try importing the correct file.'**
   String get importError_invalidData_content;
+
+  /// No description provided for @pickerError_unsupportedNoteLink_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsupported Note Link'**
+  String get pickerError_unsupportedNoteLink_title;
+
+  /// No description provided for @pickerError_unsupportedNoteLink_content.
+  ///
+  /// In en, this message translates to:
+  /// **'The link you submitted is from an unsupported note-taking platform. Currently, we only accept links from Notion and Obsidian. Please verify your link and try again.'**
+  String get pickerError_unsupportedNoteLink_content;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {
