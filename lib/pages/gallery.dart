@@ -94,7 +94,7 @@ class _GalleryPageState extends State<GalleryPage> {
 
     await DatabaseHelper.instance.deleteLink(links[index]);
     final linkDir = Directory(await getBasePath(links[index].id));
-    if (linkDir.existsSync()) linkDir.deleteSync;
+    if (await linkDir.exists()) await linkDir.delete(recursive: true);
     setState(() => links.removeAt(index));
   }
 

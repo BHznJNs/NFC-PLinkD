@@ -37,7 +37,7 @@ Future<List<ResourceModel>> copyResourcesToAppDir(String id, List<ResourceModel>
     final originalFile = File(resource.path);
     final filename = path.basename(resource.path);
     final newFilePath = path.join(dataDirPath, filename);
-    if (!File(newFilePath).existsSync()) {
+    if (!await File(newFilePath).exists()) {
       await originalFile.copy(newFilePath); 
     }
   
@@ -52,12 +52,10 @@ Future<void> mergeFolder({
   required Directory source,
   required Directory destination,
 }) async {
-  if (!source.existsSync()) return;
+  if (!await source.exists()) return;
 
   await destination.create(recursive: true);
-  final contents = source.listSync();
-
-  for (final item in contents) {
+  await for (final item in source.list()) {
     final itemName = path.basename(item.path);
     final destinationPath = path.join(destination.path, itemName);
 
@@ -87,8 +85,7 @@ Future<String> creatBackupArchive() async {
     dbFile .exists().then((_) => encoder.addFile(dbFile)),
     dataDir.exists().then((_) => encoder.addDirectory(dataDir)),
   ]);
-  encoder.closeSync();
-
+  await encoder.close();
   return tempZipPath;
 }
 
@@ -99,21 +96,21 @@ Future<Directory> extractArchiveToTemp(String archivePath) async {
   final tempDir = await getTemporaryDirectory();
   final outputDirPath = path.join(tempDir.path, path.basename(archivePath));
   final outputDir = Directory(outputDirPath);
-  outputDir.createSync();
+  await outputDir.create();
 
   for (final archiveFile in archive.files) {
     final outputPath = path.join(outputDir.path, archiveFile.name);
 
     if (archiveFile.isFile) {
       final outFile = File(outputPath);
-      if (!outFile.parent.existsSync()) {
-        outFile.parent.createSync(recursive: true);
+      if (!await outFile.parent.exists()) {
+        await outFile.parent.create(recursive: true);
       }
-      outFile.writeAsBytesSync(archiveFile.content);
+      await outFile.writeAsBytes(archiveFile.content);
     } else {
       final dir = Directory(outputPath);
-      if (!dir.existsSync()) {
-        dir.createSync(recursive: true);
+      if (!await dir.exists()) {
+        await dir.create(recursive: true);
       }
     }
   }

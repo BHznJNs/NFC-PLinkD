@@ -256,7 +256,7 @@ class _LinkEditViewState extends State<LinkEditView> {
           }
         },
       ),
-      body: ResourceListView(resources),
+      body: ResourceListView(id, resources),
     );
   }
 }

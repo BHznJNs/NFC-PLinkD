@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as path;
 import 'package:nfc_plinkd/components/link_edit_view.dart';
 import 'package:nfc_plinkd/db.dart';
 import 'package:nfc_plinkd/l10n/app_localizations.dart';
@@ -31,7 +32,7 @@ Future<LinkEditResult?> openLinkWithId(BuildContext context, String id) async {
       continue;
     }
     resolvedResources.add(resource.copyWith(
-      path: '$basePath/${resource.path}'
+      path: path.join(basePath, resource.path),
     ));
   }
   if (!context.mounted) return null;

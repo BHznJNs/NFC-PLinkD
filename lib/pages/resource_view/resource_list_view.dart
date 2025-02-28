@@ -3,8 +3,10 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:nfc_plinkd/utils/index.dart';
+import 'package:path/path.dart' as path;
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:nfc_plinkd/utils/file.dart';
+import 'package:nfc_plinkd/utils/index.dart';
 import 'package:nfc_plinkd/components/custom_textfield.dart';
 import 'package:nfc_plinkd/l10n/app_localizations.dart';
 import 'package:nfc_plinkd/models.dart';
@@ -15,8 +17,9 @@ import 'package:nfc_plinkd/utils/media/thumbnail.dart';
 import 'package:nfc_plinkd/db.dart';
 
 class ResourceListView extends StatefulWidget {
-  const ResourceListView(this.children, {super.key});
+  const ResourceListView(this.id, this.children, {super.key});
 
+  final String id;
   final List<ResourceModel> children;
 
   @override
@@ -39,7 +42,11 @@ class _ResourceListViewState extends State<ResourceListView> {
     setState(() {});
   }
 
-  void deleteItem(int index) {
+  void deleteItem(int index) async {
+    final basePath = await getBasePath(widget.id);
+    final resourcePath = path.join(basePath, resources[index].path);
+    final resourceFile = File(resourcePath);
+    if (await resourceFile.exists()) await resourceFile.delete();
     setState(() => resources.removeAt(index));
   }
 
@@ -102,9 +109,6 @@ class _GenericResourceItem extends StatefulWidget {
 class _GenericResourceItemState extends State<_GenericResourceItem> {
   static const double size = 128;
   File? thumbnail;
-
-  // late TextEditingController urlController = TextEditingController(text: widget.path);
-  // late TextEditingController descriptionController = TextEditingController(text: widget.description);
 
   void openResource() {
     switch (widget.type) {

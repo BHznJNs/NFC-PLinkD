@@ -87,19 +87,19 @@ class _SettingsPageState extends State<SettingsPage> {
 
     final archiveFile = File(archiveFilePath);
     final directoryPath = await FilePicker.platform.getDirectoryPath();
-    if (!archiveFile.existsSync() || directoryPath == null) return;
+    if (!await archiveFile.exists() || directoryPath == null) return;
 
     final targetPath = path.join(directoryPath, path.basename(archiveFile.path));
-    archiveFile.copySync(targetPath);
-    archiveFile.deleteSync();
+    await archiveFile.copy(targetPath);
+    await archiveFile.delete();
     if (mounted) showInfoSnackBar(context, l10n.settingsPage_exportData_successMsg);
   }
 
   Future<void> importData() async {
-    (File, Directory)? findTargetsInArchiveData(Directory archiveData) {
+    Future<(File, Directory)?> findTargetsInArchiveData(Directory archiveData) async {
       Directory? dataDir;
       File? databaseFile;
-      for (final item in archiveData.listSync()) {
+      await for (final item in archiveData.list()) {
         final itemName = path.basename(item.path);
         if (item is File && itemName == DatabaseHelper.dbName) {
           databaseFile = item;
@@ -132,7 +132,7 @@ class _SettingsPageState extends State<SettingsPage> {
       title: l10n.settingsPage_importData_processingArchive,
       task: () async {
         final extractedDir = await extractArchiveToTemp(targetArchivePath);
-        final targetItems = findTargetsInArchiveData(extractedDir);
+        final targetItems = await findTargetsInArchiveData(extractedDir);
         if (targetItems == null) {
           if (mounted) throw ImportError.invalidData(context);
           return;
