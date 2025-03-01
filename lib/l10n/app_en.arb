@@ -5,13 +5,15 @@
   "drawer_readPage": "Read a Link",
   "drawer_galleryPage": "Link Gallery",
   "drawer_settingPage": "Settings",
-
+  
   "createPage_title": "Create a Link",
   "createPage_image": "Take a photo",
   "createPage_video": "Record a Video",
   "createPage_audio": "Record a Audio",
   "createPage_weblink": "Attach a Web Link",
   "createPage_note": "Link to Your Note",
+  "createPage_noteUriInputPage_title": "Link to Your Note",
+  "createPage_noteUriInputPage_hint": "Input the note link here",
  
   "readPage_approachNFCTagHint": "Approach an NFC Tag",
   "readPage_readStopped": "Stopped",
@@ -43,8 +45,8 @@
   "recorderPage_title": "Record a Audio",
 
   "editLinkPage_title": "Edit a Link",
-  "editLinkPage_no_content_msg": "There is no content, please add some.",
-  "editLinkPage_success_msg": "You data was successfully saved, press \"OK\" to back.",
+  "editLinkPage_noContentMsg": "There is no content, please add some.",
+  "editLinkPage_successMsg": "You data was successfully saved, press \"OK\" to back.",
   "editLinkPage_actionLabel_image": "Take a photo",
   "editLinkPage_actionLabel_video": "Record a video",
   "editLinkPage_actionLabel_audio": "Record a audio",
@@ -52,8 +54,8 @@
   "editLinkPage_actionLabel_note": "Link to your note",
   "editLinkPage_actionLabel_upload": "Upload some resource",
   "editLinkPage_linkName_hint": "Input link name here...",
-  "editLinkPage_dialog_action_save": "Save",
-  "editLinkPage_dialog_action_delete": "Delete",
+  "editLinkPage_dialogAction_save": "Save",
+  "editLinkPage_dialogAction_delete": "Delete",
   "editLinkPage_dialog_title": "Edit Item",
   "editLinkPage_dialog_description_hint": "Input the descriptions here...",
 
@@ -68,7 +70,12 @@
   "custom_dialog_delete_content": "Are you sure you want to delete this item? This action cannot be undone, so please proceed with caution.",
   "custom_dialog_uri_weblink_title": "Website Link",
   "custom_dialog_uri_note_title": "Note Link",
-  "custom_dialog_uri_invalidUrlMsg": "Invalid URL",
+  "custom_dialog_uri_selectNoteInApp_title": "Select note in {appName}",
+  "@custom_dialog_uri_selectNoteInApp_title": {
+    "placeholders": {
+      "appName": {"type": "String", "example": "Notion"}
+    }
+  },
   "custom_dialog_success_title": "Success",
   "custom_dialog_unexpectedError_title": "Unexpected Error",
   "custom_dialog_nfc_approach_title": "Approach an NFC Tag",
@@ -93,5 +100,8 @@
   "importError_invalidData_content": "It appears the selected file is not a valid NFC PLinkD data file. Please try importing the correct file.",
 
   "pickerError_unsupportedNoteLink_title": "Unsupported Note Link",
-  "pickerError_unsupportedNoteLink_content": "The link you submitted is from an unsupported note-taking platform. Currently, we only accept links from Notion and Obsidian. Please verify your link and try again."
+  "pickerError_unsupportedNoteLink_content": "The link you submitted is from an unsupported note-taking application. Please ensure that the note link you submit belongs to one of the following supported note-taking apps:",
+
+  "general_invalidUrlMsg": "Invalid URL",
+  "general_targetAppNotFoundMsg": "Target app not found."
 }

@@ -147,55 +147,55 @@ Future<bool> showDeleteDialog(BuildContext context) async {
 // --- --- --- --- --- ---
 
 class UriInputDialog extends StatefulWidget {
-  const UriInputDialog({
-    super.key,
-    required this.title,
-    this.hintText,
-  });
-
-  final String title;
-  final String? hintText;
+  const UriInputDialog({super.key});
 
   @override
   State<StatefulWidget> createState() => _UriInputDialogState();
 }
 class _UriInputDialogState extends State<UriInputDialog> {
-  final TextEditingController textEditingController = TextEditingController();
+  final TextEditingController uriController = TextEditingController();
   bool isUrlEmpty = true;
   String? errorText;
 
-  @override
-  Widget build(BuildContext context) {
-    final l10n = S.of(context)!;
-    final textField = UriTextField(
-      textEditingController,
-      hintText: widget.hintText,
-      errorText: errorText,
-      onChange: (text) =>
-        setState(() => isUrlEmpty = text.isEmpty),
-    );
-    final cancelButton = TextButton(
+  Widget textFieldBuilder() => UriTextField(
+    uriController,
+    errorText: errorText,
+    onChange: (text) =>
+      setState(() {
+        isUrlEmpty = text.isEmpty;
+        errorText = null;
+      }),
+  );
+
+  List<Widget> actionsBuilder() => [
+    TextButton(
       onPressed: () => Navigator.of(context).pop(null),
-      child: Text(l10n.custom_dialog_action_cancel),
-    );
-    final confirmButton = TextButton(
+      child: Text(S.of(context)!.custom_dialog_action_cancel),
+    ),
+    TextButton(
       onPressed: isUrlEmpty ? null : () {
-        if (isValidUri(textEditingController.text)) {
-          Navigator.of(context).pop(textEditingController.text);
+        if (isValidUri(uriController.text)) {
+          Navigator.of(context).pop(uriController.text);
         } else {
           setState(() =>
-            errorText = l10n.custom_dialog_uri_invalidUrlMsg);
+            errorText = S.of(context)!.general_invalidUrlMsg);
         }
       },
-      child: Text(l10n.custom_dialog_action_confirm),
-    );
-    return AlertDialog.adaptive(
-      title: Text(widget.title),
-      content: textField,
-      actions: [
-        cancelButton,
-        confirmButton,
-      ],
-    );
+      child: Text(S.of(context)!.custom_dialog_action_confirm),
+    )
+  ];
+
+  @override
+  void dispose() {
+    uriController.dispose();
+    super.dispose();
   }
+
+  @override
+  Widget build(BuildContext context) =>
+    AlertDialog.adaptive(
+      title: Text(S.of(context)!.custom_dialog_uri_weblink_title),
+      content: textFieldBuilder(),
+      actions: actionsBuilder(),
+    );
 }

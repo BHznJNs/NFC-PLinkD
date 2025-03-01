@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:nfc_manager/nfc_manager.dart';
+import 'package:nfc_plinkd/components/custom_textfield.dart';
 import 'package:uuid/uuid.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -75,13 +76,13 @@ class _LinkEditViewState extends State<LinkEditView> {
   Future<void> saveLinkData() async {
     final l10n = S.of(context)!;
     if (resources.isEmpty) {
-      showInfoSnackBar(context, l10n.editLinkPage_no_content_msg);
+      showInfoSnackBar(context, l10n.editLinkPage_noContentMsg);
       return;
     }
     if (isReadView) {
       final now = DateTime.now();
       await writeIntoDatabase(now, isUpdate: true);
-      if (mounted) await showSuccessMsg(context, text: l10n.editLinkPage_success_msg);
+      if (mounted) await showSuccessMsg(context, text: l10n.editLinkPage_successMsg);
       if (mounted) {
         return Navigator.of(context).pop(LinkEditResult(
           linkNameController.text,
@@ -125,33 +126,28 @@ class _LinkEditViewState extends State<LinkEditView> {
       );
       await stopWriting?.call();
       if (!isWriten) return;
-      if (mounted) await showSuccessMsg(context, text: l10n.editLinkPage_success_msg);
+      if (mounted) await showSuccessMsg(context, text: l10n.editLinkPage_successMsg);
       if (mounted) Navigator.of(context).pop(); // when successfully saved, close this page
     }
   }
 
   bool isEditingLinkName = false;
-  final linkNameFocusNode = FocusNode();
   late String? initialLinkName = widget.link?.name;
   late TextEditingController linkNameController =
-    TextEditingController(text: widget.link?.name);
-  Widget linkNameEditorBuilder() {
-    final l10n = S.of(context)!;
-    return TextField(
+    TextEditingController(text: initialLinkName);
+  Widget linkNameEditorBuilder() =>
+    FocusOutTextField(
       maxLines: 1,
       autofocus: true,
       controller: linkNameController,
-      focusNode: linkNameFocusNode,
       decoration: InputDecoration(
-        hintText: l10n.editLinkPage_linkName_hint,
+        hintText: S.of(context)!.editLinkPage_linkName_hint,
         suffixIcon: IconButton(
           onPressed: () => linkNameController.clear(),
           icon: Icon(Icons.delete),
         ),
       ),
-      onTapOutside: (_) => linkNameFocusNode.unfocus(),
     );
-  }
 
   @override
   void initState() {

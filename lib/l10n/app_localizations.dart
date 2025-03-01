@@ -162,6 +162,18 @@ abstract class S {
   /// **'Link to Your Note'**
   String get createPage_note;
 
+  /// No description provided for @createPage_noteUriInputPage_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Link to Your Note'**
+  String get createPage_noteUriInputPage_title;
+
+  /// No description provided for @createPage_noteUriInputPage_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Input the note link here'**
+  String get createPage_noteUriInputPage_hint;
+
   /// No description provided for @readPage_approachNFCTagHint.
   ///
   /// In en, this message translates to:
@@ -318,17 +330,17 @@ abstract class S {
   /// **'Edit a Link'**
   String get editLinkPage_title;
 
-  /// No description provided for @editLinkPage_no_content_msg.
+  /// No description provided for @editLinkPage_noContentMsg.
   ///
   /// In en, this message translates to:
   /// **'There is no content, please add some.'**
-  String get editLinkPage_no_content_msg;
+  String get editLinkPage_noContentMsg;
 
-  /// No description provided for @editLinkPage_success_msg.
+  /// No description provided for @editLinkPage_successMsg.
   ///
   /// In en, this message translates to:
   /// **'You data was successfully saved, press \"OK\" to back.'**
-  String get editLinkPage_success_msg;
+  String get editLinkPage_successMsg;
 
   /// No description provided for @editLinkPage_actionLabel_image.
   ///
@@ -372,17 +384,17 @@ abstract class S {
   /// **'Input link name here...'**
   String get editLinkPage_linkName_hint;
 
-  /// No description provided for @editLinkPage_dialog_action_save.
+  /// No description provided for @editLinkPage_dialogAction_save.
   ///
   /// In en, this message translates to:
   /// **'Save'**
-  String get editLinkPage_dialog_action_save;
+  String get editLinkPage_dialogAction_save;
 
-  /// No description provided for @editLinkPage_dialog_action_delete.
+  /// No description provided for @editLinkPage_dialogAction_delete.
   ///
   /// In en, this message translates to:
   /// **'Delete'**
-  String get editLinkPage_dialog_action_delete;
+  String get editLinkPage_dialogAction_delete;
 
   /// No description provided for @editLinkPage_dialog_title.
   ///
@@ -456,11 +468,11 @@ abstract class S {
   /// **'Note Link'**
   String get custom_dialog_uri_note_title;
 
-  /// No description provided for @custom_dialog_uri_invalidUrlMsg.
+  /// No description provided for @custom_dialog_uri_selectNoteInApp_title.
   ///
   /// In en, this message translates to:
-  /// **'Invalid URL'**
-  String get custom_dialog_uri_invalidUrlMsg;
+  /// **'Select note in {appName}'**
+  String custom_dialog_uri_selectNoteInApp_title(String appName);
 
   /// No description provided for @custom_dialog_success_title.
   ///
@@ -585,8 +597,20 @@ abstract class S {
   /// No description provided for @pickerError_unsupportedNoteLink_content.
   ///
   /// In en, this message translates to:
-  /// **'The link you submitted is from an unsupported note-taking platform. Currently, we only accept links from Notion and Obsidian. Please verify your link and try again.'**
+  /// **'The link you submitted is from an unsupported note-taking application. Please ensure that the note link you submit belongs to one of the following supported note-taking apps:'**
   String get pickerError_unsupportedNoteLink_content;
+
+  /// No description provided for @general_invalidUrlMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid URL'**
+  String get general_invalidUrlMsg;
+
+  /// No description provided for @general_targetAppNotFoundMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Target app not found.'**
+  String get general_targetAppNotFoundMsg;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

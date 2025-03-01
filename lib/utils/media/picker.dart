@@ -7,6 +7,7 @@ import 'package:nfc_plinkd/components/recorder.dart';
 import 'package:nfc_plinkd/components/custom_dialog.dart';
 import 'package:nfc_plinkd/db.dart';
 import 'package:nfc_plinkd/l10n/app_localizations.dart';
+import 'package:nfc_plinkd/pages/create/note_uri_input.dart';
 import 'package:nfc_plinkd/utils/index.dart';
 
 final picker = ImagePicker();
@@ -86,40 +87,49 @@ Future<ResourcePickerResult> recordAudio(BuildContext context) async {
 Future<ResourcePickerResult> inputWebLink(BuildContext context) async {
   final result = await showDialog(
     context: context,
-    builder: (BuildContext context) =>
-      UriInputDialog(title: S.of(context)!.custom_dialog_uri_weblink_title),
+    builder: (BuildContext context) => UriInputDialog(),
   ) as String?;
   if (result == null) return [];
   return [(result, ResourceType.webLink)];
 }
 
-final noteLinkProcessors = [
-  (Uri inputUri) => inputUri.host.contains('notion.so')
-    ? inputUri.replace(scheme: 'notion').toString()
-    : null, // notion
-  (Uri inputUri) => inputUri.scheme == 'obsidian'
-    ? inputUri.toString()
-    : null, // obsidian
+final List<NoteAppItem> supportedNoteAppList = [
+  NoteAppItem(
+    id: 'notion', name: 'Notion', uri: 'notion://',
+    uriProcessor: (Uri inputUri) => inputUri.host.contains('notion.so')
+      ? inputUri.replace(scheme: 'notion').toString()
+      : null),
+  NoteAppItem(
+    id: 'obsidian', name: 'Obsidian', uri: 'obsidian://',
+    uriProcessor: (Uri inputUri) => inputUri.scheme == 'obsidian'
+        ? inputUri.toString()
+        : null,),
+  NoteAppItem(
+    id: 'joplin', name: 'Joplin', uri: 'joplin://',
+    uriProcessor: (Uri inputUri) => inputUri.scheme == 'joplin'
+        ? inputUri.toString()
+        : null,),
 ];
-/// Throw `PickerError.NotSupportedNote` if the input uri is not supported
-String tryResolveNoteLink(BuildContext context, Uri inputUri) {
-  for (final processor in noteLinkProcessors) {
-    final output = processor(inputUri);
-    if (output != null) return output;
-  }
-  throw PickerError.NotSupportedNote(context);
-}
 Future<ResourcePickerResult> inputNoteLink(BuildContext context) async {
-  final result = await showDialog(
-    context: context,
-    builder: (BuildContext context) =>
-      UriInputDialog(title: S.of(context)!.custom_dialog_uri_note_title),
-  ) as String?;
+  /// Throw `PickerError.NotSupportedNote` if the input uri is not supported
+  String tryResolveNoteLink(BuildContext context, Uri inputUri) {
+    for (final item in supportedNoteAppList) {
+      final output = item.uriProcessor(inputUri);
+      if (output != null) return output;
+    }
+    throw PickerError.NotSupportedNote(context,
+      supportedNoteAppList.map((item) => item.name).toList()
+    );
+  }
+
+  final result = await Navigator.of(context).push(
+    MaterialPageRoute(builder: (context) =>
+      NoteUriInputPage())) as String?;
   if (result == null) return [];
   if (!context.mounted) return [];
 
   try {
-    // since there is a check in the UriInputDialog,
+    // since there is a check in the `UriInputDialog`,
     // there is not need to check if uri valid here.
     final resolvedLink = tryResolveNoteLink(context, Uri.parse(result));
     return [(resolvedLink, ResourceType.note)];
@@ -150,15 +160,31 @@ Future<ResourcePickerResult> pickMediaFile(BuildContext _) async {
   return resultList;
 }
 
+// --- --- --- --- --- ---
+
+class NoteAppItem {
+  const NoteAppItem({
+    required this.id,
+    required this.name,
+    required this.uri,
+    required this.uriProcessor
+  }): iconPath='assets/images/$id-icon.png';
+  final String iconPath;
+  final String id;
+  final String name;
+  final String uri;
+  final String? Function(Uri) uriProcessor;
+}
+
 class PickerError extends CustomError {
   PickerError({required super.title, required super.content});
 
   // ignore: non_constant_identifier_names
-  static PickerError NotSupportedNote(BuildContext context) {
+  static PickerError NotSupportedNote(BuildContext context, List<String> supportedList) {
     final l10n = S.of(context)!;
     return PickerError(
       title: l10n.pickerError_unsupportedNoteLink_title,
-      content: l10n.pickerError_unsupportedNoteLink_content,
+      content: '${l10n.pickerError_unsupportedNoteLink_content}\n${supportedList.join('\n')}',
     );
   }
 }

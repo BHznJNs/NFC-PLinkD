@@ -4,17 +4,17 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
-import 'package:url_launcher/url_launcher_string.dart';
-import 'package:nfc_plinkd/utils/file.dart';
-import 'package:nfc_plinkd/utils/index.dart';
 import 'package:nfc_plinkd/components/custom_textfield.dart';
+import 'package:nfc_plinkd/db.dart';
 import 'package:nfc_plinkd/l10n/app_localizations.dart';
 import 'package:nfc_plinkd/models.dart';
 import 'package:nfc_plinkd/pages/resource_view/image.dart';
 import 'package:nfc_plinkd/pages/resource_view/audio.dart';
 import 'package:nfc_plinkd/pages/resource_view/video.dart';
+import 'package:nfc_plinkd/utils/index.dart';
+import 'package:nfc_plinkd/utils/file.dart';
 import 'package:nfc_plinkd/utils/media/thumbnail.dart';
-import 'package:nfc_plinkd/db.dart';
+import 'package:nfc_plinkd/utils/open_uri.dart';
 
 class ResourceListView extends StatefulWidget {
   const ResourceListView(this.id, this.children, {super.key});
@@ -120,9 +120,9 @@ class _GenericResourceItemState extends State<_GenericResourceItem> {
       case ResourceType.audio:
         openAudioWithDefaultPlayer(context, widget.path);
       case ResourceType.webLink:
-        launchUrlString(widget.path);
+        openWebLink(widget.path);
       case ResourceType.note:
-        launchUrlString(widget.path);
+        tryOpenNote(context, widget.path);
     }
   }
 
@@ -329,7 +329,7 @@ class _ResourceEditingDialogState extends State<_ResourceEditingDialog> {
     if (isNeededToEditPath && !isValidUri(urlController.text)) {
       final l10n = S.of(context)!;
       setState(() =>
-        errorText = l10n.custom_dialog_uri_invalidUrlMsg);
+        errorText = l10n.general_invalidUrlMsg);
       return;
     }
     final res = _ResourceEditingResult(
@@ -354,7 +354,7 @@ class _ResourceEditingDialogState extends State<_ResourceEditingDialog> {
     final l10n = S.of(context)!;
     final deleteButton = TextButton(
       onPressed: onDelete,
-      child: Text(l10n.editLinkPage_dialog_action_delete,
+      child: Text(l10n.editLinkPage_dialogAction_delete,
         style: TextStyle(
           color: Theme.of(context).colorScheme.error
         ),
@@ -362,7 +362,15 @@ class _ResourceEditingDialogState extends State<_ResourceEditingDialog> {
     );
     final saveButton = TextButton(
       onPressed: onSave,
-      child: Text(l10n.editLinkPage_dialog_action_save),
+      child: Text(l10n.editLinkPage_dialogAction_save),
+    );
+    final descriptionTextField = FocusOutTextField(
+      minLines: 1,
+      maxLines: 3,
+      controller: descriptionController,
+      decoration: InputDecoration(
+        hintText: l10n.editLinkPage_dialog_description_hint,
+      ),
     );
     return AlertDialog.adaptive(
       title: Text(l10n.editLinkPage_dialog_title),
@@ -374,14 +382,7 @@ class _ResourceEditingDialogState extends State<_ResourceEditingDialog> {
               UriTextField(urlController, errorText: errorText),
               const SizedBox(height: 32),
             ],
-          TextField(
-            minLines: 1,
-            maxLines: 3,
-            controller: descriptionController,
-            decoration: InputDecoration(
-              hintText: l10n.editLinkPage_dialog_description_hint,
-            ),
-          ),
+          descriptionTextField,
         ],
       ),
       actions: [

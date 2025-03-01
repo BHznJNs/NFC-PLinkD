@@ -12,7 +12,7 @@ import 'package:nfc_plinkd/components/link_edit_view.dart';
 import 'package:nfc_plinkd/components/drawer.dart';
 import 'package:nfc_plinkd/db.dart';
 import 'package:nfc_plinkd/l10n/app_localizations.dart';
-import 'package:nfc_plinkd/pages/create.dart';
+import 'package:nfc_plinkd/pages/create/index.dart';
 import 'package:nfc_plinkd/pages/gallery.dart';
 import 'package:nfc_plinkd/pages/read.dart';
 import 'package:nfc_plinkd/pages/settings/settings.dart';

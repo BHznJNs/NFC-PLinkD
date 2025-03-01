@@ -5,13 +5,15 @@
   "drawer_readPage": "读取链接",
   "drawer_galleryPage": "总览",
   "drawer_settingPage": "设置",
-
+  
   "createPage_title": "创建链接",
   "createPage_image": "拍照",
   "createPage_video": "录制视频",
   "createPage_audio": "录制音频",
   "createPage_weblink": "附加网页链接",
-  "createPage_note": "链接你的笔记",
+  "createPage_note": "链接到笔记软件",
+  "createPage_noteUriInputPage_title": "链接到笔记软件",
+  "createPage_noteUriInputPage_hint": "在此输入笔记链接",
 
   "readPage_approachNFCTagHint": "请靠近 NFC 标签",
   "readPage_readStopped": "已停止",
@@ -43,8 +45,8 @@
   "recorderPage_title": "录制音频",
 
   "editLinkPage_title": "编辑链接",
-  "editLinkPage_no_content_msg": "没有内容，请添加一些。",
-  "editLinkPage_success_msg": "数据已成功保存，按“确定”返回。",
+  "editLinkPage_noContentMsg": "没有内容，请添加一些。",
+  "editLinkPage_successMsg": "数据已成功保存，按“确定”返回。",
   "editLinkPage_actionLabel_image": "拍照",
   "editLinkPage_actionLabel_video": "录制视频",
   "editLinkPage_actionLabel_audio": "录制音频",
@@ -52,8 +54,8 @@
   "editLinkPage_actionLabel_note": "链接你的笔记",
   "editLinkPage_actionLabel_upload": "上传资源",
   "editLinkPage_linkName_hint": "在此输入链接名称...",
-  "editLinkPage_dialog_action_save": "保存",
-  "editLinkPage_dialog_action_delete": "删除",
+  "editLinkPage_dialogAction_save": "保存",
+  "editLinkPage_dialogAction_delete": "删除",
   "editLinkPage_dialog_title": "编辑",
   "editLinkPage_dialog_description_hint": "在此输入描述...",
 
@@ -68,11 +70,16 @@
   "custom_dialog_delete_content": "您确定要删除此项目吗？此操作无法撤销，请谨慎操作。",
   "custom_dialog_uri_weblink_title": "网站链接",
   "custom_dialog_uri_note_title": "笔记链接",
-  "custom_dialog_uri_invalidUrlMsg": "无效的 URL",
+  "custom_dialog_uri_selectNoteInApp_title": "从 {appName} 选择笔记",
+  "@custom_dialog_uri_selectNoteInApp_title": {
+    "placeholders": {
+      "appName": {"type": "String", "example": "Notion"}
+    }
+  },
   "custom_dialog_success_title": "成功",
   "custom_dialog_unexpectedError_title": "未知错误",
   "custom_dialog_nfc_approach_title": "靠近 NFC 标签",
-
+  
   "nfcError_function_disabled_title": "NFC 功能已禁用",
   "nfcError_function_disabled_content": "请启用手机的 NFC 功能后重试。",
   "nfcError_tag_unusable_title": "NFC 标签不可用",
@@ -85,13 +92,16 @@
   "nfcError_tag_formated_content": "靠近的 NFC 标签已格式化，请再次靠近以写入数据。",
   "nfcError_tag_empty_title": "NFC 标签为空",
   "nfcError_tag_empty_content": "靠近的 NFC 标签为空。",
-
+  
   "linkError_dataNotFound_title": "未找到链接数据",
   "linkError_dataNotFound_content": "此链接的数据未找到，可能已被删除。",
-
+  
   "importError_invalidData_title": "无效的数据文件",
   "importError_invalidData_content": "数据文件格式不匹配。请确保您选择的是由本应用导出的数据文件。",
-
+  
   "pickerError_unsupportedNoteLink_title": "不支持的笔记链接",
-  "pickerError_unsupportedNoteLink_content": "您提交的链接来自于不受支持的笔记应用。目前仅支持 Notion 和 Obsidian 的笔记链接，请检查并重新提交正确的链接。"
+  "pickerError_unsupportedNoteLink_content": "您提交的链接来自于不受支持的笔记应用。请确保您提交的笔记链接属于以下已支持的笔记软件：",
+  
+  "general_invalidUrlMsg": "无效的 URL",
+  "general_targetAppNotFoundMsg": "未找到目标应用。"
 }

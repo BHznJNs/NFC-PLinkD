@@ -32,9 +32,9 @@ Future<void> openAudioWithDefaultPlayer(BuildContext context, String path) async
 
 String _formatDuration(Duration duration) {
   String twoDigits(int n) => n.toString().padLeft(2, '0');
-  String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-  String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-  String twoDigitHours = twoDigits(duration.inHours);
+  final twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+  final twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+  final twoDigitHours = twoDigits(duration.inHours);
   return "${duration.inHours > 0 ? "$twoDigitHours:" : ""}$twoDigitMinutes:$twoDigitSeconds";
 }
 

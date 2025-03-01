@@ -85,7 +85,7 @@ class _GalleryPageState extends State<GalleryPage> {
     );
     await stopWriting?.call();
     if (!isWriten) return;
-    if (mounted) await showSuccessMsg(context, text: l10n.editLinkPage_success_msg);
+    if (mounted) await showSuccessMsg(context, text: l10n.editLinkPage_successMsg);
   }
 
   Future<void> deleteLink(int index) async {

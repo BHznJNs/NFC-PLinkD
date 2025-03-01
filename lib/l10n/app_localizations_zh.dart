@@ -39,7 +39,13 @@ class SZh extends S {
   String get createPage_weblink => '附加网页链接';
 
   @override
-  String get createPage_note => '链接你的笔记';
+  String get createPage_note => '链接到笔记软件';
+
+  @override
+  String get createPage_noteUriInputPage_title => '链接到笔记软件';
+
+  @override
+  String get createPage_noteUriInputPage_hint => '在此输入笔记链接';
 
   @override
   String get readPage_approachNFCTagHint => '请靠近 NFC 标签';
@@ -120,10 +126,10 @@ class SZh extends S {
   String get editLinkPage_title => '编辑链接';
 
   @override
-  String get editLinkPage_no_content_msg => '没有内容，请添加一些。';
+  String get editLinkPage_noContentMsg => '没有内容，请添加一些。';
 
   @override
-  String get editLinkPage_success_msg => '数据已成功保存，按“确定”返回。';
+  String get editLinkPage_successMsg => '数据已成功保存，按“确定”返回。';
 
   @override
   String get editLinkPage_actionLabel_image => '拍照';
@@ -147,10 +153,10 @@ class SZh extends S {
   String get editLinkPage_linkName_hint => '在此输入链接名称...';
 
   @override
-  String get editLinkPage_dialog_action_save => '保存';
+  String get editLinkPage_dialogAction_save => '保存';
 
   @override
-  String get editLinkPage_dialog_action_delete => '删除';
+  String get editLinkPage_dialogAction_delete => '删除';
 
   @override
   String get editLinkPage_dialog_title => '编辑';
@@ -189,7 +195,9 @@ class SZh extends S {
   String get custom_dialog_uri_note_title => '笔记链接';
 
   @override
-  String get custom_dialog_uri_invalidUrlMsg => '无效的 URL';
+  String custom_dialog_uri_selectNoteInApp_title(String appName) {
+    return '从 $appName 选择笔记';
+  }
 
   @override
   String get custom_dialog_success_title => '成功';
@@ -252,7 +260,13 @@ class SZh extends S {
   String get pickerError_unsupportedNoteLink_title => '不支持的笔记链接';
 
   @override
-  String get pickerError_unsupportedNoteLink_content => '您提交的链接来自于不受支持的笔记应用。目前仅支持 Notion 和 Obsidian 的笔记链接，请检查并重新提交正确的链接。';
+  String get pickerError_unsupportedNoteLink_content => '您提交的链接来自于不受支持的笔记应用。请确保您提交的笔记链接属于以下已支持的笔记软件：';
+
+  @override
+  String get general_invalidUrlMsg => '无效的 URL';
+
+  @override
+  String get general_targetAppNotFoundMsg => '未找到目标应用。';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -290,7 +304,13 @@ class SZhCn extends SZh {
   String get createPage_weblink => '附加网页链接';
 
   @override
-  String get createPage_note => '链接你的笔记';
+  String get createPage_note => '链接到笔记软件';
+
+  @override
+  String get createPage_noteUriInputPage_title => '链接到笔记软件';
+
+  @override
+  String get createPage_noteUriInputPage_hint => '在此输入笔记链接';
 
   @override
   String get readPage_approachNFCTagHint => '请靠近 NFC 标签';
@@ -371,10 +391,10 @@ class SZhCn extends SZh {
   String get editLinkPage_title => '编辑链接';
 
   @override
-  String get editLinkPage_no_content_msg => '没有内容，请添加一些。';
+  String get editLinkPage_noContentMsg => '没有内容，请添加一些。';
 
   @override
-  String get editLinkPage_success_msg => '数据已成功保存，按“确定”返回。';
+  String get editLinkPage_successMsg => '数据已成功保存，按“确定”返回。';
 
   @override
   String get editLinkPage_actionLabel_image => '拍照';
@@ -398,10 +418,10 @@ class SZhCn extends SZh {
   String get editLinkPage_linkName_hint => '在此输入链接名称...';
 
   @override
-  String get editLinkPage_dialog_action_save => '保存';
+  String get editLinkPage_dialogAction_save => '保存';
 
   @override
-  String get editLinkPage_dialog_action_delete => '删除';
+  String get editLinkPage_dialogAction_delete => '删除';
 
   @override
   String get editLinkPage_dialog_title => '编辑';
@@ -440,7 +460,9 @@ class SZhCn extends SZh {
   String get custom_dialog_uri_note_title => '笔记链接';
 
   @override
-  String get custom_dialog_uri_invalidUrlMsg => '无效的 URL';
+  String custom_dialog_uri_selectNoteInApp_title(String appName) {
+    return '从 $appName 选择笔记';
+  }
 
   @override
   String get custom_dialog_success_title => '成功';
@@ -503,5 +525,11 @@ class SZhCn extends SZh {
   String get pickerError_unsupportedNoteLink_title => '不支持的笔记链接';
 
   @override
-  String get pickerError_unsupportedNoteLink_content => '您提交的链接来自于不受支持的笔记应用。目前仅支持 Notion 和 Obsidian 的笔记链接，请检查并重新提交正确的链接。';
+  String get pickerError_unsupportedNoteLink_content => '您提交的链接来自于不受支持的笔记应用。请确保您提交的笔记链接属于以下已支持的笔记软件：';
+
+  @override
+  String get general_invalidUrlMsg => '无效的 URL';
+
+  @override
+  String get general_targetAppNotFoundMsg => '未找到目标应用。';
 }

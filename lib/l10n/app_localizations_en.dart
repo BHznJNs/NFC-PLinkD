@@ -42,6 +42,12 @@ class SEn extends S {
   String get createPage_note => 'Link to Your Note';
 
   @override
+  String get createPage_noteUriInputPage_title => 'Link to Your Note';
+
+  @override
+  String get createPage_noteUriInputPage_hint => 'Input the note link here';
+
+  @override
   String get readPage_approachNFCTagHint => 'Approach an NFC Tag';
 
   @override
@@ -120,10 +126,10 @@ class SEn extends S {
   String get editLinkPage_title => 'Edit a Link';
 
   @override
-  String get editLinkPage_no_content_msg => 'There is no content, please add some.';
+  String get editLinkPage_noContentMsg => 'There is no content, please add some.';
 
   @override
-  String get editLinkPage_success_msg => 'You data was successfully saved, press \"OK\" to back.';
+  String get editLinkPage_successMsg => 'You data was successfully saved, press \"OK\" to back.';
 
   @override
   String get editLinkPage_actionLabel_image => 'Take a photo';
@@ -147,10 +153,10 @@ class SEn extends S {
   String get editLinkPage_linkName_hint => 'Input link name here...';
 
   @override
-  String get editLinkPage_dialog_action_save => 'Save';
+  String get editLinkPage_dialogAction_save => 'Save';
 
   @override
-  String get editLinkPage_dialog_action_delete => 'Delete';
+  String get editLinkPage_dialogAction_delete => 'Delete';
 
   @override
   String get editLinkPage_dialog_title => 'Edit Item';
@@ -189,7 +195,9 @@ class SEn extends S {
   String get custom_dialog_uri_note_title => 'Note Link';
 
   @override
-  String get custom_dialog_uri_invalidUrlMsg => 'Invalid URL';
+  String custom_dialog_uri_selectNoteInApp_title(String appName) {
+    return 'Select note in $appName';
+  }
 
   @override
   String get custom_dialog_success_title => 'Success';
@@ -252,5 +260,11 @@ class SEn extends S {
   String get pickerError_unsupportedNoteLink_title => 'Unsupported Note Link';
 
   @override
-  String get pickerError_unsupportedNoteLink_content => 'The link you submitted is from an unsupported note-taking platform. Currently, we only accept links from Notion and Obsidian. Please verify your link and try again.';
+  String get pickerError_unsupportedNoteLink_content => 'The link you submitted is from an unsupported note-taking application. Please ensure that the note link you submit belongs to one of the following supported note-taking apps:';
+
+  @override
+  String get general_invalidUrlMsg => 'Invalid URL';
+
+  @override
+  String get general_targetAppNotFoundMsg => 'Target app not found.';
 }
