@@ -16,6 +16,12 @@ A mobile application that helps you create **link**s between your **p**aper mate
 
 [![Demo Video](http://img.youtube.com/vi/Vr0gKqifdtM/0.jpg)](https://www.youtube.com/watch?v=Vr0gKqifdtM)
 
+## ✨ Features
+
+- Link various types of digital content to paper: photos, videos, recordings, webpages, and digital notes
+- Data can be imported and exported, making migration easy
+- Uses the Material You design language for a minimalist and efficient interface.
+
 ## 🖼️ Screenshots
 
 ☀️ Light mode:
@@ -30,6 +36,6 @@ A mobile application that helps you create **link**s between your **p**aper mate
 | -------- | ------- | ------- | -------- |
 | ![creating screenshot](docs/screenshots/creating-page_dark_en.jpg) | ![reading screenshot](docs/screenshots/reading-page_dark_en.jpg) | ![gallery screenshot](docs/screenshots/gallery-page_dark_en.jpg) | ![settings screenshot](docs/screenshots/settings-page_dark_en.jpg) |
 
-## User Documents
+## 📖 User Documents
 
 - [FAQs](./docs/faqs.md)

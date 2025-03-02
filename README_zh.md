@@ -15,7 +15,13 @@
 ## ▶️ 视频演示
 
 Bilibili: https://www.bilibili.com/video/BV1NKA2eTEBJ/
-Youtube: [![Demo Video](http://img.youtube.com/vi/Vr0gKqifdtM/0.jpg)](https://www.youtube.com/watch?v=Vr0gKqifdtM)
+YouTube: [![Demo Video](http://img.youtube.com/vi/Vr0gKqifdtM/0.jpg)](https://www.youtube.com/watch?v=Vr0gKqifdtM)
+
+## ✨ 软件特点
+
+- 将多种电子资料链接到纸上：照片、视频、录音、网页、电子笔记
+- 数据可以导入导出，迁移方便
+- 使用 Material You 设计语言，极简高效
 
 ## 🖼️ 屏幕截图
 
@@ -31,6 +37,6 @@ Youtube: [![Demo Video](http://img.youtube.com/vi/Vr0gKqifdtM/0.jpg)](https://ww
 | ------ | ------- | ---- | ---- |
 | ![创建链接截图](docs/screenshots/creating-page_dark_zh.jpg) | ![reading截图](docs/screenshots/reading-page_dark_zh.jpg) | ![gallery截图](docs/screenshots/gallery-page_dark_zh.jpg) | ![settings截图](docs/screenshots/settings-page_dark_zh.jpg) |
 
-## 用户文档
+## 📖 用户文档
 
 - [常见问题](./docs/faqs_zh.md)
