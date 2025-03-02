@@ -82,7 +82,7 @@ class _NoteUriInputPageState extends State<NoteUriInputPage> {
         children: [
           Expanded(child:
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 32),
+              margin: EdgeInsets.symmetric(horizontal: 40),
               alignment: Alignment.center,
               child: textField,
             ),
