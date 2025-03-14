@@ -221,6 +221,7 @@ enum ResourceType {
       case String() when mimeType.startsWith('image'): return ResourceType.image;
       case String() when mimeType.startsWith('video'): return ResourceType.video;
       case String() when mimeType.startsWith('audio'): return ResourceType.audio;
+      case String() when mimeType == 'text/url': return ResourceType.webLink;
     }
     return null;
   }

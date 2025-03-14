@@ -117,6 +117,20 @@ Future<Directory> extractArchiveToTemp(String archivePath) async {
   return outputDir;
 }
 
+List<String> extractUrlsFromString(String? text) {
+  if (text == null) return [];
+
+  const urlPatString = r'((?:https?:\/\/|www\.)[^\s]+)';
+  final urlRegex = RegExp(urlPatString);
+  final matches = urlRegex.allMatches(text);
+  final resultUrls = <String>[];
+  for (Match match in matches) {
+    String? url = match.group(0);
+    if (url != null) resultUrls.add(url);
+  }
+  return resultUrls;
+}
+
 Future<void> debugPrintInternalFiles(String base) async {
   if (!kDebugMode) return;
   try {

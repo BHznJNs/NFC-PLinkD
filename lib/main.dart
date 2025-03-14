@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:app_links/app_links.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:nfc_plinkd/utils/file.dart';
 import 'package:provider/provider.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
  
@@ -50,7 +51,18 @@ class MyAppState extends State<MyApp> {
       for (final file in sharedFiles) {
         if (file.mimeType == null) continue;
         final resourceType = ResourceType.fromMimetype(file.mimeType!);
-        if (resourceType == null) continue;
+        if (resourceType == null) {
+          if (file.mimeType! == 'text/plain') {
+            final matchesInPath = extractUrlsFromString(file.path);
+            final matchesInMessage = extractUrlsFromString(file.message);
+            if (matchesInPath.isEmpty && matchesInMessage.isEmpty) continue;
+            final targetMatches = matchesInPath.isNotEmpty ? matchesInPath : matchesInMessage;
+            for (final url in targetMatches) {
+              resources.add((url, ResourceType.webLink));
+            }
+          }
+          continue;
+        }
         resources.add((file.path, resourceType));
       }
       return resources;
@@ -61,13 +73,12 @@ class MyAppState extends State<MyApp> {
       if (navigatorKey.currentContext == null) return;
       if (resources.isEmpty) return;
       Navigator.of(navigatorKey.currentContext!).push(
-        MaterialPageRoute(builder: (context) {
-          final l10n = S.of(context)!;
-          return LinkEditView(
-            title: l10n.createPage_title,
+        MaterialPageRoute(builder: (context) =>
+          LinkEditView(
+            title: S.of(context)!.createPage_title,
             resourcePickerResult: resources,
-          );
-        }),
+          )
+        ),
       );
       ReceiveSharingIntent.instance.reset();
     });
@@ -76,13 +87,12 @@ class MyAppState extends State<MyApp> {
       if (navigatorKey.currentContext == null) return;
       if (resources.isEmpty) return;
       Navigator.of(navigatorKey.currentContext!).push(
-        MaterialPageRoute(builder: (context) {
-          final l10n = S.of(context)!;
-          return LinkEditView(
-            title: l10n.createPage_title,
+        MaterialPageRoute(builder: (context) =>
+          LinkEditView(
+            title: S.of(context)!.createPage_title,
             resourcePickerResult: resources,
-          );
-        }),
+          )
+        ),
       );
     }, onError: (err) {/* do nothing */});
   }
